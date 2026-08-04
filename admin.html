@@ -19,12 +19,11 @@ textarea { min-height:90px }
 .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end } .row > div { flex:1; min-width:140px }
 table { border-collapse:collapse; width:100% } td, th { padding:7px 9px; border-bottom:1px solid var(--grid); text-align:left; font-size:13.5px; vertical-align:middle }
 th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); white-space:nowrap; vertical-align:bottom }
-.info { position:relative; cursor:help }
+.info { cursor:help }
 th .info { border-bottom:1px dotted var(--muted) }
-.info:hover::after { content:attr(data-tip); position:absolute; left:0; top:130%; z-index:20;
-  background:var(--ink); color:var(--page); padding:8px 10px; border-radius:8px; font-size:11.5px;
-  min-width:200px; max-width:280px; white-space:pre-line; text-transform:none; letter-spacing:0;
-  font-weight:400; text-align:left; line-height:1.5 }
+#tt { position:fixed; z-index:99; display:none; background:var(--ink); color:var(--page);
+  padding:8px 10px; border-radius:8px; font-size:11.5px; max-width:280px; white-space:pre-line;
+  line-height:1.5; pointer-events:none; text-transform:none; letter-spacing:0; font-weight:400; text-align:left }
 td input { padding:4px 7px; width:76px }
 #teamsT td { white-space:nowrap }
 #teamsT td:first-child { white-space:normal }
@@ -72,10 +71,10 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       <table id="teamsT"><thead><tr>
         <th>Team</th><th>Runners</th>
         <th>Avg pace <span class="info" data-tip="Team average pace (min/mi) — auto-computed from runner paces, weighted by legs assigned">ⓘ</span></th>
-        <th>Paces collected <span class="info" data-tip="🟢 every runner has a pace entered\n🔴 paces missing\n\nHover a team&#39;s dot to see each runner&#39;s pace.">ⓘ</span></th>
-        <th>Wave start <span class="info" data-tip="HH:MM, 24h.\nBlank = race default (Fri 06:00 for the 205, Sat 06:00 for the 65).\nTeams see this read-only on their settings page.">ⓘ</span></th>
+        <th>Paces collected <span class="info" data-tip="🟢 every runner has a pace entered&#10;🔴 paces missing&#10;&#10;Hover a team&#39;s dot to see each runner&#39;s pace.">ⓘ</span></th>
+        <th>Wave start <span class="info" data-tip="HH:MM, 24h.&#10;Blank = race default (Fri 06:00 for the 205, Sat 06:00 for the 65).&#10;Teams see this read-only on their settings page.">ⓘ</span></th>
         <th>Projected finish <span class="info" data-tip="Wave start (or race default if blank) + avg pace × race distance">ⓘ</span></th>
-        <th>Suggested wave <span class="info" data-tip="Latest 30-min wave slot that still finishes by the 🎯 target\n(rounded down, clamped to the start window)\n→ shown with the finish that wave produces.">ⓘ</span></th>
+        <th>Suggested wave <span class="info" data-tip="Latest 30-min wave slot that still finishes by the 🎯 target&#10;(rounded down, clamped to the start window)&#10;→ shown with the finish that wave produces.">ⓘ</span></th>
         <th>App</th><th>Settings</th><th></th>
       </tr></thead><tbody></tbody></table>
       <p class="tiny">Sorted by team name · hover a ⓘ for what each column means.</p>
@@ -118,6 +117,18 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
     const mm = Math.round(t % 1440), hh = Math.floor(mm / 60);
     return `${d} ${(hh % 12) || 12}:${String(mm % 60).padStart(2, '0')} ${hh < 12 ? 'AM' : 'PM'}`;
   }
+  const tt = document.createElement('div'); tt.id = 'tt'; document.body.appendChild(tt);
+  document.addEventListener('mouseover', (e) => {
+    const el = e.target.closest ? e.target.closest('.info') : null;
+    if (!el || !el.dataset.tip) { tt.style.display = 'none'; return; }
+    tt.textContent = el.dataset.tip;
+    tt.style.display = 'block'; tt.style.left = '0px'; tt.style.top = '0px';
+    const r = el.getBoundingClientRect(), w = tt.offsetWidth, h = tt.offsetHeight;
+    let x = r.left, y = r.bottom + 6;
+    if (x + w > innerWidth - 8) x = innerWidth - w - 8;
+    if (y + h > innerHeight - 8) y = r.top - h - 6;
+    tt.style.left = x + 'px'; tt.style.top = y + 'px';
+  });
   const slugify = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 
   async function loadSeasons() {
