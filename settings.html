@@ -35,7 +35,7 @@ a { color:var(--accent) }
         <div><label>Runners on team</label><select id="fN"></select></div>
       </div>
       <div class="row">
-        <div><label>Team avg pace (min/mi) — auto-computed if runner paces are set</label><input id="fPace" placeholder="10:00"></div>
+        <div><label>Team avg pace <span class="tiny">(auto-computed from runner paces)</span></label><input id="fPace" disabled></div>
         <div><label>Wave start <span class="tiny">(assigned by the race)</span></label><input id="fWave" disabled></div>
       </div>
     </div>
@@ -43,7 +43,7 @@ a { color:var(--accent) }
     <h2>Runners</h2>
     <p class="tiny">⚠️ <b>Pace honesty matters:</b> OTO assigns start waves from your team's average 10k trail pace. Don't underestimate — if your wave starts later than your real pace needs, you can run out of daylight on the back half and miss the finish-line festivities. When in doubt, round <i>slower</i>.</p>
     <div class="card"><table id="runnersT"><thead><tr><th>Slot</th><th>Name</th><th style="width:130px">Pace (min/mi)</th></tr></thead><tbody></tbody></table>
-    <p class="tiny">Leave paces blank to use the team average below; fill them in and we'll compute the team average for you (weighted by legs assigned).</p></div>
+    <p class="tiny"><b>Enter a pace for every runner</b> — the race director uses these to assign your team's start wave.</p></div>
     <p><button class="saveBtn">Save team</button><span class="saveMsg tiny" style="margin-left:10px"></span></p>
     <h2>Who runs which leg</h2>
     <p class="tiny">Pre-filled by rotation — change any leg. This drives the filters, planner and est. times on your team pages.</p>
