@@ -25,6 +25,9 @@ button.ghost { background:none; border:1.5px solid var(--grid); color:var(--ink2
 button.danger { background:#d03b3b }
 .tiny { font-size:12px; color:var(--muted) } .ok { color:#0ca30c; font-weight:700 } .err { color:#d03b3b; font-weight:700 }
 a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--grid); border-radius:99px; padding:2px 10px; font-size:12px }
+.tabbtn { background:none; border:1.5px solid var(--grid); color:var(--ink2); border-radius:99px; padding:5px 14px }
+.tabbtn.active { background:var(--ink); color:var(--page); border-color:var(--ink) }
+.copyBtn { background:none; border:1px solid var(--grid); color:var(--ink2); border-radius:8px; padding:4px 8px; font-size:13px }
 </style></head>
 <body><div class="wrap">
   <h1>🛠 Race admin</h1>
@@ -51,10 +54,17 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
 
     <h2>Teams <span class="tiny" id="teamCount"></span></h2>
     <div class="card" style="overflow-x:auto">
+      <p style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px">
+        <button class="tabbtn active" data-race="205">205-mile</button>
+        <button class="tabbtn" data-race="65">65-mile</button>
+        <span class="tiny" style="margin-left:12px">🎯 target finish (Sat)</span>
+        <input id="targetFin" type="time" style="width:auto;padding:4px 8px">
+        <span class="tiny">drives the suggested wave per team</span>
+      </p>
       <table id="teamsT"><thead><tr>
-        <th>Team</th><th>Race</th><th>Runners</th><th>Pace</th><th>Wave start</th><th>Projected finish</th><th>Updated</th><th>Links</th><th></th>
+        <th>Team</th><th>Runners</th><th>Pace</th><th title="all runner paces entered?">Paces</th><th>Wave start</th><th>Projected finish</th><th>Suggested wave</th><th>App</th><th>Settings</th><th></th>
       </tr></thead><tbody></tbody></table>
-      <p class="tiny">Set wave starts here (HH:MM, 24h) — teams see them read-only. Projected finish = wave + pace × race distance. Sort order: projected finish.</p>
+      <p class="tiny">Wave start HH:MM 24h (blank = assumes 06:00 for the projection) — teams see it read-only. Projected finish = wave + team pace × distance. Suggested wave = target finish − pace × distance, clamped to the 6:00–12:00 window. 🟢 all runner paces entered · 🔴 missing paces. Sorted by projected finish.</p>
     </div>
 
     <h2>Leg content <span class="tiny">(beta wording + warning flags, per season)</span></h2>
@@ -84,10 +94,12 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   let seasons = [], season = null, teams = [], legs = [];
 
   const DAYS = { '205': ['Fri','Sat','Sun'], '65': ['Sat','Sun'] };
-  function fmtFinish(race, wave, pace, n) {
-    if (!wave) return '—';
-    const [h, m] = wave.split(':').map(Number);
-    const t = h * 60 + m + pace * TOTALS[race];
+  let raceTab = '205';
+  const TARGET_DEFAULT = { '205': '16:00', '65': '15:00' };
+  const targetKey = () => 'oto_target_' + raceTab;
+  const hmm = (v) => { const [h, m] = v.split(':').map(Number); return h * 60 + m; };
+  const fmtPace = (p) => { p = Number(p); return `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`; };
+  function fmtAbs(race, t) {
     const d = DAYS[race][Math.min(Math.floor(t / 1440), DAYS[race].length - 1)];
     const mm = Math.round(t % 1440), hh = Math.floor(mm / 60);
     return `${d} ${(hh % 12) || 12}:${String(mm % 60).padStart(2, '0')} ${hh < 12 ? 'AM' : 'PM'}`;
@@ -102,21 +114,47 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   }
   async function loadTeams() {
     teams = (await db.from('teams').select('*').eq('season_id', season.id)).data || [];
-    teams.sort((a, b) => (a.wave_start || 'zz').localeCompare(b.wave_start || 'zz'));
+    const { data: allRunners } = await db.from('runners').select('team_id,slot,pace_min_per_mi');
+    const paceCount = {};
+    (allRunners || []).forEach(r => {
+      if (!paceCount[r.team_id]) paceCount[r.team_id] = {};
+      if (r.pace_min_per_mi) paceCount[r.team_id][r.slot] = true;
+    });
+    $('targetFin').value = localStorage.getItem(targetKey()) || TARGET_DEFAULT[raceTab];
+    const targetAbs = (raceTab === '205' ? 1440 : 0) + hmm($('targetFin').value);
     const base = location.href.replace(/admin\.html.*$/, '');
-    $('teamCount').textContent = `(${teams.length})`;
-    $('teamsT').querySelector('tbody').innerHTML = teams.map(t => {
-      const proj = fmtFinish(t.race, t.wave_start, Number(t.pace_min_per_mi), t.n_runners);
-      const link = `${base}${t.race === '65' ? '65/' : ''}index.html?team=${t.slug}`;
+    const view = teams.filter(t => t.race === raceTab).map(t => {
+      const pace = Number(t.pace_min_per_mi);
+      const waveMin = hmm(t.wave_start || '06:00');
+      return { ...t, pace, waveMin, assumed: !t.wave_start, finishAbs: waveMin + pace * TOTALS[t.race] };
+    }).sort((a, b) => a.finishAbs - b.finishAbs);
+    $('teamCount').textContent = `(${view.length} of ${teams.length})`;
+    $('teamsT').querySelector('tbody').innerHTML = view.map(t => {
+      const done = Object.keys(paceCount[t.id] || {}).filter(sl => Number(sl) <= t.n_runners).length;
+      const complete = done >= t.n_runners;
+      const dot = `<span title="${done}/${t.n_runners} runner paces entered" style="font-size:15px">${complete ? '🟢' : '🔴'}</span>`;
+      const sugg = Math.min(720, Math.max(360, targetAbs - t.pace * TOTALS[t.race]));
+      const suggTxt = `${String(Math.floor(sugg / 60)).padStart(2, '0')}:${String(Math.round(sugg % 60)).padStart(2, '0')}`;
+      let flag = '';
+      if (complete && sugg > t.waveMin + 10) flag = ` <span class="ok tiny">← could start later</span>`;
+      else if (sugg < t.waveMin - 10) flag = ` <span class="err tiny">← needs earlier start</span>`;
+      const appL = `${base}${t.race === '65' ? '65/' : ''}index.html?team=${t.slug}`;
+      const setL = `${base}settings.html?team=${t.slug}`;
+      const cell = (u) => `<button class="copyBtn" data-link="${u}" title="copy link">⧉</button> <a href="${u}" target="_blank" title="open">↗</a>`;
       return `<tr data-id="${t.id}">
         <td><b>${esc(t.name)}</b><div class="tiny">/${t.slug}</div></td>
-        <td>${t.race}</td><td>${t.n_runners}</td><td>${t.pace_min_per_mi}</td>
+        <td>${t.n_runners}</td><td>${fmtPace(t.pace)}</td><td>${dot}</td>
         <td><input class="wave" value="${t.wave_start || ''}" placeholder="06:00"></td>
-        <td><b>${proj}</b></td>
-        <td class="tiny">${t.updated_at ? t.updated_at.slice(5, 16).replace('T', ' ') : ''}</td>
-        <td class="tiny"><a href="${link}" target="_blank">app</a> · <a href="${base}settings.html?team=${t.slug}" target="_blank">settings</a></td>
+        <td><b>${fmtAbs(t.race, t.finishAbs)}</b>${t.assumed ? ' <span class="tiny">(assumed 06:00)</span>' : ''}</td>
+        <td><b>${suggTxt}</b>${flag}</td>
+        <td>${cell(appL)}</td><td>${cell(setL)}</td>
         <td><button class="ghost del">✕</button></td></tr>`;
     }).join('');
+    $('teamsT').querySelectorAll('.copyBtn').forEach(btn => btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(btn.dataset.link);
+      const old = btn.textContent; btn.textContent = '✓';
+      setTimeout(() => { btn.textContent = old; }, 900);
+    }));
     $('teamsT').querySelectorAll('.wave').forEach(inp => inp.addEventListener('change', async () => {
       const id = inp.closest('tr').dataset.id;
       const v = inp.value.trim().match(/^\d{1,2}:\d{2}$/) ? inp.value.trim() : null;
@@ -153,6 +191,15 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   async function boot() {
     $('login').style.display = 'none'; $('app').style.display = '';
     $('cN').innerHTML = Array.from({length: 12}, (_, i) => `<option${i + 1 === 6 ? ' selected' : ''}>${i + 1}</option>`).join('');
+    document.querySelectorAll('.tabbtn').forEach(b => b.addEventListener('click', () => {
+      raceTab = b.dataset.race;
+      document.querySelectorAll('.tabbtn').forEach(x => x.classList.toggle('active', x === b));
+      loadTeams();
+    }));
+    $('targetFin').addEventListener('change', () => {
+      if ($('targetFin').value) localStorage.setItem(targetKey(), $('targetFin').value);
+      loadTeams();
+    });
     await loadSeasons(); await Promise.all([loadTeams(), loadCopyOptions(), loadLegs()]);
   }
 
