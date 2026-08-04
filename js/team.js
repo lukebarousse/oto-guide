@@ -118,6 +118,10 @@
       setP();
     }
 
+    // team pages: hide the what-if size selector — team size lives in settings
+    const nrSel = $('#nrSel');
+    if (nrSel && nrSel.closest('.planctl')) nrSel.closest('.planctl').style.display = 'none';
+
     // planner (overview): recompute with real assignments
     const tb = $('#plantbody');
     if (tb && typeof LEGDATA !== 'undefined') {

@@ -1000,7 +1000,7 @@ def build_overview():
   <h2>Runner planner — who takes which rotation slot?</h2>
   <p class="tiny" style="margin:.2em 0 .6em" id="planNote">With {N_RUNNERS} runners, slot <i>s</i> runs legs <i>s, s+{N_RUNNERS}, s+{2*N_RUNNERS}, …</i></p>
   <div class="planctl web-only">Runners on your team: <select id="nrSel">{nr_options}</select>
-    <span class="tiny">try any size — set <code>N_RUNNERS</code> in data.py to make it stick</span></div>
+    <span class="tiny">what-if only — it doesn't change any team's real setup</span></div>
   {planner_table()}
 </div>
 {watch_panel()}
