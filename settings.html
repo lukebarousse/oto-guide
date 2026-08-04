@@ -121,7 +121,7 @@ a { color:var(--accent) }
 
   async function saveTeam(msgEl) {
     const marks = [...document.querySelectorAll('.saveMsg')];
-    const say = (t, cls) => marks.forEach(el => { el.textContent = el === msgEl ? t : ''; if (el === msgEl) el.className = cls; });
+    const say = (t, cls) => marks.forEach(el => { el.textContent = el === msgEl ? t : ''; if (el === msgEl) el.className = 'saveMsg ' + cls; });
     say('saving…', 'tiny');
     try {
       const m = fPace.value.trim().match(/^(\d{1,2}):(\d{2})$/);
