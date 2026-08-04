@@ -36,7 +36,7 @@ a { color:var(--accent) }
       </div>
       <div class="row">
         <div><label>Team avg pace <span style="text-transform:none;font-weight:400">(auto-computed)</span></label><input id="fPace" disabled></div>
-        <div><label>Wave start <span class="tiny">(assigned by the race)</span></label><input id="fWave" disabled></div>
+        <div><label>Wave start</label><input id="fWave" disabled></div>
       </div>
     </div>
     <p><button class="saveBtn">Save team</button><span class="saveMsg tiny" style="margin-left:10px"></span></p>
@@ -89,7 +89,7 @@ a { color:var(--accent) }
   const p = Number(team.pace_min_per_mi);
   fPace.value = `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`;
   const wDay = team.race === '65' ? 'Sat' : 'Fri', wDef = '06:00';
-  fWave.value = team.wave_start ? `${wDay} ${team.wave_start} (assigned by the race)` : `${wDay} ${wDef} (race default — your wave isn't assigned yet)`;
+  fWave.value = team.wave_start ? `${wDay} ${team.wave_start} (assigned by race coordinator)` : `${wDay} ${wDef} (race default)`;
 
   const LEGS36 = Array.from({length: 36}, (_, i) => i + 1).filter(n => n >= LEG_MIN);
   function renderTables() {
