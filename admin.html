@@ -35,6 +35,11 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
 .tabbtn { background:none; border:1.5px solid var(--grid); color:var(--ink2); border-radius:99px; padding:5px 14px }
 .tabbtn.active { background:var(--ink); color:var(--page); border-color:var(--ink) }
 .copyBtn { background:none; border:1px solid var(--grid); color:var(--ink2); border-radius:8px; padding:4px 8px; font-size:13px }
+#menuBox { display:none; position:absolute; right:0; top:110%; z-index:50; background:var(--card);
+  border:1px solid var(--grid); border-radius:12px; padding:8px; min-width:230px;
+  flex-direction:column; gap:6px; box-shadow:0 8px 24px rgba(0,0,0,.35) }
+#menuBox.open { display:flex }
+#menuBox button { width:100%; text-align:left }
 </style></head>
 <body><div class="wrap">
   <h1>🛠 Race admin</h1>
@@ -45,10 +50,18 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   </div>
 
   <div id="app" style="display:none">
-    <p><span class="pill">Season <select id="seasonSel" style="width:auto;padding:2px 6px"></select></span>
-       <button class="ghost" id="newSeason">+ new season</button>
-       <button class="ghost" id="activateSeason">make selected season live</button>
-       <button class="ghost" id="signOut" style="float:right">sign out</button></p>
+    <p style="display:flex;gap:10px;align-items:center">
+      <span class="pill">Season <select id="seasonSel" style="width:auto;padding:2px 6px"></select></span>
+      <span style="flex:1"></span>
+      <span style="position:relative">
+        <button class="ghost" id="menuBtn" title="admin menu">☰</button>
+        <span id="menuBox">
+          <button class="ghost" id="newSeason">+ new season</button>
+          <button class="ghost" id="activateSeason">make selected season live</button>
+          <button class="ghost" id="signOut">sign out</button>
+        </span>
+      </span>
+    </p>
 
     <h2>Create team</h2>
     <div class="card"><div class="row">
@@ -117,6 +130,10 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
     const mm = Math.round(t % 1440), hh = Math.floor(mm / 60);
     return `${d} ${(hh % 12) || 12}:${String(mm % 60).padStart(2, '0')} ${hh < 12 ? 'AM' : 'PM'}`;
   }
+  const menuBtn = document.getElementById('menuBtn'), menuBox = document.getElementById('menuBox');
+  menuBtn.addEventListener('click', (e) => { e.stopPropagation(); menuBox.classList.toggle('open'); });
+  document.addEventListener('click', (e) => { if (!menuBox.contains(e.target)) menuBox.classList.remove('open'); });
+
   const tt = document.createElement('div'); tt.id = 'tt'; document.body.appendChild(tt);
   document.addEventListener('mouseover', (e) => {
     const el = e.target.closest ? e.target.closest('.info') : null;
