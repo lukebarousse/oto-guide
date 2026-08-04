@@ -26,8 +26,7 @@ TEAM_NAME = "OTO 65"
 N_RUNNERS = 6          # 65-mile teams are 4-6 runners
 RUNNERS = {}
 
-# TODO: confirm the official 65-mile Saturday start time with the race.
-PLAN = dict(PLAN, start_hhmm="07:00")
+PLAN = dict(PLAN, start_hhmm="06:00")   # 6:00 AM Saturday, per the race director
 RACE_DAYS = ["Sat", "Sun"]
 PLAN_NOTE = "one-day event — confirm your start time with the race"
 START_KEY = "24"       # leg 25 starts at exchange zone 24 (Lake Fort Smith)

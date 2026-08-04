@@ -19,7 +19,10 @@ textarea { min-height:90px }
 .row { display:flex; gap:12px; flex-wrap:wrap } .row > div { flex:1; min-width:140px }
 table { border-collapse:collapse; width:100% } td, th { padding:7px 9px; border-bottom:1px solid var(--grid); text-align:left; font-size:13.5px; vertical-align:middle }
 th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
-th[title] { cursor:help }
+th .info { position:relative; cursor:help; border-bottom:1px dotted var(--muted) }
+th .info:hover::after { content:attr(data-tip); position:absolute; left:0; top:130%; z-index:20;
+  background:var(--ink); color:var(--page); padding:8px 10px; border-radius:8px; font-size:11.5px;
+  width:240px; white-space:normal; text-transform:none; letter-spacing:0; font-weight:400; text-align:left }
 td input { padding:4px 7px; width:76px }
 button { font:inherit; font-weight:700; border:none; border-radius:10px; padding:9px 16px; cursor:pointer; background:var(--accent); color:#fff }
 button.ghost { background:none; border:1.5px solid var(--grid); color:var(--ink2) }
@@ -64,14 +67,14 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       </p>
       <table id="teamsT"><thead><tr>
         <th>Team</th><th>Runners</th>
-        <th title="Team average pace (min/mi) — auto-computed from runner paces, weighted by legs assigned">Avg pace ⓘ</th>
-        <th title="🟢 every runner has a pace entered · 🔴 paces missing — hover the dot for the count">Paces collected ⓘ</th>
-        <th title="HH:MM, 24h. Blank = race default (205: Fri 06:00 · 65: Sat 07:00). Teams see this read-only on their settings page">Wave start ⓘ</th>
-        <th title="Wave start (or race default if blank) + avg pace × race distance">Projected finish ⓘ</th>
-        <th title="Latest 30-min wave slot for the 🎯 target finish (rounded up, clamped to the start window) — with the finish that wave produces">Suggested wave ⓘ</th>
+        <th>Avg pace <span class="info" data-tip="Team average pace (min/mi) — auto-computed from runner paces, weighted by legs assigned">ⓘ</span></th>
+        <th>Paces collected <span class="info" data-tip="🟢 every runner has a pace entered · 🔴 paces missing — hover the dot for the count">ⓘ</span></th>
+        <th>Wave start <span class="info" data-tip="HH:MM, 24h. Blank = race default (Fri 06:00 for the 205, Sat 06:00 for the 65). Teams see this read-only on their settings page">ⓘ</span></th>
+        <th>Projected finish <span class="info" data-tip="Wave start (or race default if blank) + avg pace × race distance">ⓘ</span></th>
+        <th>Suggested wave <span class="info" data-tip="Latest 30-min wave slot that still finishes by the 🎯 target (rounded down, clamped to the start window) — with the finish that wave produces">ⓘ</span></th>
         <th>App</th><th>Settings</th><th></th>
       </tr></thead><tbody></tbody></table>
-      <p class="tiny">Sorted by projected finish · hover the ⓘ column headers for details.</p>
+      <p class="tiny">Sorted by team name · hover a ⓘ for what each column means.</p>
     </div>
 
     <h2>Leg content <span class="tiny">(beta wording + warning flags, per season)</span></h2>
@@ -103,7 +106,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   const DAYS = { '205': ['Fri','Sat','Sun'], '65': ['Sat','Sun'] };
   let raceTab = '205';
   const TARGET_DEFAULT = { '205': '16:00', '65': '15:00' };
-  const DEF_WAVE = { '205': '06:00', '65': '07:00' };
+  const DEF_WAVE = { '205': '06:00', '65': '06:00' };
   const hmm = (v) => { const [h, m] = v.split(':').map(Number); return h * 60 + m; };
   const fmtPace = (p) => { p = Number(p); return `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`; };
   function fmtAbs(race, t) {
@@ -134,13 +137,13 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       const pace = Number(t.pace_min_per_mi);
       const waveMin = hmm(t.wave_start || DEF_WAVE[t.race]);
       return { ...t, pace, waveMin, assumed: !t.wave_start, finishAbs: waveMin + pace * TOTALS[t.race] };
-    }).sort((a, b) => a.finishAbs - b.finishAbs);
+    }).sort((a, b) => a.name.localeCompare(b.name));
     $('teamCount').textContent = `(${view.length} of ${teams.length})`;
     $('teamsT').querySelector('tbody').innerHTML = view.map(t => {
       const done = Object.keys(paceCount[t.id] || {}).filter(sl => Number(sl) <= t.n_runners).length;
       const complete = done >= t.n_runners;
       const dot = `<span title="${done}/${t.n_runners} runner paces entered" style="font-size:15px">${complete ? '🟢' : '🔴'}</span>`;
-      let sugg = Math.ceil((targetAbs - t.pace * TOTALS[t.race]) / 30) * 30;
+      let sugg = Math.floor((targetAbs - t.pace * TOTALS[t.race]) / 30) * 30;
       sugg = Math.min(720, Math.max(hmm(DEF_WAVE[t.race]), sugg));
       const suggTxt = `${String(Math.floor(sugg / 60)).padStart(2, '0')}:${String(Math.round(sugg % 60)).padStart(2, '0')}`;
       const suggFinish = fmtAbs(t.race, sugg + t.pace * TOTALS[t.race]);
