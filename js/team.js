@@ -102,11 +102,21 @@
       if (startIn && team.wave_start) startIn.value = team.wave_start;
     }
 
-    // race-day dropdown runner names
+    // race-day dropdown runner names + per-runner pace defaults
     $$('#rdLeg option').forEach(o => {
       const n = Number(o.value); const nm = names[legSlot(n)];
       if (nm) { o.dataset.runner = nm; o.textContent = o.textContent.replace(/—.*$/, `— ${nm}`); }
     });
+    const rdPace = $('#rdPace'), rdLeg = $('#rdLeg');
+    if (rdPace && rdLeg) {
+      const paceBySlot = {}; (runners || []).forEach(r => { if (r.pace_min_per_mi) paceBySlot[r.slot] = Number(r.pace_min_per_mi); });
+      const setP = () => {
+        const p = paceBySlot[legSlot(Number(rdLeg.value))] || Number(team.pace_min_per_mi) || PLAN.pace;
+        rdPace.value = `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`;
+      };
+      rdLeg.addEventListener('change', setP);
+      setP();
+    }
 
     // planner (overview): recompute with real assignments
     const tb = $('#plantbody');

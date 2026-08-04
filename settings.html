@@ -26,6 +26,7 @@ a { color:var(--accent) }
 <body><div class="wrap">
   <h1>🏃🏻 Team settings</h1>
   <p class="tiny" id="crumb"></p>
+  <p id="topnav" style="display:none">→ Your team's guide: <a id="lnkLegsTop"><b>Legs</b></a> · <a id="lnkOverTop"><b>Overview</b></a></p>
   <div id="msg"></div>
   <div id="app" style="display:none">
     <div class="card">
@@ -34,12 +35,14 @@ a { color:var(--accent) }
         <div><label>Runners on team</label><select id="fN"></select></div>
       </div>
       <div class="row">
-        <div><label>Team avg pace (min/mi, e.g. 10:30)</label><input id="fPace" placeholder="10:00"></div>
+        <div><label>Team avg pace (min/mi) — auto-computed if runner paces are set</label><input id="fPace" placeholder="10:00"></div>
         <div><label>Wave start <span class="tiny">(assigned by the race)</span></label><input id="fWave" disabled></div>
       </div>
     </div>
     <h2>Runners</h2>
-    <div class="card"><table id="runnersT"><thead><tr><th>Slot</th><th>Name</th></tr></thead><tbody></tbody></table></div>
+    <p class="tiny">⚠️ <b>Pace honesty matters:</b> OTO assigns start waves from your team's average 10k trail pace. Don't underestimate — if your wave starts later than your real pace needs, you can run out of daylight on the back half and miss the finish-line festivities. When in doubt, round <i>slower</i>.</p>
+    <div class="card"><table id="runnersT"><thead><tr><th>Slot</th><th>Name</th><th style="width:130px">Pace (min/mi)</th></tr></thead><tbody></tbody></table>
+    <p class="tiny">Leave paces blank to use the team average below; fill them in and we'll compute the team average for you (weighted by legs assigned).</p></div>
     <h2>Who runs which leg</h2>
     <p class="tiny">Pre-filled by rotation — change any leg. This drives the filters, planner and est. times on your team pages.</p>
     <div class="card"><table id="assignT"><thead><tr><th>Leg</th><th></th><th>Runner</th></tr></thead><tbody></tbody></table></div>
@@ -73,7 +76,7 @@ a { color:var(--accent) }
     db.from('assignments').select('*').eq('team_id', team.id),
     db.from('legs').select('n').eq('season_id', season.id),
   ]);
-  const names = {}; (runners || []).forEach(r => names[r.slot] = r.name);
+  const names = {}; const paces = {}; (runners || []).forEach(r => { names[r.slot] = r.name; if (r.pace_min_per_mi) paces[r.slot] = Number(r.pace_min_per_mi); });
   const slotOf = {}; (assigns || []).forEach(a => slotOf[a.leg] = a.slot);
 
   const fName = document.getElementById('fName'), fN = document.getElementById('fN'),
@@ -88,8 +91,10 @@ a { color:var(--accent) }
   const LEGS36 = Array.from({length: 36}, (_, i) => i + 1).filter(n => n >= LEG_MIN);
   function renderTables() {
     const N = Number(fN.value);
+    const pstr = (v) => v ? `${Math.floor(v)}:${String(Math.round(v % 1 * 60)).padStart(2,'0')}` : '';
     document.querySelector('#runnersT tbody').innerHTML = Array.from({length: N}, (_, i) =>
-      `<tr><td><b>${i+1}</b></td><td><input data-slot="${i+1}" value="${(names[i+1] || '').replace(/"/g,'&quot;')}" placeholder="runner name"></td></tr>`).join('');
+      `<tr><td><b>${i+1}</b></td><td><input data-slot="${i+1}" value="${(names[i+1] || '').replace(/"/g,'&quot;')}" placeholder="runner name"></td>
+       <td><input data-pace-slot="${i+1}" value="${pstr(paces[i+1])}" placeholder="10:30"></td></tr>`).join('');
     const opts = (sel) => Array.from({length: N}, (_, i) =>
       `<option value="${i+1}"${i+1 === sel ? ' selected' : ''}>${i+1}${names[i+1] ? ' — ' + names[i+1] : ''}</option>`).join('');
     document.querySelector('#assignT tbody').innerHTML = LEGS36.map((n, idx) => {
@@ -97,10 +102,19 @@ a { color:var(--accent) }
       const cur = slotOf[n] && slotOf[n] <= N ? slotOf[n] : def;
       return `<tr><td><b>${n}</b></td><td class="tiny"></td><td><select data-leg="${n}">${opts(cur)}</select></td></tr>`;
     }).join('');
-    document.querySelectorAll('#runnersT input').forEach(inp =>
+    document.querySelectorAll('#runnersT input[data-slot]').forEach(inp =>
       inp.addEventListener('input', () => { names[Number(inp.dataset.slot)] = inp.value; }));
+    document.querySelectorAll('#runnersT input[data-pace-slot]').forEach(inp =>
+      inp.addEventListener('input', () => {
+        const m = inp.value.trim().match(/^(\d{1,2}):(\d{2})$/);
+        paces[Number(inp.dataset.paceSlot)] = m ? Number(m[1]) + Number(m[2]) / 60 : null;
+      }));
   }
-  fN.addEventListener('change', renderTables);
+  fN.addEventListener('change', () => {
+    // keep any still-valid manual assignments (saved or not) across a size change
+    document.querySelectorAll('#assignT select').forEach(sel => { slotOf[Number(sel.dataset.leg)] = Number(sel.value); });
+    renderTables();
+  });
   renderTables();
 
   document.getElementById('save').addEventListener('click', async () => {
@@ -110,19 +124,27 @@ a { color:var(--accent) }
     const N = Number(fN.value);
     const pace = Number(m[1]) + Number(m[2]) / 60;
     const upT = await db.from('teams').update({ name: fName.value.trim() || team.name, n_runners: N,
-      pace_min_per_mi: pace.toFixed(2), updated_at: new Date().toISOString() }).eq('id', team.id);
-    const runnerRows = Array.from({length: N}, (_, i) => ({ team_id: team.id, slot: i + 1, name: (names[i + 1] || '').trim() }));
+      pace_min_per_mi: teamPace.toFixed(2), updated_at: new Date().toISOString() }).eq('id', team.id);
+    const legCount = {};
+    document.querySelectorAll('#assignT select').forEach(sel => { const v = Number(sel.value); legCount[v] = (legCount[v] || 0) + 1; });
+    let wSum = 0, w = 0;
+    for (let sl = 1; sl <= N; sl++) { const c = legCount[sl] || 0; const pp = paces[sl] || pace; wSum += c * pp; w += c; }
+    const teamPace = w ? wSum / w : pace;
+    const runnerRows = Array.from({length: N}, (_, i) => ({ team_id: team.id, slot: i + 1,
+      name: (names[i + 1] || '').trim(), pace_min_per_mi: paces[i + 1] ? paces[i + 1].toFixed(2) : null }));
     const upR = await db.from('runners').upsert(runnerRows);
     const assignRows = [...document.querySelectorAll('#assignT select')].map(sel =>
       ({ team_id: team.id, leg: Number(sel.dataset.leg), slot: Number(sel.value) }));
     const upA = await db.from('assignments').upsert(assignRows);
     const err = upT.error || upR.error || upA.error;
-    sm.textContent = err ? ('save failed: ' + err.message) : 'saved ✓ — your team pages are updated';
+    if (!err) fPace.value = `${Math.floor(teamPace)}:${String(Math.round(teamPace % 1 * 60)).padStart(2,'0')}`;
+    sm.textContent = err ? ('save failed: ' + err.message) : 'saved ✓ — your team pages are updated (team avg pace: ' + fPace.value + ')';
     sm.className = err ? 'err' : 'ok';
   });
 
-  document.getElementById('lnkLegs').href = NAMES_URL + 'index.html?team=' + encodeURIComponent(slug);
-  document.getElementById('lnkOver').href = NAMES_URL + 'overview.html?team=' + encodeURIComponent(slug);
+  for (const [a, b] of [['lnkLegs', 'index'], ['lnkOver', 'overview'], ['lnkLegsTop', 'index'], ['lnkOverTop', 'overview']])
+    document.getElementById(a).href = NAMES_URL + b + '.html?team=' + encodeURIComponent(slug);
+  document.getElementById('topnav').style.display = '';
   document.getElementById('app').style.display = '';
 })();
 </script>
