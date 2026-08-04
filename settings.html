@@ -88,7 +88,8 @@ a { color:var(--accent) }
   fN.value = team.n_runners;
   const p = Number(team.pace_min_per_mi);
   fPace.value = `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`;
-  fWave.value = team.wave_start || 'not assigned yet';
+  const wDay = team.race === '65' ? 'Sat' : 'Fri', wDef = team.race === '65' ? '07:00' : '06:00';
+  fWave.value = team.wave_start ? `${wDay} ${team.wave_start} (assigned by the race)` : `${wDay} ${wDef} (race default — your wave isn't assigned yet)`;
 
   const LEGS36 = Array.from({length: 36}, (_, i) => i + 1).filter(n => n >= LEG_MIN);
   function renderTables() {

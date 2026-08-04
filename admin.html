@@ -19,6 +19,7 @@ textarea { min-height:90px }
 .row { display:flex; gap:12px; flex-wrap:wrap } .row > div { flex:1; min-width:140px }
 table { border-collapse:collapse; width:100% } td, th { padding:7px 9px; border-bottom:1px solid var(--grid); text-align:left; font-size:13.5px; vertical-align:middle }
 th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
+th[title] { cursor:help }
 td input { padding:4px 7px; width:76px }
 button { font:inherit; font-weight:700; border:none; border-radius:10px; padding:9px 16px; cursor:pointer; background:var(--accent); color:#fff }
 button.ghost { background:none; border:1.5px solid var(--grid); color:var(--ink2) }
@@ -62,9 +63,15 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
         <span class="tiny">drives the suggested wave per team</span>
       </p>
       <table id="teamsT"><thead><tr>
-        <th>Team</th><th>Runners</th><th>Pace</th><th title="all runner paces entered?">Paces</th><th>Wave start</th><th>Projected finish</th><th>Suggested wave</th><th>App</th><th>Settings</th><th></th>
+        <th>Team</th><th>Runners</th>
+        <th title="Team average pace (min/mi) — auto-computed from runner paces, weighted by legs assigned">Avg pace ⓘ</th>
+        <th title="🟢 every runner has a pace entered · 🔴 paces missing — hover the dot for the count">Paces collected ⓘ</th>
+        <th title="HH:MM, 24h. Blank = race default (205: Fri 06:00 · 65: Sat 07:00). Teams see this read-only on their settings page">Wave start ⓘ</th>
+        <th title="Wave start (or race default if blank) + avg pace × race distance">Projected finish ⓘ</th>
+        <th title="Latest 30-min wave slot for the 🎯 target finish (rounded up, clamped to the start window) — with the finish that wave produces">Suggested wave ⓘ</th>
+        <th>App</th><th>Settings</th><th></th>
       </tr></thead><tbody></tbody></table>
-      <p class="tiny">Wave start HH:MM 24h (blank = assumes 06:00 for the projection) — teams see it read-only. Projected finish = wave + team pace × distance. Suggested wave = target finish − pace × distance, clamped to the 6:00–12:00 window. 🟢 all runner paces entered · 🔴 missing paces. Sorted by projected finish.</p>
+      <p class="tiny">Sorted by projected finish · hover the ⓘ column headers for details.</p>
     </div>
 
     <h2>Leg content <span class="tiny">(beta wording + warning flags, per season)</span></h2>
@@ -96,7 +103,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   const DAYS = { '205': ['Fri','Sat','Sun'], '65': ['Sat','Sun'] };
   let raceTab = '205';
   const TARGET_DEFAULT = { '205': '16:00', '65': '15:00' };
-  const targetKey = () => 'oto_target_' + raceTab;
+  const DEF_WAVE = { '205': '06:00', '65': '07:00' };
   const hmm = (v) => { const [h, m] = v.split(':').map(Number); return h * 60 + m; };
   const fmtPace = (p) => { p = Number(p); return `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`; };
   function fmtAbs(race, t) {
@@ -120,12 +127,12 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       if (!paceCount[r.team_id]) paceCount[r.team_id] = {};
       if (r.pace_min_per_mi) paceCount[r.team_id][r.slot] = true;
     });
-    $('targetFin').value = localStorage.getItem(targetKey()) || TARGET_DEFAULT[raceTab];
+    $('targetFin').value = season['target_finish_' + raceTab] || TARGET_DEFAULT[raceTab];
     const targetAbs = (raceTab === '205' ? 1440 : 0) + hmm($('targetFin').value);
     const base = location.href.replace(/admin\.html.*$/, '');
     const view = teams.filter(t => t.race === raceTab).map(t => {
       const pace = Number(t.pace_min_per_mi);
-      const waveMin = hmm(t.wave_start || '06:00');
+      const waveMin = hmm(t.wave_start || DEF_WAVE[t.race]);
       return { ...t, pace, waveMin, assumed: !t.wave_start, finishAbs: waveMin + pace * TOTALS[t.race] };
     }).sort((a, b) => a.finishAbs - b.finishAbs);
     $('teamCount').textContent = `(${view.length} of ${teams.length})`;
@@ -133,8 +140,10 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       const done = Object.keys(paceCount[t.id] || {}).filter(sl => Number(sl) <= t.n_runners).length;
       const complete = done >= t.n_runners;
       const dot = `<span title="${done}/${t.n_runners} runner paces entered" style="font-size:15px">${complete ? '🟢' : '🔴'}</span>`;
-      const sugg = Math.min(720, Math.max(360, targetAbs - t.pace * TOTALS[t.race]));
+      let sugg = Math.ceil((targetAbs - t.pace * TOTALS[t.race]) / 30) * 30;
+      sugg = Math.min(720, Math.max(hmm(DEF_WAVE[t.race]), sugg));
       const suggTxt = `${String(Math.floor(sugg / 60)).padStart(2, '0')}:${String(Math.round(sugg % 60)).padStart(2, '0')}`;
+      const suggFinish = fmtAbs(t.race, sugg + t.pace * TOTALS[t.race]);
       let flag = '';
       if (complete && sugg > t.waveMin + 10) flag = ` <span class="ok tiny">← could start later</span>`;
       else if (sugg < t.waveMin - 10) flag = ` <span class="err tiny">← needs earlier start</span>`;
@@ -144,9 +153,9 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       return `<tr data-id="${t.id}">
         <td><b>${esc(t.name)}</b><div class="tiny">/${t.slug}</div></td>
         <td>${t.n_runners}</td><td>${fmtPace(t.pace)}</td><td>${dot}</td>
-        <td><input class="wave" value="${t.wave_start || ''}" placeholder="06:00"></td>
-        <td><b>${fmtAbs(t.race, t.finishAbs)}</b>${t.assumed ? ' <span class="tiny">(assumed 06:00)</span>' : ''}</td>
-        <td><b>${suggTxt}</b>${flag}</td>
+        <td><input class="wave" value="${t.wave_start || ''}" placeholder="${DEF_WAVE[t.race]}"></td>
+        <td><b>${fmtAbs(t.race, t.finishAbs)}</b></td>
+        <td><b>${suggTxt}</b> <span class="tiny">→ ${suggFinish}</span>${flag}</td>
         <td>${cell(appL)}</td><td>${cell(setL)}</td>
         <td><button class="ghost del">✕</button></td></tr>`;
     }).join('');
@@ -196,8 +205,13 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       document.querySelectorAll('.tabbtn').forEach(x => x.classList.toggle('active', x === b));
       loadTeams();
     }));
-    $('targetFin').addEventListener('change', () => {
-      if ($('targetFin').value) localStorage.setItem(targetKey(), $('targetFin').value);
+    $('targetFin').addEventListener('change', async () => {
+      const v = $('targetFin').value;
+      if (v) {
+        const { error } = await db.from('seasons').update({ ['target_finish_' + raceTab]: v }).eq('id', season.id);
+        if (error) alert('Could not save target (run the seasons migration?): ' + error.message);
+        else season['target_finish_' + raceTab] = v;
+      }
       loadTeams();
     });
     await loadSeasons(); await Promise.all([loadTeams(), loadCopyOptions(), loadLegs()]);
