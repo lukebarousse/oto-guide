@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>OTO Guide</title>
+<script>
+// GitHub Pages routing shim: /t/<team-slug> -> index.html?team=<slug>
+// (the team page then bounces to /65/ automatically if it's a 65-mile team)
+(function () {
+  var parts = location.pathname.split('/').filter(Boolean);
+  var i = parts.indexOf('t');
+  if (i !== -1 && parts[i + 1]) {
+    var base = '/' + parts.slice(0, i).join('/');
+    location.replace(base + (base.endsWith('/') ? '' : '/') + 'index.html?team=' + encodeURIComponent(parts[i + 1].toLowerCase()));
+  } else {
+    document.write('<p style="font-family:system-ui;padding:40px">Not found. <a href="/">OTO Guide home</a></p>');
+  }
+})();
+</script></head><body></body></html>

@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">%F0%9F%8F%83%F0%9F%8F%BB</text></svg>'>
+<title>OTO 65 — Overview</title>
+<style>
+:root { color-scheme: light;
+  --surface:#fcfcfb; --page:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10); --card:#ffffff; --accent:#d97427;
+  --nightshade:rgba(38,52,110,.13) }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-print]) { color-scheme: dark;
+    --surface:#1a1a19; --page:#0d0d0d; --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12); --card:#232322; --accent:#d97427;
+    --nightshade:rgba(140,160,255,.18) } }
+* { box-sizing:border-box }
+html { scroll-behavior:smooth }
+body { margin:0; background:var(--page); color:var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size:14px; line-height:1.45; -webkit-print-color-adjust:exact; print-color-adjust:exact }
+.wrap { max-width:860px; margin:0 auto; padding:0 16px 48px }
+a { color:var(--accent) }
+a, button { -webkit-tap-highlight-color: transparent }
+h1,h2,h3 { line-height:1.15; margin:0 }
+nav.top { position:sticky; top:0; z-index:9; background:var(--page); border-bottom:1px solid var(--grid); padding:8px 12px 0 }
+.navrow { display:flex; gap:4px; overflow-x:auto; font-size:12.5px; white-space:nowrap; padding-bottom:8px; align-items:center }
+.navrow a, .navrow button { text-decoration:none; color:var(--ink2); padding:5px 10px; border-radius:99px;
+  border:1px solid var(--grid); background:none; font:inherit; font-size:12.5px; cursor:pointer;
+  -webkit-appearance:none; appearance:none }
+.navrow a:hover, .navrow button:hover { background:var(--card) }
+.navrow .brand { font-weight:800; color:var(--ink); border:none; padding-left:0 }
+.navrow .active { background:var(--ink); color:var(--page); border-color:var(--ink) }
+.navrow .rowlabel { font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); flex:none }
+.navtabs a { font-weight:700 }
+.jumprow { display:flex; gap:3px; overflow-x:auto; padding-bottom:8px }
+.jumprow a { flex:none; position:relative; width:30px; height:34px; display:flex; align-items:center; justify-content:center;
+  padding-bottom:6px; font-size:11.5px; font-weight:700; text-decoration:none; color:var(--ink2);
+  border:1px solid var(--grid); border-radius:8px }
+.jumprow a .d { position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50% }
+.jumprow a:hover, .jumprow a:active { background:var(--card) }
+.jumprow a:visited, .navrow a:visited { color:var(--ink2) }
+.navrow .active:visited { color:var(--page) }
+.hero { padding:30px 0 8px }
+.hero .kicker { font-weight:800; letter-spacing:.14em; color:var(--accent); font-size:13px }
+.hero h1 { font-size:32px; font-weight:800; letter-spacing:-.01em; margin:2px 0 4px }
+.hero .sub { color:var(--ink2); font-size:15px }
+.statgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin:18px 0 }
+.tile { background:var(--card); border:1px solid var(--ring); border-radius:10px; padding:10px 12px }
+.tile b { display:block; font-size:22px }
+.tile span { color:var(--muted); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em }
+.panel { background:var(--card); border:1px solid var(--ring); border-radius:12px; padding:14px 16px; margin:14px 0 }
+.panel h2 { font-size:16px; margin-bottom:8px }
+.legendrow { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px; font-size:12px; color:var(--ink2) }
+.pill { display:inline-flex; align-items:center; gap:5px; border:1.5px solid var(--pc);
+  background:color-mix(in srgb, var(--pc) 13%, transparent); color:var(--ink);
+  border-radius:99px; padding:2px 9px 2px 7px; font-size:11.5px; white-space:nowrap }
+.pill .dot { width:8px; height:8px; border-radius:50%; background:var(--pc); flex:none }
+.pill .pl { color:var(--ink2); font-size:10px; text-transform:uppercase; letter-spacing:.05em }
+.chip { display:inline-block; border-radius:6px; padding:2px 7px; font-size:11px; margin:2px 3px 0 0;
+  border:1px solid var(--ring); background:var(--surface); color:var(--ink2) }
+.chip.climb { border-color:color-mix(in srgb, var(--accent) 45%, transparent); color:var(--ink) }
+.dotc { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; outline:1px solid rgba(0,0,0,.2) }
+.secbanner { margin:34px 0 12px; padding:14px 16px; border-radius:12px; background:var(--ink); color:var(--page) }
+.secbanner .secno { font-size:11px; letter-spacing:.18em; opacity:.7; font-weight:700 }
+.secbanner h2 { font-size:19px; margin:2px 0 }
+.secbanner .sectotals { font-size:13px; opacity:.85 }
+.secex { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; justify-content:space-between;
+  margin-top:11px; padding-top:11px; border-top:1px solid color-mix(in srgb, currentColor 25%, transparent) }
+.secex b { display:block; font-size:12.5px; letter-spacing:.05em }
+.secex > div > span { font-size:11.5px; opacity:.75 }
+.secex .mapwrap { display:flex; gap:7px; flex-wrap:wrap; align-items:center }
+.secex .coords { color:inherit; opacity:.7 }
+.bannerbtn { display:inline-block; text-decoration:none; font-weight:700; font-size:12px; color:inherit;
+  border:1.5px solid color-mix(in srgb, currentColor 45%, transparent); border-radius:8px; padding:4px 11px }
+.leg { background:var(--card); border:1px solid var(--ring); border-radius:12px; padding:13px 15px; margin:10px 0 }
+.leg.hidden, .hiddenx { display:none !important }
+.leghead { display:flex; gap:12px; align-items:flex-start }
+.legnum { font-size:26px; font-weight:800; color:var(--accent); line-height:1; padding-top:2px }
+.titleblock { flex:1; min-width:0 }
+.titleblock h3 { font-size:17px }
+.titleblock .meta { font-size:11.5px; color:var(--muted); margin-top:2px }
+.badges { display:flex; flex-direction:column; gap:4px; align-items:flex-end }
+.statrow { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin:10px 0 6px }
+.stat { font-size:13px; color:var(--ink2) }
+.stat b { font-size:17px; color:var(--ink) }
+.meterwrap { display:flex; align-items:center; gap:7px }
+.meter { width:70px; height:7px; border-radius:99px; background:var(--grid); overflow:hidden }
+.meter .fill { height:100%; background:var(--accent); border-radius:99px }
+.meter.zoned { background:linear-gradient(to right,
+  var(--grid) 0 24.5%, var(--axis) 24.5% 25.5%, var(--grid) 25.5% 49.5%, var(--axis) 49.5% 50.5%,
+  var(--grid) 50.5% 74.5%, var(--axis) 74.5% 75.5%, var(--grid) 75.5% 100%) }
+.mval { font-size:11.5px; color:var(--ink2) }
+.profile { margin:8px 0 2px; border:1px solid var(--grid); border-radius:8px; padding:6px 8px 4px; background:var(--surface) }
+.proflabel { font-size:10.5px; color:var(--muted); margin-top:2px }
+.surfrow { margin:7px 0 }
+.surfbar { display:flex; gap:2px; height:15px; border-radius:5px; overflow:hidden }
+.seg { color:#fff; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em;
+  display:flex; align-items:center; justify-content:center; min-width:8px }
+.surftext { font-size:11px; color:var(--muted); margin-top:3px }
+.beta { margin:8px 0 4px; font-size:13.5px }
+.beta .src, .srcbadge { display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent); border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius:4px; padding:1px 5px; margin-right:7px; vertical-align:1px }
+.tiny { font-size:11px; color:var(--muted) }
+.nowrap { white-space:nowrap }
+.steps { margin:8px 0 4px 20px; font-size:13.5px }
+.steps li { margin:7px 0 }
+#map iframe { width:100% !important; max-width:none !important }
+.wrap.wide { max-width:1240px }
+td.bar { background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%, transparent) var(--p), transparent var(--p)); background-repeat:no-repeat }
+.pillrow { display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 10px }
+.pillbtn { border:1px solid var(--grid); background:none; color:var(--ink2); font:inherit; font-size:12.5px;
+  padding:5px 10px; border-radius:99px; cursor:pointer; -webkit-appearance:none; appearance:none }
+.pillbtn.active { background:var(--ink); color:var(--page); border-color:var(--ink) }
+.skb.dim { opacity:.15 }
+.planctl { margin-top:10px; font-size:12.5px; color:var(--ink2); display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center }
+.planctl input, .planctl select { font:inherit; font-size:12.5px; background:var(--surface); color:var(--ink);
+  border:1px solid var(--grid); border-radius:6px; padding:3px 6px; max-width:100% }
+.planctl #paceIn { width:52px; text-align:center }
+.planctl .pillbtn { padding:3px 9px }
+.footnote { font-size:11.5px; color:var(--ink2); background:var(--surface); border:1px dashed var(--axis);
+  border-radius:7px; padding:5px 9px; margin-top:6px }
+.legfoot { margin-top:9px; display:flex; flex-wrap:wrap; gap:7px; align-items:center }
+.stravabtn { display:inline-block; text-decoration:none; font-weight:700; font-size:12.5px;
+  border:1.5px solid var(--accent); border-radius:8px; padding:5px 12px }
+.mapbtn { border-color:var(--grid); color:var(--ink2) }
+.coords { font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums }
+.qrbox { display:flex; align-items:center; gap:8px }
+.qrbox img { width:62px; height:62px; image-rendering:pixelated }
+.qrbox span { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em }
+.qrbox.big img { width:88px; height:88px }
+.qrbox.big { flex-direction:column; text-align:center; gap:4px }
+.exchange { display:flex; gap:10px; align-items:center; border:1.5px dashed var(--ink2); border-radius:12px;
+  padding:10px 14px; margin:12px 0; background:var(--surface) }
+.exchange .flag { font-size:20px }
+.exchange b { display:block; font-size:13.5px; letter-spacing:.04em }
+.exchange span { font-size:12px; color:var(--ink2) }
+.exchange.finish { border-style:solid; border-color:var(--ink) }
+.exchange .mapwrap { display:flex; gap:7px; flex-wrap:wrap; margin-top:8px }
+.tscroll { overflow-x:auto; -webkit-overflow-scrolling:touch }
+.tscroll .tbl { min-width:560px }
+.tbl { width:100%; border-collapse:collapse; font-size:12.5px }
+.tbl th { text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+  border-bottom:1.5px solid var(--axis); padding:5px 7px }
+.tbl td { border-bottom:1px solid var(--grid); padding:5px 7px; vertical-align:top }
+.tbl .r { text-align:right; font-variant-numeric:tabular-nums }
+.tbl .c { text-align:center }
+.tbl.small { font-size:11px }
+.tbl.small td, .tbl.small th { padding:3.5px 5px }
+.exrow td { background:var(--surface); font-weight:700; font-size:10.5px; letter-spacing:.05em }
+.blankcell { min-width:110px; border-bottom:1px dotted var(--muted) !important }
+.linkrow { display:flex; flex-wrap:wrap; gap:16px; margin-top:10px }
+details.legend { margin:12px 0 }
+details.legend summary { cursor:pointer; font-weight:700; font-size:13px; color:var(--ink2) }
+footer.colophon { margin-top:36px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--grid); padding-top:12px }
+.print-only { display:none }
+@page { size:letter; margin:0.45in }
+@media print {
+  :root { color-scheme:light;
+    --surface:#fcfcfb; --page:#ffffff; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.14); --card:#ffffff; --accent:#d97427 }
+  body { font-size:11.5px; background:#fff }
+  nav.top, .web-only { display:none !important }
+  .print-only { display:flex }
+  .wrap { max-width:none; padding:0 }
+  .hero { padding-top:4px }
+  .hero h1 { font-size:30px }
+  .leg, .panel, .exchange { break-inside:avoid }
+  .secbanner { break-before:page; margin-top:0; background:#0b0b0b !important; color:#fff !important }
+  .cover-end { break-after:page }
+  .leg { padding:10px 12px; margin:8px 0 }
+  .beta { font-size:11.5px }
+  a { text-decoration:none; color:inherit }
+  .idx-break { break-before:page }
+}
+</style></head>
+<body>
+<nav class="top">
+  <div class="navrow navtabs"><a class="brand" href="index.html">OTO 65</a><a href="index.html">Legs</a><a href="overview.html" class="active">Overview</a></div>
+  <div class="navrow"><span class="rowlabel">Jump to</span><a href="#index">All legs</a><a href="#map">Map</a><a href="#plan">Planner</a><a href="#watch">Watch</a><a href="#rules">Rules</a></div>
+</nav>
+<div class="wrap wide" id="top">
+
+
+<header class="hero">
+  <div class="kicker">OTO 65 · RACE GUIDE</div>
+  <h1>Outback in the Ozarks · 65-Mile Relay</h1>
+  <div class="sub">Saturday Oct 10, 2026 · Lake Fort Smith State Park, Mountainburg, AR → Prairie Grove Battlefield State Park, Prairie Grove, AR</div>
+  
+  <div class="statgrid">
+    <div class="tile"><b>66.6</b><span>miles</span></div>
+    <div class="tile"><b>12</b><span>legs</span></div>
+    <div class="tile"><b>5,633</b><span>ft of climbing</span></div>
+    <div class="tile"><b>6</b><span>runners · 2 legs each</span></div>
+    <div class="tile"><b>1</b><span>major exchanges</span></div>
+  </div>
+</header>
+<div class="panel" id="index">
+  <h2>Every leg on one page</h2>
+  
+  <div class="tscroll"><table class="tbl small">
+<thead><tr><th>#</th><th>Leg</th><th class="r">Mi</th><th class="r">Gain</th><th class="r">ft/mi</th><th>Surface</th><th>Rating (official → team)</th><th class="r">Starts @ mi</th><th>Est start</th></tr></thead>
+<tbody><tr data-slot="1" data-n="25"><td class="c">25</td><td><a href="index.html#leg-25">Tester to Chester</a></td><td class="r bar" style="--p:100%">8.41</td><td class="r bar" style="--p:88%">+845</td><td class="r bar" style="--p:57%">100</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">0</td><td class="nowrap"><span class="eststart nowrap" data-mi="0.0">Sat 7:00 AM 🌅</span></td></tr><tr data-slot="2" data-n="26"><td class="c">26</td><td><a href="index.html#leg-26">Gumption</a></td><td class="r bar" style="--p:65%">5.47</td><td class="r bar" style="--p:100%">+958</td><td class="r bar" style="--p:100%">175</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">8.41</td><td class="nowrap"><span class="eststart nowrap" data-mi="8.409999999999997">Sat 8:24 AM ☀️</span></td></tr><tr data-slot="3" data-n="27"><td class="c">27</td><td><a href="index.html#leg-27">Chuck a Wobbly</a></td><td class="r bar" style="--p:91%">7.67</td><td class="r bar" style="--p:85%">+818</td><td class="r bar" style="--p:61%">107</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">13.88</td><td class="nowrap"><span class="eststart nowrap" data-mi="13.879999999999995">Sat 9:19 AM ☀️</span></td></tr><tr data-slot="4" data-n="28"><td class="c">28</td><td><a href="index.html#leg-28">Boondocks</a></td><td class="r bar" style="--p:61%">5.15</td><td class="r bar" style="--p:43%">+415</td><td class="r bar" style="--p:46%">81</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">21.55</td><td class="nowrap"><span class="eststart nowrap" data-mi="21.55000000000001">Sat 10:36 AM ☀️</span></td></tr><tr data-slot="5" data-n="29"><td class="c">29</td><td><a href="index.html#leg-29">Backwoods Boomerang</a></td><td class="r bar" style="--p:75%">6.27</td><td class="r bar" style="--p:29%">+281</td><td class="r bar" style="--p:26%">45</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">26.7</td><td class="nowrap"><span class="eststart nowrap" data-mi="26.700000000000017">Sat 11:27 AM ☀️</span></td></tr><tr data-slot="6" data-n="30"><td class="c">30</td><td><a href="index.html#leg-30">Holy Hedgehog!</a></td><td class="r bar" style="--p:90%">7.56</td><td class="r bar" style="--p:38%">+364</td><td class="r bar" style="--p:27%">48</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">32.97</td><td class="nowrap"><span class="eststart nowrap" data-mi="32.97">Sat 12:30 PM ☀️</span></td></tr><tr class="exrow"><td colspan="9">🚩 Devil's Den State Park — mile 40.53</td></tr><tr data-slot="1" data-n="31"><td class="c">31</td><td><a href="index.html#leg-31">Running from the Devil</a></td><td class="r bar" style="--p:75%">6.27</td><td class="r bar" style="--p:97%">+929</td><td class="r bar" style="--p:85%">148</td><td>P56% / G36% / T8%</td><td><span class="dotc" style="background:#d03b3b"></span>Very Hard</td><td class="r">40.53</td><td class="nowrap"><span class="eststart nowrap" data-mi="40.53">Sat 1:45 PM ☀️</span></td></tr><tr data-slot="2" data-n="32"><td class="c">32</td><td><a href="index.html#leg-32">Ridgy Didge</a></td><td class="r bar" style="--p:55%">4.62</td><td class="r bar" style="--p:33%">+317</td><td class="r bar" style="--p:39%">69</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">46.8</td><td class="nowrap"><span class="eststart nowrap" data-mi="46.80000000000001">Sat 2:48 PM ☀️</span></td></tr><tr data-slot="3" data-n="33"><td class="c">33</td><td><a href="index.html#leg-33">Platypus Plod</a></td><td class="r bar" style="--p:43%">3.6</td><td class="r bar" style="--p:10%">+99</td><td class="r bar" style="--p:16%">28</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">51.42</td><td class="nowrap"><span class="eststart nowrap" data-mi="51.420000000000016">Sat 3:34 PM ☀️</span></td></tr><tr data-slot="4" data-n="34"><td class="c">34</td><td><a href="index.html#leg-34">Gravel, Grit &amp; Bridge Biz</a></td><td class="r bar" style="--p:43%">3.62</td><td class="r bar" style="--p:14%">+136</td><td class="r bar" style="--p:21%">38</td><td>G100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">55.02</td><td class="nowrap"><span class="eststart nowrap" data-mi="55.02000000000001">Sat 4:10 PM ☀️</span></td></tr><tr data-slot="5" data-n="35"><td class="c">35</td><td><a href="index.html#leg-35">The Holy Roller</a></td><td class="r bar" style="--p:36%">3.03</td><td class="r bar" style="--p:22%">+212</td><td class="r bar" style="--p:40%">70</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">58.64</td><td class="nowrap"><span class="eststart nowrap" data-mi="58.640000000000015">Sat 4:46 PM ☀️</span></td></tr><tr data-slot="6" data-n="36"><td class="c">36</td><td><a href="index.html#leg-36">Finish Line</a></td><td class="r bar" style="--p:58%">4.89</td><td class="r bar" style="--p:27%">+259</td><td class="r bar" style="--p:30%">53</td><td>P80% / G20%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">61.67</td><td class="nowrap"><span class="eststart nowrap" data-mi="61.670000000000016">Sat 5:17 PM ☀️</span></td></tr></tbody></table></div>
+  <div class="planctl web-only">⏱ Est. schedule assumes team pace <input id="paceIn" value="10:00" size="4"> min/mi · wave start Sat <input id="startIn" type="time" value="07:00"> <button id="planReset" class="pillbtn">reset</button> <span class="tiny">one-day event — confirm your start time with the race</span></div>
+</div>
+<div class="panel" id="map">
+  <h2>Full course map <span class="tiny">(the race's official all-legs Strava route)</span></h2>
+  <div class="strava-embed-placeholder" data-embed-type="route" data-embed-id="3386113643310609494" data-style="standard" data-map-hash="7.42/36.048/-93.997" data-club-id="1634354" data-from-embed="true"></div>
+  <script src="https://strava-embeds.com/embed.js"></script>
+  <p class="tiny" style="margin:.5em 0 0">Embed not loading? <a href="https://www.strava.com/routes/3386113643310609494" target="_blank" rel="noopener">Open the all-legs route on Strava ↗</a></p>
+</div>
+<div class="panel" id="plan">
+  <h2>Runner planner — who takes which rotation slot?</h2>
+  <p class="tiny" style="margin:.2em 0 .6em" id="planNote">With 6 runners, slot <i>s</i> runs legs <i>s, s+6, s+12, …</i></p>
+  <div class="planctl web-only">Runners on your team: <select id="nrSel"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
+    <span class="tiny">try any size — set <code>N_RUNNERS</code> in data.py to make it stick</span></div>
+  <div class="tscroll"><table class="tbl">
+<thead><tr><th>Rank</th><th>Slot</th><th>Runner</th><th>Legs</th><th class="r">Miles</th><th class="r">Climb ft</th><th>Leg ratings</th><th>Difficulty</th><th>Toughest assignment</th></tr></thead>
+<tbody id="plantbody"><tr><td class="c"><b>1</b></td><td class="c"><b>1</b></td><td class="blankcell runner-name" data-slot="1">&nbsp;</td><td>25, 31</td><td class="r">14.7</td><td class="r">1,774</td><td class="nowrap"><span class="dotc" style="background:#ec835a" title="Leg 25 · Tester to Chester · Hard"></span><span class="dotc" style="background:#d03b3b" title="Leg 31 · Running from the Devil · Very Hard"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:100%"></div></div><span class="mval">100</span></div></td><td>Leg 31 · Running from the Devil (Very Hard · +929 ft)</td></tr><tr><td class="c"><b>2</b></td><td class="c"><b>2</b></td><td class="blankcell runner-name" data-slot="2">&nbsp;</td><td>26, 32</td><td class="r">10.1</td><td class="r">1,275</td><td class="nowrap"><span class="dotc" style="background:#fab219" title="Leg 26 · Gumption · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 32 · Ridgy Didge · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:61%"></div></div><span class="mval">61</span></div></td><td>Leg 26 · Gumption (Moderate · +958 ft)</td></tr><tr><td class="c"><b>3</b></td><td class="c"><b>6</b></td><td class="blankcell runner-name" data-slot="6">&nbsp;</td><td>30, 36</td><td class="r">12.4</td><td class="r">623</td><td class="nowrap"><span class="dotc" style="background:#ec835a" title="Leg 30 · Holy Hedgehog! · Hard"></span><span class="dotc" style="background:#fab219" title="Leg 36 · Finish Line · Moderate"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:61%"></div></div><span class="mval">61</span></div></td><td>Leg 30 · Holy Hedgehog! (Hard · +364 ft)</td></tr><tr><td class="c"><b>4</b></td><td class="c"><b>3</b></td><td class="blankcell runner-name" data-slot="3">&nbsp;</td><td>27, 33</td><td class="r">11.3</td><td class="r">917</td><td class="nowrap"><span class="dotc" style="background:#ec835a" title="Leg 27 · Chuck a Wobbly · Hard"></span><span class="dotc" style="background:#0ca30c" title="Leg 33 · Platypus Plod · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:60%"></div></div><span class="mval">60</span></div></td><td>Leg 27 · Chuck a Wobbly (Hard · +818 ft)</td></tr><tr><td class="c"><b>5</b></td><td class="c"><b>4</b></td><td class="blankcell runner-name" data-slot="4">&nbsp;</td><td>28, 34</td><td class="r">8.8</td><td class="r">551</td><td class="nowrap"><span class="dotc" style="background:#fab219" title="Leg 28 · Boondocks · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 34 · Gravel, Grit &amp; Bridge Biz · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:43%"></div></div><span class="mval">43</span></div></td><td>Leg 28 · Boondocks (Moderate · +415 ft)</td></tr><tr><td class="c"><b>6</b></td><td class="c"><b>5</b></td><td class="blankcell runner-name" data-slot="5">&nbsp;</td><td>29, 35</td><td class="r">9.3</td><td class="r">493</td><td class="nowrap"><span class="dotc" style="background:#fab219" title="Leg 29 · Backwoods Boomerang · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 35 · The Holy Roller · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:43%"></div></div><span class="mval">43</span></div></td><td>Leg 29 · Backwoods Boomerang (Moderate · +281 ft)</td></tr></tbody></table></div>
+<p class="tiny" style="margin:.6em 0 0">Sorted hardest → easiest. Difficulty = equal parts total miles, total climb, and summed leg ratings (Easy 1 → Very Hard 4, team rating where it differs), scaled so the hardest slot = 100. Rating dots are in leg order<span class="web-only"> — hover for the leg</span>.</p>
+</div>
+<div class="panel" id="watch">
+  <h2>Get your legs on your Garmin watch</h2>
+  <p class="tiny" style="margin:.2em 0 .6em">Cell signal is spotty on the course — load your legs as courses <b>before race weekend</b> so the watch can guide you (route line, off-course alerts, climb profile) with no phone needed.</p>
+  <ol class="steps">
+    <li><b>Link Strava to Garmin (one-time).</b> Garmin Connect app → <i>Settings → Connected Apps → Strava</i> → sign in and enable the <b>Courses</b> permission.</li>
+    <li><b>Save each of your legs on Strava.</b> Open the leg's Strava route from its card on the <a href="index.html">Legs page</a> and tap the ☆ <b>star / save</b> icon so it lights up.</li>
+    <li><b>Sync your watch</b> with the Garmin Connect app. Starred Strava routes are pushed to the watch automatically and land in <i>Courses</i>.</li>
+    <li><b>Race day:</b> start a Run activity → hold <b>UP/MENU</b> → <i>Navigation → Courses</i> → pick your leg → <i>Do Course</i>. (Menu names vary slightly by model.)</li>
+  </ol>
+  <p class="tiny">Apple Watch has no native course-following — the WorkOutDoors app can import the same routes (export GPX from Strava), or use the map links on each leg card and run from the phone.</p>
+</div>
+
+<div class="panel" id="rules">
+  <h2>Night rules &amp; official links <span class="tiny">(🌐 from the official 2025 race guide)</span></h2>
+  <p style="margin:.3em 0">🦺 <b>Nighttime hours = 1 hour before sunset through 1 hour after dawn:</b> reflective vest for anyone
+  out of the van, headlamp + rear flashing tail light for runners. In-ear headphones are banned (open-ear audio OK).
+  Course is marked with black arrows on bright-yellow signs at each turn, plus yellow flags and reflective tags.</p>
+  <p style="margin:.3em 0" class="web-only">
+    <a href="https://outbackintheozarks.com/course-map" target="_blank" rel="noopener">Official course map + Strava routes ↗</a> ·
+    <a href="https://static1.squarespace.com/static/67b6279ccd5b44506e82f478/t/68488aee94be8934cad18ff3/1749584626134/OTO+2025+Race+Guide+.pdf" target="_blank" rel="noopener">2025 race guide PDF ↗</a> ·
+    <a href="https://maps.app.goo.gl/gRvJDNHpHR2z5R6q9" target="_blank" rel="noopener">Exchange zones map ↗</a> ·
+    <a href="https://www.google.com/maps/d/edit?mid=1S3rWAD35CEJBqz6sRkXKpyRrL0PEO_w&usp=sharing" target="_blank" rel="noopener">Full route map ↗</a>
+  </p>
+  <div class="linkrow print-only"></div>
+</div>
+<footer class="colophon">Built for OTO 65 · leg beta by your team ·
+names, routes &amp; rules from outbackintheozarks.com · not an official race document. Go get it. 🤙</footer>
+</div>
+<script>const RACE_DAYS_JS=["Sat", "Sun"];const RACE_ID="65";const PLAN={"start": 420, "pace": 10.0, "sr": 435, "ss": 1125, "total": 66.56};const SEGS=[{"a": 0.0, "b": 8.41, "x0": 30, "x1": 105.52}, {"a": 8.41, "b": 13.88, "x0": 105.52, "x1": 237.156}, {"a": 13.88, "b": 21.55, "x0": 237.156, "x1": 317.316}, {"a": 21.55, "b": 26.7, "x0": 317.316, "x1": 377.883}, {"a": 26.7, "b": 32.97, "x0": 377.883, "x1": 411.569}, {"a": 32.97, "b": 40.53, "x0": 411.569, "x1": 447.758}, {"a": 40.53, "b": 46.8, "x0": 447.758, "x1": 559.122}, {"a": 46.8, "b": 51.42, "x0": 559.122, "x1": 610.694}, {"a": 51.42, "b": 55.02, "x0": 610.694, "x1": 631.364}, {"a": 55.02, "b": 58.64, "x0": 631.364, "x1": 659.602}, {"a": 58.64, "b": 61.67, "x0": 659.602, "x1": 712.19}, {"a": 61.67, "b": 66.56, "x0": 712.19, "x1": 752.0}];const GEO={"top": 40, "ploth": 134};const NR=6;const RMAP={};const LEGDATA=[{"n": 25, "dist": 8.41, "gain": 845, "v": 100.5, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Tester to Chester"}, {"n": 26, "dist": 5.47, "gain": 958, "v": 175.1, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Gumption"}, {"n": 27, "dist": 7.67, "gain": 818, "v": 106.6, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Chuck a Wobbly"}, {"n": 28, "dist": 5.15, "gain": 415, "v": 80.6, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Boondocks"}, {"n": 29, "dist": 6.27, "gain": 281, "v": 44.8, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Backwoods Boomerang"}, {"n": 30, "dist": 7.56, "gain": 364, "v": 48.1, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Holy Hedgehog!"}, {"n": 31, "dist": 6.27, "gain": 929, "v": 148.2, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Running from the Devil"}, {"n": 32, "dist": 4.62, "gain": 317, "v": 68.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Ridgy Didge"}, {"n": 33, "dist": 3.6, "gain": 99, "v": 27.5, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Platypus Plod"}, {"n": 34, "dist": 3.62, "gain": 136, "v": 37.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Gravel, Grit & Bridge Biz"}, {"n": 35, "dist": 3.03, "gain": 212, "v": 70.0, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "The Holy Roller"}, {"n": 36, "dist": 4.89, "gain": 259, "v": 53.0, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Finish Line"}];
+function filterSlot(s, btn) {
+  document.querySelectorAll('.leg').forEach(el => {
+    el.classList.toggle('hidden', s !== 0 && Number(el.dataset.slot) !== s);
+  });
+  document.querySelectorAll('.jumprow a').forEach(el => {
+    el.classList.toggle('hiddenx', s !== 0 && Number(el.dataset.slot) !== s);
+  });
+  document.querySelectorAll('.skb').forEach(el => {
+    el.classList.toggle('dim', s !== 0 && Number(el.dataset.slot) !== s);
+  });
+  document.querySelectorAll('.filterbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({top: 0});
+}
+document.querySelectorAll('.idxbtn').forEach(b => b.addEventListener('click', () => {
+  const s = Number(b.dataset.slot);
+  document.querySelectorAll('#index tbody tr').forEach(tr => {
+    const match = tr.classList.contains('exrow') ? s === 0 : (s === 0 || Number(tr.dataset.slot) === s);
+    tr.classList.toggle('hiddenx', !match);
+  });
+  document.querySelectorAll('.idxbtn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+}));
+document.querySelectorAll('.filterbtn').forEach(b => {
+  b.addEventListener('click', () => filterSlot(Number(b.dataset.slot), b));
+});
+// ---- pace / timeline estimator ----
+const DAYSJS = RACE_DAYS_JS;
+function fmtClock(t) {
+  const d = Math.min(Math.floor(t/1440), DAYSJS.length-1); const mm = Math.round(t%1440);
+  const h = Math.floor(mm/60), m = mm%60;
+  return DAYSJS[d]+' '+((h%12)||12)+':'+String(m).padStart(2,'0')+' '+(h<12?'AM':'PM');
+}
+function phaseEmoji(t) {
+  const c = t%1440;
+  if (c >= PLAN.sr-45 && c < PLAN.sr+45) return '🌅';
+  if (c >= PLAN.ss-45 && c < PLAN.ss+45) return '🌆';
+  if (c >= PLAN.sr+45 && c < PLAN.ss-45) return '☀️';
+  return '🌙';
+}
+function mileX(mi) {
+  for (const s of SEGS) { if (mi >= s.a-1e-9 && mi <= s.b+1e-9) return s.x0+(mi-s.a)/(s.b-s.a)*(s.x1-s.x0); }
+  return mi < SEGS[0].a ? SEGS[0].x0 : SEGS[SEGS.length-1].x1;
+}
+function renderNight(pace, start) {
+  const g = document.getElementById('nightg'); if (!g) return;
+  const t1 = start + pace*PLAN.total; const parts = []; const regions = [];
+  for (let d = 0; d < 3; d++) {
+    const ns = d*1440+PLAN.ss, ne = (d+1)*1440+PLAN.sr;
+    const a = Math.max(ns, start), b = Math.min(ne, t1);
+    if (b > a) regions.push([(a-start)/pace, (b-start)/pace, ns >= start, ne <= t1]);
+  }
+  const dayspans = []; let cur = 0;
+  for (const r of regions) { dayspans.push([cur, r[0]]); cur = r[1]; }
+  dayspans.push([cur, PLAN.total]);
+  for (const [ma, mb] of regions) {
+    const xa = mileX(ma), xb = mileX(mb);
+    parts.push(`<rect x="${xa}" y="${GEO.top}" width="${xb-xa}" height="${GEO.ploth}" fill="var(--nightshade)"/>`);
+    parts.push(`<text x="${(xa+xb)/2}" y="${GEO.top+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">🌙 night</text>`);
+  }
+  for (const [da, db] of dayspans) {
+    if (db-da > 18) parts.push(`<text x="${(mileX(da)+mileX(db))/2}" y="${GEO.top+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">☀️ day</text>`);
+  }
+  let tick = (Math.floor(start/360)+1)*360;
+  while (tick < t1) {
+    const x = mileX((tick-start)/pace);
+    const d = Math.min(Math.floor(tick/1440), DAYSJS.length-1), h = Math.floor((tick%1440)/60);
+    const lbl = DAYSJS[d]+' '+((h%12)||12)+' '+(h<12?'AM':'PM');
+    parts.push(`<line x1="${x}" y1="${GEO.top+GEO.ploth}" x2="${x}" y2="${GEO.top+GEO.ploth+4}" stroke="var(--axis)" stroke-width="1"/>`);
+    parts.push(`<text x="${x}" y="${GEO.top+GEO.ploth+20}" text-anchor="middle" font-size="6.8" fill="var(--muted)">${lbl}</text>`);
+    tick += 360;
+  }
+  g.innerHTML = parts.join('');
+}
+let __plan = {pace: null, start: null};
+function applyPlan(pace, start) {
+  __plan = {pace: pace, start: start};
+  document.querySelectorAll('.eststart').forEach(el => {
+    const t = start + pace*parseFloat(el.dataset.mi);
+    el.textContent = fmtClock(t)+' '+phaseEmoji(t);
+  });
+  renderNight(pace, start);
+}
+function parsePace(v) { const m = v.trim().match(/^(\d{1,2}):(\d{2})$/); return m ? Number(m[1])+Number(m[2])/60 : null; }
+function hmJS(v) { const p = v.split(':').map(Number); return p[0]*60+p[1]; }
+function paceStr(p) { const mm = Math.floor(p), ss = Math.round((p-mm)*60); return mm+':'+String(ss).padStart(2,'0'); }
+__plan = {pace: PLAN.pace, start: PLAN.start};
+// ---- race-day finish estimator ----
+const rdLeg = document.getElementById('rdLeg');
+if (rdLeg) {
+  const rdTime = document.getElementById('rdTime'), rdPace = document.getElementById('rdPace'),
+        rdOut = document.getElementById('rdOut');
+  let rdAnchor = null;
+  const RACE0 = new Date(2026, 9, 9);  // Fri Oct 9, 2026 00:00 local
+  function raceMinToDate(t) { return new Date(RACE0.getTime() + t*60000); }
+  function rdUpdate() {
+    const opt = rdLeg.selectedOptions[0];
+    const pl = parsePace(rdPace.value);
+    if (!opt || !pl || !rdTime.value) return;
+    const dist = parseFloat(opt.dataset.dist), mi = parseFloat(opt.dataset.mi);
+    const clock = hmJS(rdTime.value), est = __plan.start + __plan.pace*mi;
+    let t = clock;
+    for (const cand of [clock, clock+1440, clock+2880]) {
+      if (Math.abs(cand-est) < Math.abs(t-est)) t = cand;
+    }
+    rdAnchor = {mi: mi, t: t};
+    const eta = t + pl*dist;
+    const finish = eta + __plan.pace*(PLAN.total - mi - dist);
+    let count = '';
+    const now = new Date(), real = raceMinToDate(eta);
+    if (Math.abs(now - RACE0) < 4*86400000 && real > now) {
+      const m = Math.round((real - now)/60000);
+      count = ` · in ${m >= 60 ? Math.floor(m/60)+'h ' : ''}${m%60}m`;
+    }
+    rdOut.innerHTML = `<b>${opt.dataset.runner || 'Runner'}</b> reaches <b>${opt.dataset.to}</b> ~<b>${fmtClock(eta)}</b>${count}` +
+      ` · projected race finish <b>${fmtClock(finish)}</b>`;
+  }
+  document.getElementById('rdNow').addEventListener('click', () => {
+    const n = new Date();
+    rdTime.value = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    rdUpdate();
+  });
+  [rdLeg, rdTime, rdPace].forEach(el => el.addEventListener('change', rdUpdate));
+  document.getElementById('rdApply').addEventListener('click', () => {
+    if (!rdAnchor) { rdUpdate(); if (!rdAnchor) return; }
+    const s = ((rdAnchor.t - __plan.pace*rdAnchor.mi) % 1440 + 1440) % 1440;
+    const startEl = document.getElementById('startIn');
+    if (startEl) {
+      startEl.value = String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.round(s%60)).padStart(2,'0');
+      startEl.dispatchEvent(new Event('change'));
+    }
+    rdUpdate();
+  });
+}
+const paceIn = document.getElementById('paceIn'), startIn = document.getElementById('startIn');
+if (paceIn && startIn) {
+  const sp = localStorage.getItem('oto_pace'), st = localStorage.getItem('oto_start');
+  if (sp) paceIn.value = sp;
+  if (st) startIn.value = st;
+  const upd = () => {
+    const p = parsePace(paceIn.value); const t = startIn.value ? hmJS(startIn.value) : PLAN.start;
+    if (p) { localStorage.setItem('oto_pace', paceIn.value); localStorage.setItem('oto_start', startIn.value); applyPlan(p, t); }
+  };
+  paceIn.addEventListener('change', upd);
+  startIn.addEventListener('change', upd);
+  const rst = document.getElementById('planReset');
+  if (rst) rst.addEventListener('click', () => {
+    localStorage.removeItem('oto_pace'); localStorage.removeItem('oto_start');
+    paceIn.value = paceStr(PLAN.pace);
+    startIn.value = String(Math.floor(PLAN.start/60)).padStart(2,'0')+':'+String(PLAN.start%60).padStart(2,'0');
+    applyPlan(PLAN.pace, PLAN.start);
+  });
+  if (sp || st) upd();
+}
+// ---- interactive runner planner (overview) ----
+const nrSel = document.getElementById('nrSel');
+if (nrSel) {
+  function renderPlanner(N) {
+    const slots = [];
+    for (let s = 1; s <= N; s++) {
+      const legs = LEGDATA.filter(l => (l.n - 1) % N + 1 === s);
+      const mi = legs.reduce((a, l) => a + l.dist, 0), gain = legs.reduce((a, l) => a + l.gain, 0),
+            pts = legs.reduce((a, l) => a + l.pts, 0);
+      slots.push({s, legs, mi, gain, pts});
+    }
+    const am = slots.reduce((a, x) => a + x.mi, 0) / N, ag = slots.reduce((a, x) => a + x.gain, 0) / N,
+          ap = slots.reduce((a, x) => a + x.pts, 0) / N;
+    slots.forEach(x => x.score = x.mi/am + x.gain/ag + x.pts/ap);
+    const top = Math.max(...slots.map(x => x.score));
+    slots.sort((a, b) => b.score - a.score);
+    const rows = slots.map((x, i) => {
+      const idx = Math.round(100 * x.score / top);
+      const hardest = x.legs.reduce((a, l) =>
+        (l.pts > a.pts || (l.pts === a.pts && (l.gain > a.gain || (l.gain === a.gain && l.v > a.v)))) ? l : a);
+      const dots = x.legs.map(l =>
+        `<span class="dotc" style="background:${l.color}" title="Leg ${l.n} · ${l.name} · ${l.lbl}"></span>`).join('');
+      const nm = (N === NR && RMAP[x.s]) ? `<b>${RMAP[x.s]}</b>`
+               : '<span class="tiny">—</span>';
+      return `<tr><td class="c"><b>${i+1}</b></td><td class="c"><b>${x.s}</b></td>`
+        + `<td class="runner-name">${nm}</td>`
+        + `<td>${x.legs.map(l => l.n).join(', ')}</td><td class="r">${x.mi.toFixed(1)}</td>`
+        + `<td class="r">${x.gain.toLocaleString()}</td><td class="nowrap">${dots}</td>`
+        + `<td><div class="meterwrap"><div class="meter"><div class="fill" style="width:${idx}%"></div></div>`
+        + `<span class="mval">${idx}</span></div></td>`
+        + `<td>Leg ${hardest.n} · ${hardest.name} (${hardest.lbl} · +${hardest.gain.toLocaleString()} ft)</td></tr>`;
+    });
+    const tb = document.getElementById('plantbody');
+    if (tb) tb.innerHTML = rows.join('');
+    const note = document.getElementById('planNote');
+    if (note) note.innerHTML = `With ${N} runners, slot <i>s</i> runs legs <i>s, s+${N}, s+${2*N}, …</i>`;
+  }
+  nrSel.addEventListener('change', () => renderPlanner(Number(nrSel.value)));
+}
+// keep anchor targets clear of the sticky nav
+const topnav = document.querySelector('nav.top');
+function setScrollPad() {
+  if (topnav) document.documentElement.style.scrollPaddingTop = (topnav.offsetHeight + 10) + 'px';
+}
+setScrollPad();
+addEventListener('resize', setScrollPad);
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/team.js"></script>
+</body></html>

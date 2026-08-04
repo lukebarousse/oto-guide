@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">%F0%9F%8F%83%F0%9F%8F%BB</text></svg>'>
+<title>Race admin — OTO Guide</title>
+<style>
+:root { color-scheme: light; --page:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --card:#ffffff; --accent:#2a78d6 }
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark; --page:#0d0d0d; --ink:#fff; --ink2:#c3c2b7;
+  --muted:#898781; --grid:#2c2c2a; --card:#232322; --accent:#3987e5 } }
+* { box-sizing:border-box }
+body { margin:0; background:var(--page); color:var(--ink); font-family:system-ui,-apple-system,sans-serif; font-size:15px }
+.wrap { max-width:1100px; margin:0 auto; padding:20px 16px 60px }
+h1 { font-size:24px; margin:.2em 0 } h2 { font-size:17px; margin:1.6em 0 .5em }
+.card { background:var(--card); border:1px solid var(--grid); border-radius:12px; padding:16px; margin:12px 0 }
+label { display:block; font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin:10px 0 4px }
+input, select, textarea { font:inherit; background:var(--page); color:var(--ink); border:1px solid var(--grid); border-radius:8px; padding:8px 10px; width:100% }
+textarea { min-height:90px }
+.row { display:flex; gap:12px; flex-wrap:wrap } .row > div { flex:1; min-width:140px }
+table { border-collapse:collapse; width:100% } td, th { padding:7px 9px; border-bottom:1px solid var(--grid); text-align:left; font-size:13.5px; vertical-align:middle }
+th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
+td input { padding:4px 7px; width:76px }
+button { font:inherit; font-weight:700; border:none; border-radius:10px; padding:9px 16px; cursor:pointer; background:var(--accent); color:#fff }
+button.ghost { background:none; border:1.5px solid var(--grid); color:var(--ink2) }
+button.danger { background:#d03b3b }
+.tiny { font-size:12px; color:var(--muted) } .ok { color:#0ca30c; font-weight:700 } .err { color:#d03b3b; font-weight:700 }
+a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--grid); border-radius:99px; padding:2px 10px; font-size:12px }
+</style></head>
+<body><div class="wrap">
+  <h1>🛠 Race admin</h1>
+  <div id="login" class="card" style="max-width:420px">
+    <label>Email</label><input id="lEmail" type="email" autocomplete="username">
+    <label>Password</label><input id="lPass" type="password" autocomplete="current-password">
+    <p><button id="lGo">Sign in</button> <span id="lMsg" class="tiny"></span></p>
+  </div>
+
+  <div id="app" style="display:none">
+    <p><span class="pill">Season <select id="seasonSel" style="width:auto;padding:2px 6px"></select></span>
+       <button class="ghost" id="newSeason">+ new season</button>
+       <button class="ghost" id="activateSeason">make selected season live</button>
+       <button class="ghost" id="signOut" style="float:right">sign out</button></p>
+
+    <h2>Create team</h2>
+    <div class="card"><div class="row">
+      <div><label>Team name</label><input id="cName" placeholder="Trail Mob"></div>
+      <div><label>Race</label><select id="cRace"><option value="205">205-mile</option><option value="65">65-mile</option></select></div>
+      <div><label>Runners</label><select id="cN"></select></div>
+      <div><label>Copy setup from <span class="tiny">(optional)</span></label><select id="cCopy"><option value="">— blank —</option></select></div>
+      <div style="align-self:end"><button id="cGo">Create team</button></div>
+    </div><p class="tiny" id="cMsg"></p></div>
+
+    <h2>Teams <span class="tiny" id="teamCount"></span></h2>
+    <div class="card" style="overflow-x:auto">
+      <table id="teamsT"><thead><tr>
+        <th>Team</th><th>Race</th><th>Runners</th><th>Pace</th><th>Wave start</th><th>Projected finish</th><th>Updated</th><th>Links</th><th></th>
+      </tr></thead><tbody></tbody></table>
+      <p class="tiny">Set wave starts here (HH:MM, 24h) — teams see them read-only. Projected finish = wave + pace × race distance. Sort order: projected finish.</p>
+    </div>
+
+    <h2>Leg content <span class="tiny">(beta wording + warning flags, per season)</span></h2>
+    <div class="card">
+      <div class="row">
+        <div style="max-width:120px"><label>Leg</label><select id="legSel"></select></div>
+        <div><label>Team-adjusted rating <span class="tiny">(blank = keep official)</span></label>
+          <select id="legRating"><option value="">—</option><option>Easy</option><option>Moderate</option><option>Hard</option><option>Very Hard</option></select></div>
+        <div><label>Surface text</label><input id="legSurface"></div>
+      </div>
+      <label>Beta</label><textarea id="legBeta"></textarea>
+      <label>Warning flags (comma-separated)</label><input id="legTags" placeholder="Loose gravel, No van access">
+      <p><button id="legSave">Save leg</button> <span id="legMsg" class="tiny"></span></p>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script>
+(function () {
+  const cfg = window.OTO_CONFIG || {};
+  if (!cfg.url || !cfg.anonKey) { document.getElementById('lMsg').textContent = 'app not configured'; return; }
+  const db = supabase.createClient(cfg.url, cfg.anonKey);
+  const $ = (id) => document.getElementById(id);
+  const TOTALS = { '205': 207.16, '65': 66.56 };
+  const esc = (t) => { const d = document.createElement('div'); d.textContent = t ?? ''; return d.innerHTML; };
+  let seasons = [], season = null, teams = [], legs = [];
+
+  const DAYS = { '205': ['Fri','Sat','Sun'], '65': ['Sat','Sun'] };
+  function fmtFinish(race, wave, pace, n) {
+    if (!wave) return '—';
+    const [h, m] = wave.split(':').map(Number);
+    const t = h * 60 + m + pace * TOTALS[race];
+    const d = DAYS[race][Math.min(Math.floor(t / 1440), DAYS[race].length - 1)];
+    const mm = Math.round(t % 1440), hh = Math.floor(mm / 60);
+    return `${d} ${(hh % 12) || 12}:${String(mm % 60).padStart(2, '0')} ${hh < 12 ? 'AM' : 'PM'}`;
+  }
+  const slugify = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+
+  async function loadSeasons() {
+    seasons = (await db.from('seasons').select('*').order('year', { ascending: false })).data || [];
+    $('seasonSel').innerHTML = seasons.map(s => `<option value="${s.id}">${s.year}${s.active ? ' (live)' : ''}</option>`).join('');
+    season = seasons.find(s => s.active) || seasons[0];
+    if (season) $('seasonSel').value = season.id;
+  }
+  async function loadTeams() {
+    teams = (await db.from('teams').select('*').eq('season_id', season.id)).data || [];
+    teams.sort((a, b) => (a.wave_start || 'zz').localeCompare(b.wave_start || 'zz'));
+    const base = location.href.replace(/admin\.html.*$/, '');
+    $('teamCount').textContent = `(${teams.length})`;
+    $('teamsT').querySelector('tbody').innerHTML = teams.map(t => {
+      const proj = fmtFinish(t.race, t.wave_start, Number(t.pace_min_per_mi), t.n_runners);
+      const link = `${base}${t.race === '65' ? '65/' : ''}index.html?team=${t.slug}`;
+      return `<tr data-id="${t.id}">
+        <td><b>${esc(t.name)}</b><div class="tiny">/${t.slug}</div></td>
+        <td>${t.race}</td><td>${t.n_runners}</td><td>${t.pace_min_per_mi}</td>
+        <td><input class="wave" value="${t.wave_start || ''}" placeholder="06:00"></td>
+        <td><b>${proj}</b></td>
+        <td class="tiny">${t.updated_at ? t.updated_at.slice(5, 16).replace('T', ' ') : ''}</td>
+        <td class="tiny"><a href="${link}" target="_blank">app</a> · <a href="${base}settings.html?team=${t.slug}" target="_blank">settings</a></td>
+        <td><button class="ghost del">✕</button></td></tr>`;
+    }).join('');
+    $('teamsT').querySelectorAll('.wave').forEach(inp => inp.addEventListener('change', async () => {
+      const id = inp.closest('tr').dataset.id;
+      const v = inp.value.trim().match(/^\d{1,2}:\d{2}$/) ? inp.value.trim() : null;
+      await db.from('teams').update({ wave_start: v }).eq('id', id);
+      loadTeams();
+    }));
+    $('teamsT').querySelectorAll('.del').forEach(btn => btn.addEventListener('click', async () => {
+      const tr = btn.closest('tr'); const t = teams.find(x => x.id === tr.dataset.id);
+      if (!confirm(`Delete team "${t.name}"? This removes their roster and assignments.`)) return;
+      await db.from('teams').delete().eq('id', t.id);
+      loadTeams(); loadCopyOptions();
+    }));
+  }
+  async function loadCopyOptions() {
+    const all = (await db.from('teams').select('id,name,slug,season_id')).data || [];
+    const yr = (sid) => (seasons.find(s => s.id === sid) || {}).year || '?';
+    $('cCopy').innerHTML = '<option value="">— blank —</option>' +
+      all.map(t => `<option value="${t.id}">${yr(t.season_id)} · ${esc(t.name)}</option>`).join('');
+  }
+  async function loadLegs() {
+    legs = (await db.from('legs').select('*').eq('season_id', season.id).order('n')).data || [];
+    $('legSel').innerHTML = legs.map(l => `<option value="${l.n}">${l.n}</option>`).join('');
+    showLeg();
+  }
+  function showLeg() {
+    const l = legs.find(x => x.n === Number($('legSel').value));
+    if (!l) return;
+    $('legBeta').value = l.beta || '';
+    $('legTags').value = (l.tags || []).join(', ');
+    $('legRating').value = l.team_rating || '';
+    $('legSurface').value = l.surface_text || '';
+  }
+
+  async function boot() {
+    $('login').style.display = 'none'; $('app').style.display = '';
+    $('cN').innerHTML = Array.from({length: 12}, (_, i) => `<option${i + 1 === 6 ? ' selected' : ''}>${i + 1}</option>`).join('');
+    await loadSeasons(); await Promise.all([loadTeams(), loadCopyOptions(), loadLegs()]);
+  }
+
+  $('lGo').addEventListener('click', async () => {
+    const { error } = await db.auth.signInWithPassword({ email: $('lEmail').value, password: $('lPass').value });
+    $('lMsg').textContent = error ? error.message : '';
+    if (!error) boot();
+  });
+  db.auth.getSession().then(({ data }) => { if (data.session) boot(); });
+  $('signOut').addEventListener('click', async () => { await db.auth.signOut(); location.reload(); });
+
+  $('seasonSel').addEventListener('change', async () => {
+    season = seasons.find(s => s.id === Number($('seasonSel').value));
+    await Promise.all([loadTeams(), loadLegs()]);
+  });
+  $('newSeason').addEventListener('click', async () => {
+    const year = prompt('New season year?', String(new Date().getFullYear() + 1));
+    if (!year) return;
+    const { data: ns, error } = await db.from('seasons').insert({ year: Number(year) }).select().single();
+    if (error) return alert(error.message);
+    const src = legs.length ? legs : [];
+    if (src.length) await db.from('legs').insert(src.map(l => ({ season_id: ns.id, n: l.n, beta: l.beta, tags: l.tags, team_rating: l.team_rating, surface_text: l.surface_text })));
+    await loadSeasons(); await Promise.all([loadTeams(), loadLegs()]);
+  });
+  $('activateSeason').addEventListener('click', async () => {
+    await db.from('seasons').update({ active: false }).neq('id', 0);
+    await db.from('seasons').update({ active: true }).eq('id', Number($('seasonSel').value));
+    await loadSeasons();
+  });
+
+  $('cGo').addEventListener('click', async () => {
+    const name = $('cName').value.trim();
+    if (!name) return;
+    const slug = slugify(name);
+    const { data: nt, error } = await db.from('teams').insert({
+      season_id: season.id, race: $('cRace').value, slug, name, n_runners: Number($('cN').value)
+    }).select().single();
+    if (error) { $('cMsg').innerHTML = `<span class="err">${esc(error.message)}</span>`; return; }
+    const src = $('cCopy').value;
+    if (src) {
+      const [{ data: rs }, { data: as }, { data: st }] = await Promise.all([
+        db.from('runners').select('slot,name,pace_min_per_mi').eq('team_id', src),
+        db.from('assignments').select('leg,slot').eq('team_id', src),
+        db.from('teams').select('pace_min_per_mi,n_runners').eq('id', src).single(),
+      ]);
+      if (st) await db.from('teams').update({ pace_min_per_mi: st.pace_min_per_mi, n_runners: st.n_runners }).eq('id', nt.id);
+      if (rs && rs.length) await db.from('runners').insert(rs.map(r => ({ ...r, team_id: nt.id })));
+      if (as && as.length) await db.from('assignments').insert(as.map(a => ({ ...a, team_id: nt.id })));
+    }
+    const base = location.href.replace(/admin\.html.*$/, '');
+    $('cMsg').innerHTML = `<span class="ok">created ✓</span> team link: <a href="${base}settings.html?team=${slug}" target="_blank">${base}settings.html?team=${slug}</a> — send this to the captain`;
+    $('cName').value = '';
+    loadTeams(); loadCopyOptions();
+  });
+
+  $('legSel').addEventListener('change', showLeg);
+  $('legSave').addEventListener('click', async () => {
+    const n = Number($('legSel').value);
+    const tags = $('legTags').value.split(',').map(t => t.trim()).filter(Boolean);
+    const { error } = await db.from('legs').update({
+      beta: $('legBeta').value, tags, team_rating: $('legRating').value || null, surface_text: $('legSurface').value
+    }).eq('season_id', season.id).eq('n', n);
+    $('legMsg').textContent = error ? error.message : 'saved ✓';
+    $('legMsg').className = error ? 'err' : 'ok';
+    if (!error) loadLegs();
+  });
+})();
+</script>
+</body></html>
