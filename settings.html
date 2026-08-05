@@ -46,7 +46,8 @@ a { color:var(--accent) }
     <p class="tiny"><b>Enter a pace for every runner</b> — the race director uses these to assign your team's start wave.</p></div>
     <p><button class="saveBtn">Save team</button><span class="saveMsg tiny" style="margin-left:10px"></span></p>
     <h2>Who runs which leg</h2>
-    <p class="tiny">Pre-filled by rotation — change any leg. This drives the filters, planner and est. times on your team pages.</p>
+    <p class="tiny">Pre-filled by rotation — change any leg. This drives the filters, planner and est. times on your team pages.
+      <button class="ghost" id="resetAssign" style="padding:5px 12px;margin-left:8px">↺ reset to run-in-order</button></p>
     <div class="card"><table id="assignT"><thead><tr><th>Leg</th><th></th><th>Runner</th></tr></thead><tbody></tbody></table></div>
     <p><button class="saveBtn">Save team</button><span class="saveMsg tiny" style="margin-left:10px"></span></p>
     <p class="tiny">Your team pages: <a id="lnkLegs">Legs</a> · <a id="lnkOver">Overview</a> — bookmark them; anyone with the link can view and edit.</p>
@@ -113,6 +114,10 @@ a { color:var(--accent) }
         paces[Number(inp.dataset.paceSlot)] = m ? Number(m[1]) + Number(m[2]) / 60 : null;
       }));
   }
+  document.getElementById('resetAssign').addEventListener('click', () => {
+    for (const k of Object.keys(slotOf)) delete slotOf[k];
+    renderTables();
+  });
   fN.addEventListener('change', () => {
     // keep any still-valid manual assignments (saved or not) across a size change
     document.querySelectorAll('#assignT select').forEach(sel => { slotOf[Number(sel.dataset.leg)] = Number(sel.value); });
