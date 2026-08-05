@@ -166,7 +166,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
     const attr = (t) => t.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
     $('targetFin').value = season['target_finish_' + raceTab] || TARGET_DEFAULT[raceTab];
     const targetAbs = (raceTab === '205' ? 1440 : 0) + hmm($('targetFin').value);
-    const base = location.href.replace(/admin\.html.*$/, '');
+    const base = location.href.replace(/admin(\.html)?([?#].*)?$/, '');
     const view = teams.filter(t => t.race === raceTab).map(t => {
       const pace = Number(t.pace_min_per_mi);
       const waveMin = hmm(t.wave_start || DEF_WAVE[t.race]);
@@ -305,7 +305,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       if (rs && rs.length) await db.from('runners').insert(rs.map(r => ({ ...r, team_id: nt.id })));
       if (as && as.length) await db.from('assignments').insert(as.map(a => ({ ...a, team_id: nt.id })));
     }
-    const base = location.href.replace(/admin\.html.*$/, '');
+    const base = location.href.replace(/admin(\.html)?([?#].*)?$/, '');
     $('cMsg').innerHTML = `<span class="ok">created ✓</span> team link: <a href="${base}settings.html?team=${slug}" target="_blank">${base}settings.html?team=${slug}</a> — send this to the captain`;
     $('cName').value = '';
     loadTeams(); loadCopyOptions();
