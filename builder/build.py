@@ -824,6 +824,7 @@ function setScrollPad() {
 }
 setScrollPad();
 addEventListener('resize', setScrollPad);
+if (topnav && window.ResizeObserver) new ResizeObserver(setScrollPad).observe(topnav);
 '''
 
 def dot_legend():
