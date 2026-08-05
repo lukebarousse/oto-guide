@@ -8,7 +8,8 @@
   var i = parts.indexOf('t');
   if (i !== -1 && parts[i + 1]) {
     var base = '/' + parts.slice(0, i).join('/');
-    location.replace(base + (base.endsWith('/') ? '' : '/') + 'index.html?team=' + encodeURIComponent(parts[i + 1].toLowerCase()));
+    var page = { settings: 'settings.html', overview: 'overview.html' }[(parts[i + 2] || '').toLowerCase()] || 'index.html';
+    location.replace(base + (base.endsWith('/') ? '' : '/') + page + '?team=' + encodeURIComponent(parts[i + 1].toLowerCase()));
   } else {
     document.write('<p style="font-family:system-ui;padding:40px">Not found. <a href="/">OTO Guide home</a></p>');
   }

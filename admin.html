@@ -87,7 +87,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
         <th>Paces collected <span class="info" data-tip="🟢 every runner has a pace entered&#10;🔴 paces missing&#10;&#10;Hover a team&#39;s dot to see each runner&#39;s pace.">ⓘ</span></th>
         <th>Wave start <span class="info" data-tip="HH:MM, 24h.&#10;Blank = race default (Fri 06:00 for the 205, Sat 06:00 for the 65).&#10;Teams see this read-only on their settings page.">ⓘ</span></th>
         <th>Projected finish <span class="info" data-tip="Wave start (or race default if blank) + avg pace × race distance">ⓘ</span></th>
-        <th>Suggested wave <span class="info" data-tip="Latest 30-min wave slot that still finishes by the 🎯 target&#10;(rounded down, clamped to the start window)&#10;→ shown with the finish that wave produces.">ⓘ</span></th>
+        <th>Suggested wave <span class="info" data-tip="Latest hourly wave that still finishes by the 🎯 target&#10;(rounded down, clamped to the start window)&#10;→ shown with the finish that wave produces.">ⓘ</span></th>
         <th>App</th><th>Settings</th><th></th>
       </tr></thead><tbody></tbody></table>
       <p class="tiny">Sorted by team name · hover a ⓘ for what each column means.</p>
@@ -182,15 +182,15 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
         return `${nm} — ${r && r.pace_min_per_mi ? fmtPace(r.pace_min_per_mi) : 'no pace yet'}`;
       }).join('\n');
       const dot = `<span class="info" data-tip="${attr(`${done}/${t.n_runners} paces entered\n\n${lines}`)}" style="font-size:15px">${complete ? '🟢' : '🔴'}</span>`;
-      let sugg = Math.floor((targetAbs - t.pace * TOTALS[t.race]) / 30) * 30;
+      let sugg = Math.floor((targetAbs - t.pace * TOTALS[t.race]) / 60) * 60;
       sugg = Math.min(720, Math.max(hmm(DEF_WAVE[t.race]), sugg));
       const suggTxt = `${String(Math.floor(sugg / 60)).padStart(2, '0')}:${String(Math.round(sugg % 60)).padStart(2, '0')}`;
       const suggFinish = fmtAbs(t.race, sugg + t.pace * TOTALS[t.race]);
       let flag = '';
       if (complete && sugg > t.waveMin + 10) flag = ` <span class="ok tiny">← could start later</span>`;
       else if (sugg < t.waveMin - 10) flag = ` <span class="err tiny">← needs earlier start</span>`;
-      const appL = `${base}${t.race === '65' ? '65/' : ''}index.html?team=${t.slug}`;
-      const setL = `${base}settings.html?team=${t.slug}`;
+      const appL = `${base}t/${t.slug}`;
+      const setL = `${base}t/${t.slug}/settings`;
       const cell = (u) => `<button class="copyBtn" data-link="${u}" title="copy link">⧉</button> <a href="${u}" target="_blank" title="open">↗</a>`;
       return `<tr data-id="${t.id}">
         <td><b>${esc(t.name)}</b><div class="tiny">/${t.slug}</div></td>
@@ -306,7 +306,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       if (as && as.length) await db.from('assignments').insert(as.map(a => ({ ...a, team_id: nt.id })));
     }
     const base = location.href.replace(/admin(\.html)?([?#].*)?$/, '');
-    $('cMsg').innerHTML = `<span class="ok">created ✓</span> team link: <a href="${base}settings.html?team=${slug}" target="_blank">${base}settings.html?team=${slug}</a> — send this to the captain`;
+    $('cMsg').innerHTML = `<span class="ok">created ✓</span> team link: <a href="${base}t/${slug}/settings" target="_blank">${base}t/${slug}/settings</a> — send this to the captain`;
     $('cName').value = '';
     loadTeams(); loadCopyOptions();
   });
