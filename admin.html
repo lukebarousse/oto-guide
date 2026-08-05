@@ -187,8 +187,8 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       const suggTxt = `${String(Math.floor(sugg / 60)).padStart(2, '0')}:${String(Math.round(sugg % 60)).padStart(2, '0')}`;
       const suggFinish = fmtAbs(t.race, sugg + t.pace * TOTALS[t.race]);
       let flag = '';
-      if (complete && sugg > t.waveMin + 10) flag = ` <span class="ok tiny">← could start later</span>`;
-      else if (sugg < t.waveMin - 10) flag = ` <span class="err tiny">← needs earlier start</span>`;
+      if (complete && sugg > t.waveMin + 10) flag = ` <span class="ok tiny">— could start later</span>`;
+      else if (sugg < t.waveMin - 10) flag = ` <span class="err tiny">— needs earlier start</span>`;
       const appL = `${base}t/${t.slug}`;
       const setL = `${base}t/${t.slug}/settings`;
       const cell = (u) => `<button class="copyBtn" data-link="${u}" title="copy link">⧉</button> <a href="${u}" target="_blank" title="open">↗</a>`;
@@ -196,8 +196,8 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
         <td><b>${esc(t.name)}</b><div class="tiny">/${t.slug}</div></td>
         <td>${t.n_runners}</td><td>${fmtPace(t.pace)}</td><td>${dot}</td>
         <td><input class="wave" value="${t.wave_start || ''}" placeholder="${DEF_WAVE[t.race]}"></td>
-        <td><b>${fmtAbs(t.race, t.finishAbs)}</b></td>
-        <td><b>${suggTxt}</b> <span class="tiny">→ ${suggFinish}</span>${flag}</td>
+        <td><b>${fmtAbs(t.race, t.finishAbs)}</b>${flag}</td>
+        <td><b>${suggTxt}</b> <span class="tiny">→ ${suggFinish}</span></td>
         <td>${cell(appL)}</td><td>${cell(setL)}</td>
         <td><button class="ghost del">✕</button></td></tr>`;
     }).join('');
