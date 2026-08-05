@@ -124,7 +124,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
   const TARGET_DEFAULT = { '205': '16:00', '65': '15:00' };
   const DEF_WAVE = { '205': '06:00', '65': '06:00' };
   const hmm = (v) => { const [h, m] = v.split(':').map(Number); return h * 60 + m; };
-  const fmtPace = (p) => { p = Number(p); return `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`; };
+  const fmtPace = (p) => { p = Number(p); return `${Math.floor(Math.round(p * 60) / 60)}:${String(Math.round(p * 60) % 60).padStart(2, '0')}`; };
   function fmtAbs(race, t) {
     const d = DAYS[race][Math.min(Math.floor(t / 1440), DAYS[race].length - 1)];
     const mm = Math.round(t % 1440), hh = Math.floor(mm / 60);

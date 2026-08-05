@@ -51,6 +51,7 @@
     ]);
     const names = {}; (runners || []).forEach(r => { if (r.name) names[r.slot] = r.name; });
     const slotOf = {}; (assigns || []).forEach(a => { slotOf[a.leg] = a.slot; });
+    const paceBySlot = {}; (runners || []).forEach(r => { if (r.pace_min_per_mi) paceBySlot[r.slot] = Number(r.pace_min_per_mi); });
     const N = team.n_runners || 6;
     const defSlot = (n) => ((n - 1) % N) + 1;
     const legSlot = (n) => slotOf[n] || defSlot(n);
@@ -93,13 +94,40 @@
       row.querySelectorAll('.filterbtn').forEach(b => b.addEventListener('click', () => filterSlot(Number(b.dataset.slot), b)));
     }
 
-    // pace + wave -> timeline (respect a local override if the team set one on this device)
-    if (typeof applyPlan === 'function' && !localStorage.getItem('oto_pace')) {
-      const start = team.wave_start ? team.wave_start.split(':').reduce((h, m) => Number(h) * 60 + Number(m)) : PLAN.start;
-      applyPlan(Number(team.pace_min_per_mi) || PLAN.pace, start);
+    // per-runner piecewise schedule: each leg takes dist × its runner's pace
+    // (missing runner paces fall back to the team average)
+    const teamPaceNum = Number(team.pace_min_per_mi) || PLAN.pace;
+    if (typeof applyPlan === 'function' && typeof LEGDATA !== 'undefined') {
+      const start0 = team.wave_start ? team.wave_start.split(':').reduce((h, m) => Number(h) * 60 + Number(m)) : PLAN.start;
+      const ms = [0], ts = [0];
+      let mm = 0, tt = 0;
+      LEGDATA.forEach(l => {
+        const pc = paceBySlot[legSlot(l.n)] || teamPaceNum;
+        mm += l.dist; tt += l.dist * pc;
+        ms.push(mm); ts.push(tt);
+      });
+      window.OTO_SCHED = {
+        start: start0, total: tt,
+        timeAtMile(mi) {
+          if (mi <= 0) return this.start;
+          if (mi >= ms[ms.length - 1]) return this.start + ts[ts.length - 1];
+          let i = 1; while (ms[i] < mi) i++;
+          return this.start + ts[i - 1] + (mi - ms[i - 1]) / (ms[i] - ms[i - 1]) * (ts[i] - ts[i - 1]);
+        },
+        mileAtTime(t) {
+          const rel = t - this.start;
+          if (rel <= 0) return 0;
+          if (rel >= ts[ts.length - 1]) return ms[ms.length - 1];
+          let i = 1; while (ts[i] < rel) i++;
+          return ms[i - 1] + (rel - ts[i - 1]) / (ts[i] - ts[i - 1]) * (ms[i] - ms[i - 1]);
+        }
+      };
+      // team pages: pace is derived from the roster, not editable — hide the ⏱ control
       const paceIn = $('#paceIn'), startIn = $('#startIn');
-      if (paceIn) { const p = Number(team.pace_min_per_mi) || PLAN.pace; paceIn.value = `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`; }
-      if (startIn && team.wave_start) startIn.value = team.wave_start;
+      if (paceIn && paceIn.closest('.planctl')) paceIn.closest('.planctl').style.display = 'none';
+      if (startIn) startIn.value = team.wave_start || '';
+      localStorage.removeItem('oto_pace'); localStorage.removeItem('oto_start');
+      applyPlan(teamPaceNum, start0);
     }
 
     // race-day dropdown runner names + per-runner pace defaults
@@ -109,10 +137,9 @@
     });
     const rdPace = $('#rdPace'), rdLeg = $('#rdLeg');
     if (rdPace && rdLeg) {
-      const paceBySlot = {}; (runners || []).forEach(r => { if (r.pace_min_per_mi) paceBySlot[r.slot] = Number(r.pace_min_per_mi); });
       const setP = () => {
         const p = paceBySlot[legSlot(Number(rdLeg.value))] || Number(team.pace_min_per_mi) || PLAN.pace;
-        rdPace.value = `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`;
+        rdPace.value = `${Math.floor(Math.round(p * 60) / 60)}:${String(Math.round(p * 60) % 60).padStart(2, '0')}`;
       };
       rdLeg.addEventListener('change', setP);
       setP();

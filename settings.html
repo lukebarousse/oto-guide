@@ -87,14 +87,14 @@ a { color:var(--accent) }
   fN.innerHTML = Array.from({length: 12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('');
   fN.value = team.n_runners;
   const p = Number(team.pace_min_per_mi);
-  fPace.value = `${Math.floor(p)}:${String(Math.round(p % 1 * 60)).padStart(2, '0')}`;
+  fPace.value = `${Math.floor(Math.round(p * 60) / 60)}:${String(Math.round(p * 60) % 60).padStart(2, '0')}`;
   const wDay = team.race === '65' ? 'Sat' : 'Fri', wDef = '06:00';
   fWave.value = team.wave_start ? `${wDay} ${team.wave_start} (assigned by race coordinator)` : `${wDay} ${wDef} (race default)`;
 
   const LEGS36 = Array.from({length: 36}, (_, i) => i + 1).filter(n => n >= LEG_MIN);
   function renderTables() {
     const N = Number(fN.value);
-    const pstr = (v) => v ? `${Math.floor(v)}:${String(Math.round(v % 1 * 60)).padStart(2,'0')}` : '';
+    const pstr = (v) => v ? `${Math.floor(Math.round(v * 60) / 60)}:${String(Math.round(v * 60) % 60).padStart(2, '0')}` : '';
     document.querySelector('#runnersT tbody').innerHTML = Array.from({length: N}, (_, i) =>
       `<tr><td><b>${i+1}</b></td><td><input data-slot="${i+1}" value="${(names[i+1] || '').replace(/"/g,'&quot;')}" placeholder="runner name"></td>
        <td><input data-pace-slot="${i+1}" value="${pstr(paces[i+1])}" placeholder="10:30"></td></tr>`).join('');
@@ -143,7 +143,7 @@ a { color:var(--accent) }
         ({ team_id: team.id, leg: Number(sel.dataset.leg), slot: Number(sel.value) }));
       const upA = await db.from('assignments').upsert(assignRows);
       const err = upT.error || upR.error || upA.error;
-      if (!err) fPace.value = `${Math.floor(teamPace)}:${String(Math.round(teamPace % 1 * 60)).padStart(2,'0')}`;
+      if (!err) fPace.value = `${Math.floor(Math.round(teamPace * 60) / 60)}:${String(Math.round(teamPace * 60) % 60).padStart(2, '0')}`;
       say(err ? ('save failed: ' + err.message) : 'saved ✓ — team avg pace ' + fPace.value + ' — your pages are updated', err ? 'err' : 'ok');
     } catch (e) {
       say('save failed: ' + e.message, 'err');

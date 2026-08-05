@@ -600,13 +600,13 @@ function mileX(mi) {
   for (const s of SEGS) { if (mi >= s.a-1e-9 && mi <= s.b+1e-9) return s.x0+(mi-s.a)/(s.b-s.a)*(s.x1-s.x0); }
   return mi < SEGS[0].a ? SEGS[0].x0 : SEGS[SEGS.length-1].x1;
 }
-function renderNight(pace, start) {
+function renderNight() {
   const g = document.getElementById('nightg'); if (!g) return;
-  const t1 = start + pace*PLAN.total; const parts = []; const regions = [];
+  const start = tAt(0), t1 = tAt(PLAN.total); const parts = []; const regions = [];
   for (let d = 0; d < 3; d++) {
     const ns = d*1440+PLAN.ss, ne = (d+1)*1440+PLAN.sr;
     const a = Math.max(ns, start), b = Math.min(ne, t1);
-    if (b > a) regions.push([(a-start)/pace, (b-start)/pace, ns >= start, ne <= t1]);
+    if (b > a) regions.push([mAt(a), mAt(b), ns >= start, ne <= t1]);
   }
   const dayspans = []; let cur = 0;
   for (const r of regions) { dayspans.push([cur, r[0]]); cur = r[1]; }
@@ -621,7 +621,7 @@ function renderNight(pace, start) {
   }
   let tick = (Math.floor(start/360)+1)*360;
   while (tick < t1) {
-    const x = mileX((tick-start)/pace);
+    const x = mileX(mAt(tick));
     const d = Math.min(Math.floor(tick/1440), DAYSJS.length-1), h = Math.floor((tick%1440)/60);
     const lbl = DAYSJS[d]+' '+((h%12)||12)+' '+(h<12?'AM':'PM');
     parts.push(`<line x1="${x}" y1="${GEO.top+GEO.ploth}" x2="${x}" y2="${GEO.top+GEO.ploth+4}" stroke="var(--axis)" stroke-width="1"/>`);
@@ -631,17 +631,20 @@ function renderNight(pace, start) {
   g.innerHTML = parts.join('');
 }
 let __plan = {pace: null, start: null};
+function tAt(m) { return window.OTO_SCHED ? window.OTO_SCHED.timeAtMile(m) : __plan.start + __plan.pace * m; }
+function mAt(t) { return window.OTO_SCHED ? window.OTO_SCHED.mileAtTime(t) : (t - __plan.start) / __plan.pace; }
 function applyPlan(pace, start) {
   __plan = {pace: pace, start: start};
+  if (window.OTO_SCHED) window.OTO_SCHED.start = start;
   document.querySelectorAll('.eststart').forEach(el => {
-    const t = start + pace*parseFloat(el.dataset.mi);
+    const t = tAt(parseFloat(el.dataset.mi));
     el.textContent = fmtClock(t)+' '+phaseEmoji(t);
   });
-  renderNight(pace, start);
+  renderNight();
 }
 function parsePace(v) { const m = v.trim().match(/^(\d{1,2}):(\d{2})$/); return m ? Number(m[1])+Number(m[2])/60 : null; }
 function hmJS(v) { const p = v.split(':').map(Number); return p[0]*60+p[1]; }
-function paceStr(p) { const mm = Math.floor(p), ss = Math.round((p-mm)*60); return mm+':'+String(ss).padStart(2,'0'); }
+function paceStr(p) { const t = Math.round(p*60); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
 __plan = {pace: PLAN.pace, start: PLAN.start};
 // ---- race-day finish estimator ----
 const rdLeg = document.getElementById('rdLeg');
@@ -656,14 +659,14 @@ if (rdLeg) {
     const pl = parsePace(rdPace.value);
     if (!opt || !pl || !rdTime.value) return;
     const dist = parseFloat(opt.dataset.dist), mi = parseFloat(opt.dataset.mi);
-    const clock = hmJS(rdTime.value), est = __plan.start + __plan.pace*mi;
+    const clock = hmJS(rdTime.value), est = tAt(mi);
     let t = clock;
     for (const cand of [clock, clock+1440, clock+2880]) {
       if (Math.abs(cand-est) < Math.abs(t-est)) t = cand;
     }
     rdAnchor = {mi: mi, t: t};
     const eta = t + pl*dist;
-    const finish = eta + __plan.pace*(PLAN.total - mi - dist);
+    const finish = eta + (tAt(PLAN.total) - tAt(mi + dist));
     let count = '';
     const now = new Date(), real = raceMinToDate(eta);
     if (Math.abs(now - RACE0) < 4*86400000 && real > now) {
