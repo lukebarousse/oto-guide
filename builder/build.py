@@ -823,6 +823,9 @@ setScrollPad();
 addEventListener('resize', setScrollPad);
 '''
 
+def dot_legend():
+    return " · ".join(f'<span class="dotc" style="background:{c}"></span>{k}' for k, c in DIFF.items())
+
 def diff_legend():
     return "".join(f'<span class="pill" style="--pc:{c}"><span class="dot"></span><b>{k}</b></span>' for k, c in DIFF.items())
 
@@ -965,7 +968,8 @@ def build_index():
 <div class="panel" id="course">
   <h2>The whole course at a glance</h2>
   {skyline_svg("")}
-  <div class="legendrow">Bar height = leg distance (mi) · bar width = steepness (ft/mi) · color = difficulty, team-adjusted: {diff_legend()} · tap a bar to open that leg</div>
+  <div class="legendrow">Bar height = leg distance (mi) · bar width = steepness (ft/mi) · tap a bar to open that leg</div>
+  <div class="legendrow">Color = difficulty, team-adjusted: {dot_legend()}</div>
   {plan_ctl()}
 </div>
 {how_to_read(compact=True)}
@@ -1014,7 +1018,8 @@ def build_print():
 <div class="panel">
   <h2>The whole course at a glance</h2>
   {skyline_svg("")}
-  <div class="legendrow">Bar height = leg distance (mi) · bar width = steepness (ft/mi) · color = difficulty, team-adjusted: {diff_legend()}</div>
+  <div class="legendrow">Bar height = leg distance (mi) · bar width = steepness (ft/mi)</div>
+  <div class="legendrow">Color = difficulty, team-adjusted: {dot_legend()}</div>
 </div>
 <div class="panel">
   <h2>Race in six sections</h2>
