@@ -88,7 +88,9 @@ a { color:var(--accent) }
   const LEG_MIN = team.race === '65' ? 25 : 1;
   const NAMES_URL = team.race === '65' ? '65/' : '';
   document.getElementById('hdrBrand').textContent = team.name;
-  document.getElementById('hdrMeta').textContent = `OTO ${team.race} · ${season.year}`;
+  const RACE_DATES = { '205': 'Oct 9–10', '65': 'Oct 10' }; // per-race dates; update each season
+  const dts = RACE_DATES[team.race];
+  document.getElementById('hdrMeta').textContent = `OTO ${team.race} · ${dts ? dts + ', ' : ''}${season.year}`;
 
   const [{ data: runners }, { data: assigns }, { data: legRows }] = await Promise.all([
     db.from('runners').select('*').eq('team_id', team.id),

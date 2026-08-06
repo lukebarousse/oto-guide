@@ -6,7 +6,7 @@
 Elevation profiles: if out/elev.json exists ({"1": [[mi, ft], ...], ...}), native SVG
 profiles are embedded in each leg card.
 """
-import base64, importlib, io, json, os, html as H
+import base64, importlib, io, json, os, re, html as H
 import qrcode
 _d = importlib.import_module(os.environ.get("OTO_DATA", "data"))
 LEGS, NAMES, STRAVA, EXCHANGES, SECTIONS, RACE = _d.LEGS, _d.NAMES, _d.STRAVA, _d.EXCHANGES, _d.SECTIONS, _d.RACE
@@ -1097,6 +1097,18 @@ document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', (e) =
   GUIDE.toggleLeg(n, true);
   row.scrollIntoView({behavior: 'smooth', block: 'start'});
 }));
+// "X runs these N" mini-cards re-render on every chip change, so delegate
+document.addEventListener('click', (e) => {
+  const mini = e.target.closest ? e.target.closest('a.mini') : null;
+  if (!mini) return;
+  const n = Number((mini.getAttribute('href') || '').split('#lr-').pop());
+  if (!n) return;
+  const row = document.getElementById('lr-' + n);
+  if (!row) return;
+  e.preventDefault();
+  GUIDE.toggleLeg(n, true);
+  row.scrollIntoView({behavior: 'smooth', block: 'start'});
+});
 // platform-appropriate map primary
 (function () {
   const apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
@@ -1137,11 +1149,12 @@ GUIDE.renderLoadCards = function () {
   const stats = this.slotStats();
   box.innerHTML = stats.map((x, i) => {
     const c = this.idxColor(x.idx);
-    let longest = 0;
+    let longest = 0, after = null;
     for (let k = 0; k + 1 < x.legs.length; k++) {
       const endT = tAt(this.startMi(x.legs[k].n) + x.legs[k].dist);
       const nextT = tAt(this.startMi(x.legs[k + 1].n));
-      longest = Math.max(longest, nextT - endT);
+      const gap = nextT - endT;
+      if (gap > longest) { longest = gap; after = x.legs[k].n; }
     }
     const hardest = x.legs.length ? x.legs.reduce((a, l) => (l.pts > a.pts || (l.pts === a.pts && l.gain > a.gain)) ? l : a) : null;
     const rk1 = i === 0 ? `style="background:${c};color:var(--page);border-color:${c}"` : '';
@@ -1152,7 +1165,7 @@ GUIDE.renderLoadCards = function () {
       <div class="lcbody">
         <div><b>${x.mi.toFixed(1)} mi</b><span class="${x.dMi > 0 ? 'hi' : ''}">${x.dMi >= 0 ? '+' : ''}${x.dMi.toFixed(1)} vs avg</span></div>
         <div><b>+${x.gain.toLocaleString()} ft</b><span class="${x.dGain > 0 ? 'hi' : ''}">${x.dGain >= 0 ? '+' : ''}${Math.round(x.dGain)} vs avg</span></div>
-        <div><b>${this.fmtDur(longest)}</b><span>longest break</span></div>
+        <div><b>${after ? this.fmtDur(longest) : '—'}</b><span>${after ? 'longest break · after ' + after : 'runs once'}</span></div>
       </div>
       <div class="lclegs">${x.legs.map(l => `<i style="background:color-mix(in srgb, ${l.color} 24%, transparent);border-top:2px solid ${l.color}">${l.n}</i>`).join('')}</div>
       ${hardest ? `<div class="lctough">toughest — leg ${hardest.n} · ${hardest.name} (${hardest.lbl.toLowerCase()}, +${hardest.gain.toLocaleString()} ft)</div>` : ''}
@@ -1166,6 +1179,10 @@ GUIDE.renderSwimlane = function () {
   const t0 = tAt(0), tEnd = tAt(PLAN.total);
   const X = (t) => LBL + (t - t0) / (tEnd - t0) * PLOTW;
   const bottom = HEAD + this.N * ROWH + 4;
+  // size the canvas to the roster — 12-runner rows would clip at the baked-in 200px
+  const svgH = bottom + 20;
+  svg.setAttribute('height', svgH);
+  svg.setAttribute('viewBox', '0 0 900 ' + svgH);
   namesBox.innerHTML = Array.from({length: this.N}, (_, i) => `<div>${this.shortLabel(i + 1)}</div>`).join('');
   let parts = [];
   for (let d = 0; d < 3; d++) {
@@ -1349,6 +1366,13 @@ def nav_tabs(active):
 def fmt_pace_str(v):
     t = round(v * 60); return f"{t // 60}:{t % 60:02d}"
 
+def short_dates():
+    """'Friday Oct 9 – Saturday Oct 10, 2026' -> 'Oct 9–10, 2026'; one-day races pass through."""
+    d = RACE["dates"]
+    for day in ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"):
+        d = d.replace(day + " ", "")
+    return re.sub(r"([A-Za-z]+) ([0-9]+) – \1 ([0-9]+)", r"\1 \2–\3", d)
+
 def header_nav(active, with_chips=False):
     """Two-row sticky header. Row 1 byte-identical across pages except the active item."""
     items = ""
@@ -1365,7 +1389,7 @@ def header_nav(active, with_chips=False):
                  + '</div>')
     return f'''<div class="hdr"><div class="hdr-in">
   <div class="hdr-row"><span class="hdr-brand brand">{esc(TEAM_NAME)}</span>
-    <span class="hdr-meta">{RACE_ID} · {esc(RACE["dates"].replace("Friday ", "").replace("Saturday ", "").replace(" – ", "–").replace(", 2026", ""))}</span>
+    <span class="hdr-meta">OTO {RACE_ID} · {esc(short_dates())}</span>
     <nav class="hdr-nav">{items}</nav></div>
   {chips}
 </div></div>'''
