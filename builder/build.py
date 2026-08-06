@@ -87,7 +87,7 @@ def night_regions(pace, t0):
     return out
 
 # ---------------- skyline ----------------
-SKY = dict(W=760, H=200, PADL=30, PADR=8, TOP=40, BOT=26)
+SKY = dict(W=760, H=210, PADL=30, PADR=8, TOP=40, BOT=36)
 
 def sky_layout():
     plot_w = SKY["W"] - SKY["PADL"] - SKY["PADR"]
@@ -120,10 +120,10 @@ def night_group(segs, plot_h):
     for ma, mb, _, _ in regions:
         xa, xb = mile_x(ma, segs), mile_x(mb, segs)
         parts.append(f'<rect x="{xa:.1f}" y="{TOP}" width="{xb-xa:.1f}" height="{plot_h}" fill="var(--nightshade)"/>')
-        parts.append(f'<text x="{(xa+xb)/2:.1f}" y="{TOP+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">🌙 night</text>')
+        parts.append(f'<text x="{(xa+xb)/2:.1f}" y="{TOP+10}" text-anchor="middle" font-size="9" fill="var(--ink2)">🌙 night</text>')
     for da, db in day_spans:
         if db - da > 18:
-            parts.append(f'<text x="{(mile_x(da,segs)+mile_x(db,segs))/2:.1f}" y="{SKY["TOP"]+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">☀️ day</text>')
+            parts.append(f'<text x="{(mile_x(da,segs)+mile_x(db,segs))/2:.1f}" y="{SKY["TOP"]+10}" text-anchor="middle" font-size="9" fill="var(--ink2)">☀️ day</text>')
     # estimated clock ticks every 6h along the bottom
     pace, t0 = PLAN["pace_min_per_mi"], hm(PLAN["start_hhmm"])
     t1 = t0 + pace * TOTAL_MI
@@ -134,7 +134,7 @@ def night_group(segs, plot_h):
         h = mm // 60
         lbl = f'{DAYS[min(d, len(DAYS)-1)]} {h % 12 or 12} {"AM" if h < 12 else "PM"}'
         parts.append(f'<line x1="{x:.1f}" y1="{TOP+plot_h}" x2="{x:.1f}" y2="{TOP+plot_h+4}" stroke="var(--axis)" stroke-width="1"/>')
-        parts.append(f'<text x="{x:.1f}" y="{TOP+plot_h+20}" text-anchor="middle" font-size="6.8" fill="var(--muted)">{lbl}</text>')
+        parts.append(f'<text x="{x:.1f}" y="{TOP+plot_h+22}" text-anchor="middle" font-size="9" fill="var(--muted)">{lbl}</text>')
         tick += 360
     return f'<g id="nightg">{"".join(parts)}</g>'
 
@@ -148,7 +148,7 @@ def skyline_svg(legs_href="index.html"):
     parts = [f'<svg viewBox="0 0 {W} {H_}" role="img" aria-label="Every leg: bar height is distance in miles, bar width is climb rate" style="width:100%;height:auto;display:block">']
     for gv in (2, 4, 6, 8):
         parts.append(f'<line x1="{PAD_L}" y1="{y(gv):.1f}" x2="{W-PAD_R}" y2="{y(gv):.1f}" stroke="var(--grid)" stroke-width="1"/>')
-        parts.append(f'<text x="{PAD_L-4}" y="{y(gv)+3:.1f}" text-anchor="end" font-size="8" fill="var(--muted)">{gv}</text>')
+        parts.append(f'<text x="{PAD_L-4}" y="{y(gv)+3:.1f}" text-anchor="end" font-size="9" fill="var(--muted)">{gv}</text>')
     parts.append(night_group(segs, plot_h))
     xx = PAD_L
     edges = {}
@@ -162,7 +162,7 @@ def skyline_svg(legs_href="index.html"):
                      f'<rect x="{xx+0.6:.1f}" y="{y(l["dist"]):.1f}" width="{max(w-1.2,1.6):.1f}" height="{(TOP+plot_h-y(l["dist"])):.1f}" rx="2" '
                      f'fill="{DIFF[rating]}" stroke="rgba(0,0,0,.28)" stroke-width="0.5">'
                      f'<title>Leg {l["n"]} · {NAMES[l["n"]]} · {fmt_mi(l["dist"])} mi · +{l["gain"]:,} ft · {v:.0f} ft/mi · {note} · {RUNNERS.get(slot, "")}</title></rect>'
-                     + (f'<text x="{xx+w/2:.1f}" y="{TOP+plot_h+9}" text-anchor="middle" font-size="6.2" fill="var(--muted)">{l["n"]}</text>' if w >= 8.5 else "")
+                     + (f'<text x="{xx+w/2:.1f}" y="{TOP+plot_h+10}" text-anchor="middle" font-size="9" fill="var(--muted)">{l["n"]}</text>' if w >= 10 else "")
                      + '</a>')
         xx += w
         edges[l["n"]] = xx
@@ -176,7 +176,8 @@ def skyline_svg(legs_href="index.html"):
         parts.append(f'<line x1="{ex:.1f}" y1="{TOP-14}" x2="{ex:.1f}" y2="{TOP+plot_h}" stroke="var(--ink2)" stroke-width="0.8" stroke-dasharray="3 3"/>')
         parts.append(f'<text x="{ex:.1f}" y="{TOP-11}" text-anchor="middle" font-size="7" fill="var(--muted)">mi {fmt_mi(mi)}</text>')
         parts.append(f'<text x="{ex:.1f}" y="{TOP-20}" text-anchor="middle" font-size="8" font-weight="700" fill="var(--ink)">{esc(label)}</text>')
-    parts.append(f'<text x="{PAD_L-22}" y="{TOP-2}" font-size="7.5" fill="var(--muted)">mi</text>')
+    parts.append(f'<text x="8" y="36" font-size="9" fill="var(--muted)">mi</text>')
+    parts.append(f'<text x="30" y="{H_-4}" font-size="9" fill="var(--muted)">estimated clock time →</text>')
     parts.append("</svg>")
     return "".join(parts)
 
@@ -203,16 +204,16 @@ def profile_svg(n):
     gv = math.ceil(lo_pad / step) * step
     while gv < hi_pad:
         parts.append(f'<line x1="{PL}" y1="{Y(gv):.1f}" x2="{W-PR}" y2="{Y(gv):.1f}" stroke="var(--grid)" stroke-width="1" stroke-dasharray="3 3"/>')
-        parts.append(f'<text x="{PL-4}" y="{Y(gv)+2.5:.1f}" text-anchor="end" font-size="7.5" fill="var(--muted)">{gv:,.0f}</text>')
+        parts.append(f'<text x="{PL-4}" y="{Y(gv)+2.5:.1f}" text-anchor="end" font-size="9" fill="var(--muted)">{gv:,.0f}</text>')
         gv += step
     parts.append(f'<path d="{area}" fill="color-mix(in srgb, var(--accent) 22%, transparent)"/>')
-    parts.append(f'<path d="{path}" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/>')
+    parts.append(f'<path d="{path}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>')
     # x ticks each mile
     m = 1
     while m < x1:
-        parts.append(f'<text x="{X(m):.1f}" y="{PT+ph+11}" text-anchor="middle" font-size="7.5" fill="var(--muted)">{m} mi</text>')
+        parts.append(f'<text x="{X(m):.1f}" y="{PT+ph+11}" text-anchor="middle" font-size="9" fill="var(--muted)">{m} mi</text>')
         m += 1
-    parts.append(f'<text x="{PL-4}" y="{PT+2}" text-anchor="end" font-size="7" fill="var(--muted)">ft</text>')
+    parts.append(f'<text x="{PL-4}" y="{PT+2}" text-anchor="end" font-size="9" fill="var(--muted)">ft</text>')
     parts.append("</svg>")
     return f'<div class="profile">{"".join(parts)}<div class="proflabel">Elevation profile · {lo:,.0f}–{hi:,.0f} ft <span class="tiny">(current 2026 Strava route)</span></div></div>'
 
@@ -375,9 +376,11 @@ def planner_table():
 <tbody id="plantbody">{rows}</tbody></table></div>
 <p class="tiny" style="margin:.6em 0 0">Sorted hardest → easiest. Difficulty = equal parts total miles, total climb, and summed leg ratings (Easy 1 → Very Hard 4, team rating where it differs), scaled so the hardest slot = 100. Rating dots are in leg order<span class="web-only"> — hover for the leg</span>.</p>'''
 
-def watch_panel(legs_href="index.html"):
-    return f'''<div class="panel" id="watch">
-  <h2>Get your legs on your Garmin watch</h2>
+def watch_panel(legs_href="index.html", inner=False):
+    head = '' if inner else '<h2>Get your legs on your Garmin watch</h2>'
+    open_div = '<div>' if inner else '<div class="panel" id="watch">'
+    return f'''{open_div}
+  {head}
   <p class="tiny" style="margin:.2em 0 .6em">Cell signal is spotty on the course — load your legs as courses <b>before race weekend</b> so the watch can guide you (route line, off-course alerts, climb profile) with no phone needed.</p>
   <ol class="steps">
     <li><b>Link Strava to Garmin (one-time).</b> Garmin Connect app → <i>Settings → Connected Apps → Strava</i> → sign in and enable the <b>Courses</b> permission.</li>
@@ -426,6 +429,7 @@ def css():
     --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12); --card:#232322; --accent:#3987e5;
     --nightshade:rgba(140,160,255,.18) } }
 * { box-sizing:border-box }
+:root { --mono: ui-monospace, SFMono-Regular, Menlo, monospace }
 html { scroll-behavior:smooth }
 body { margin:0; background:var(--page); color:var(--ink);
   font-family: system-ui, -apple-system, "Segoe UI", "Liberation Sans", "DejaVu Sans", sans-serif;
@@ -530,6 +534,173 @@ td.bar { background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%,
   border:1px solid var(--grid); border-radius:6px; padding:3px 6px; max-width:100% }
 .planctl #paceIn { width:52px; text-align:center }
 .planctl .pillbtn { padding:3px 9px }
+/* ---------- redesign: header ---------- */
+.hdr { position:sticky; top:0; z-index:9; background:color-mix(in srgb, var(--page) 94%, transparent);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:1px solid var(--grid); padding:9px 14px }
+.hdr-in { max-width:1064px; margin:0 auto }
+.hdr-row { display:flex; align-items:center; gap:8px }
+.hdr-brand { font-weight:800; font-size:13px }
+.hdr-meta { font:11px var(--mono); color:var(--muted) }
+.hdr-nav { margin-left:auto; display:flex; gap:14px; align-items:center }
+.hdr-nav a, .hdr-nav span { font:700 12px system-ui; color:var(--ink2); text-decoration:none }
+.hdr-nav span { color:var(--ink); border-bottom:2px solid var(--accent); padding-bottom:1px }
+.chiprow { display:flex; gap:6px; margin-top:9px; overflow-x:auto; scrollbar-width:none }
+.chiprow::-webkit-scrollbar { display:none }
+.chip2 { flex:none; border:1px solid var(--grid); background:transparent; color:var(--ink2);
+  font:600 12px system-ui; padding:5px 11px; border-radius:99px; cursor:pointer;
+  -webkit-appearance:none; appearance:none }
+.chip2.on { background:var(--ink); border-color:var(--ink); color:var(--page) }
+/* ---------- redesign: page shell ---------- */
+.shell { max-width:1064px; margin:0 auto; padding:16px 14px 40px }
+.eyebrow { display:flex; align-items:baseline; gap:8px }
+.eyebrow b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--accent) }
+.eyebrow span { margin-left:auto; font:11px var(--mono); color:var(--muted) }
+.kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:7px }
+.kpi { background:var(--card); border:1px solid var(--ring); border-radius:12px; padding:11px 11px 10px }
+.kpi b { display:block; font-weight:700; font-size:22px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
+.kpi span { display:block; font:600 9.5px system-ui; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-top:2px }
+/* ---------- redesign: chart card ---------- */
+.chartcard { background:var(--card); border:1px solid var(--ring); border-radius:14px; padding:13px 12px 12px; margin:16px 0 0 }
+.chartcard h2 { font-size:14px; letter-spacing:-.01em; font-weight:700 }
+.chartcard .sub { font-size:12px; color:var(--ink2); margin:2px 0 8px }
+.skb.dim { opacity:.18 }
+details.chartlegend { margin-top:8px }
+details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:var(--ink2) }
+.legendgrid { display:grid; grid-template-columns:auto 1fr; gap:8px 10px; align-items:center; margin-top:9px; font-size:12px; color:var(--ink2) }
+/* ---------- redesign: my legs ---------- */
+.mylabel { font:11px system-ui; color:var(--muted); margin:16px 0 7px }
+.minigrid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px }
+.mini { background:var(--card); border:1px solid var(--ring); border-radius:10px; padding:8px 9px 9px;
+  color:var(--ink); min-width:0; text-decoration:none; display:block }
+.mini .r1 { display:flex; justify-content:space-between; font:700 11px var(--mono); color:var(--muted) }
+.mini .nm, .mini .d { display:block }
+.mini .r1 i { font-style:normal; font-weight:400; font-size:11px }
+.mini .nm { font:600 12px system-ui; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:2px 0 }
+.mini .d { font:11.5px var(--mono); color:var(--ink2) }
+.morebtn { grid-column:1/-1; border:1px dashed var(--axis); background:none; color:var(--ink2);
+  font:600 11.5px system-ui; border-radius:10px; padding:8px; cursor:pointer; -webkit-appearance:none; appearance:none }
+/* ---------- redesign: banners ---------- */
+.bnr { display:flex; gap:9px; align-items:center; padding:11px 12px; border-radius:12px;
+  border:1px solid var(--ring); margin:14px 0 6px }
+.bnr.ex { border-left:3px solid var(--accent); background:color-mix(in srgb, var(--accent) 8%, transparent) }
+.bnr.se { border-left:3px solid var(--ink2); background:var(--surface) }
+.bnr .bnrmain { flex:1; min-width:0 }
+.bnr .kick { display:flex; justify-content:space-between; font:800 9.5px system-ui; letter-spacing:.13em; text-transform:uppercase }
+.bnr.ex .kick { color:var(--accent) } .bnr.se .kick { color:var(--ink2) }
+.bnr .kick i { font:10.5px var(--mono); font-style:normal; color:var(--muted); letter-spacing:0; text-transform:none }
+.bnr .bname { font-weight:700; font-size:14.5px; letter-spacing:-.015em }
+.bnr .bsub { font:10.5px var(--mono); color:var(--muted) }
+.bnr .bnav { text-align:right; flex:none }
+.mapbtn2 { display:inline-block; background:var(--card); border:1px solid var(--grid); border-radius:9px;
+  padding:7px 11px; font:700 12px system-ui; color:var(--ink); text-decoration:none; white-space:nowrap }
+.mapalt { display:block; font:11px system-ui; color:var(--muted); text-decoration:none; margin-top:3px }
+.mapalt:hover { color:var(--ink2) }
+/* ---------- redesign: leg rows + expanded card ---------- */
+.allhdr { display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 2px }
+.allhdr b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--muted) }
+.allhdr span { font:11px system-ui; color:var(--muted) }
+.lrow { display:flex; align-items:center; gap:9px; padding:9px 10px; margin:5px 0; border-radius:11px;
+  cursor:pointer; border:1px solid transparent }
+.lrow .rail { width:3px; height:26px; border-radius:2px; flex:none }
+.lrow .num { font:700 12px var(--mono); color:var(--muted); width:20px; flex:none }
+.lrow .lname { font:600 13.5px system-ui; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0 }
+.lrow .lstats { font:11.5px var(--mono); color:var(--ink2); font-variant-numeric:tabular-nums; white-space:nowrap }
+.lrow .av { width:22px; height:22px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+  font:700 10px system-ui; background:var(--surface); color:var(--ink2); border:1px solid var(--grid) }
+.lrow.mine { background:color-mix(in srgb, var(--accent) 12%, transparent);
+  border:1px solid color-mix(in srgb, var(--accent) 34%, transparent) }
+.lrow.mine .av { background:var(--accent); color:#fff; border-color:var(--accent) }
+.lrow.openrow { background:var(--card); border:1px solid var(--ring) }
+.lrow .lsurf, .lrow .lrating, .lrow .lstart { display:none }
+.lx { display:none; background:var(--card); border:1px solid var(--ring); border-radius:12px; overflow:hidden; margin:0 0 8px }
+.lx.open { display:block }
+.lx .band { display:flex; justify-content:space-between; padding:7px 13px; font:800 10px system-ui; letter-spacing:.12em; text-transform:uppercase }
+.lx .band i { font:10px var(--mono); font-style:normal; color:var(--muted); letter-spacing:0; text-transform:none }
+.lx .bandmeta { font:10px var(--mono); color:var(--muted); letter-spacing:0; text-transform:none; display:none }
+.lx .xbody { padding:12px 13px 13px }
+.lx .nums { display:flex; gap:18px; margin-bottom:10px }
+.lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
+.lx .nums span { font-size:11px; color:var(--muted); margin-left:3px }
+.lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
+  background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
+.lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center; font:700 10px system-ui; flex:none }
+.lx .assign b { font:700 12.5px system-ui }
+.lx .assign .when { margin-left:auto; font:11.5px var(--mono); color:var(--ink2); white-space:nowrap }
+.lx .surfmeta { display:flex; justify-content:space-between; font:10.5px var(--mono); color:var(--muted); margin-top:3px }
+.lx .beta2 { font-size:14px; line-height:1.5; color:var(--ink2); text-wrap:pretty; margin:10px 0 }
+.lx .beta2 .src { margin-right:7px }
+.lx .xgrid { display:block }
+.lx .xbtns { display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap; margin-top:10px }
+/* ---------- redesign: desktop ---------- */
+@media (min-width: 900px) {
+  .hdr { padding:11px 14px }
+  .hdr-brand { font-size:15px }
+  .hdr-nav a, .hdr-nav span { font-size:13px }
+  .shell { padding:22px 28px 48px }
+  .pagegrid { display:grid; grid-template-columns:308px 1fr; gap:30px; align-items:start }
+  .rail { position:sticky; top:76px; display:flex; flex-direction:column; gap:16px }
+  .minigrid { grid-template-columns:repeat(2,1fr) }
+  .legendgrid { grid-template-columns:auto 1fr auto 1fr }
+  .exjump { background:var(--card); border:1px solid var(--ring); border-radius:12px; padding:6px 4px }
+  .exjump a { display:flex; gap:8px; align-items:baseline; padding:7px 9px; border-radius:8px; text-decoration:none; color:var(--ink); font-size:13px; white-space:nowrap; overflow:hidden }
+.exjump a > :nth-child(2) { overflow:hidden; text-overflow:ellipsis }
+  .exjump a:hover { background:var(--surface) }
+  .exjump .k { font:700 10.5px var(--mono); color:var(--accent) }
+  .exjump .m { margin-left:auto; font:10.5px var(--mono); color:var(--muted) }
+  .lrow .lsurf { display:flex; width:78px; height:6px; border-radius:3px; overflow:hidden; gap:1px; flex:none }
+  .lrow .lsurf i { height:100% }
+  .lrow .lrating { display:block; width:96px; font:600 10.5px system-ui; flex:none }
+  .lrow .lstart { display:block; width:104px; font:11px var(--mono); color:var(--ink2); text-align:right; flex:none }
+  .lrow .lname { font-size:14.5px }
+  .lx .xgrid { display:grid; grid-template-columns:1.15fr 1fr; gap:20px }
+  .lx .xright { display:flex; flex-direction:column }
+  .lx .xbtns { margin-top:auto; padding-top:10px }
+  .lx .bandmeta { display:inline }
+}
+@media (max-width: 899px) { .exjump { display:none } .rail-desktop-only { display:none } #myLegsBlock { display:none } }
+@media (min-width: 900px) { #myLegsBlockPhone { display:none } }
+/* ---------- redesign: overview ---------- */
+.ovh1 { font-weight:800; font-size:24px; letter-spacing:-.028em; margin:4px 0 2px }
+.ovh2 { font-weight:800; font-size:20px; letter-spacing:-.025em; margin:26px 0 2px }
+.ovsub { font-size:12.5px; line-height:1.5; color:var(--ink2); margin:0 0 10px }
+.loadcards { display:flex; flex-direction:column; gap:7px }
+.loadcard { background:var(--card); border:1px solid var(--ring); border-radius:13px; overflow:hidden }
+.loadcard .lchead { display:flex; align-items:center; gap:8px; padding:10px 12px 7px }
+.loadcard .rk { width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font:700 11px var(--mono); background:var(--surface); color:var(--muted); border:1px solid var(--grid); flex:none }
+.loadcard .lcname { font:700 15px system-ui }
+.loadcard .lcidx { margin-left:auto; font:700 15px var(--mono) }
+.loadcard .lcidx i { font:400 10.5px var(--mono); color:var(--muted); font-style:normal; margin-left:4px }
+.loadcard .lcbar { height:5px; background:var(--surface) }
+.loadcard .lcbar i { display:block; height:100% }
+.loadcard .lcbody { display:flex; gap:18px; padding:9px 12px 8px }
+.loadcard .lcbody b { display:block; font-weight:700; font-size:17px; letter-spacing:-.02em; font-variant-numeric:tabular-nums }
+.loadcard .lcbody span { display:block; font:10.5px var(--mono); color:var(--muted) }
+.loadcard .lcbody .hi { color:#ec835a }
+.loadcard .lclegs { display:flex; gap:3px; padding:0 12px }
+.loadcard .lclegs i { flex:1; text-align:center; font:700 10.5px var(--mono); padding:3px 0 4px;
+  border-radius:0 0 5px 5px; font-style:normal }
+.loadcard .lctough { font:10.5px var(--mono); color:var(--muted); padding:6px 12px 10px }
+.swimcard { background:var(--card); border:1px solid var(--ring); border-radius:14px; padding:12px; display:flex }
+.swimnames { flex:none; width:66px; padding-top:22px }
+.swimnames div { height:26px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;
+  font:700 11px system-ui; color:var(--ink2); white-space:nowrap; overflow:hidden }
+.swimscroll { overflow-x:auto; flex:1 }
+.swimscroll svg { display:block }
+.swimlegend { display:flex; gap:12px; flex-wrap:wrap; font-size:11.5px; color:var(--muted); margin-top:8px; align-items:center }
+details.ovd { margin:10px 0 }
+details.ovd > summary { cursor:pointer; background:var(--card); border:1px solid var(--ring); border-radius:12px;
+  padding:12px 14px; font:700 14px system-ui; list-style:none }
+details.ovd > summary::-webkit-details-marker { display:none }
+details.ovd > summary:after { content:'▾'; float:right; color:var(--muted) }
+details.ovd[open] > summary:after { content:'▴' }
+details.ovd .ovdbody { padding:12px 2px 2px }
+@media (min-width: 900px) {
+  .loadcards { display:grid; grid-template-columns:repeat(3,1fr) }
+  .swimnames { width:78px }
+  .ovtwo { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start }
+}
 .footnote { font-size:11.5px; color:var(--ink2); background:var(--surface); border:1px dashed var(--axis);
   border-radius:7px; padding:5px 9px; margin-top:6px }
 .legfoot { margin-top:9px; display:flex; flex-wrap:wrap; gap:7px; align-items:center }
@@ -616,7 +787,9 @@ def runners_js():
             + ";const GEO=" + json.dumps(dict(top=SKY["TOP"], ploth=plot_h))
             + ";const NR=" + str(N_RUNNERS)
             + ";const RMAP=" + json.dumps({str(k): v for k, v in RUNNERS.items()})
-            + ";const LEGDATA=" + json.dumps(legdata) + ";"
+            + ";const LEGDATA=" + json.dumps(legdata)
+            + ";const RMAP0=" + json.dumps({str(k): v for k, v in RUNNERS.items()})
+            + ";const NR0=" + str(N_RUNNERS) + ";"
             + RUNNERS_JS)
 
 # runner names come baked into the HTML from data.RUNNERS; JS handles filtering + plan recompute
@@ -679,10 +852,10 @@ function renderNight() {
   for (const [ma, mb] of regions) {
     const xa = mileX(ma), xb = mileX(mb);
     parts.push(`<rect x="${xa}" y="${GEO.top}" width="${xb-xa}" height="${GEO.ploth}" fill="var(--nightshade)"/>`);
-    parts.push(`<text x="${(xa+xb)/2}" y="${GEO.top+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">🌙 night</text>`);
+    parts.push(`<text x="${(xa+xb)/2}" y="${GEO.top+10}" text-anchor="middle" font-size="9" fill="var(--ink2)">🌙 night</text>`);
   }
   for (const [da, db] of dayspans) {
-    if (db-da > 18) parts.push(`<text x="${(mileX(da)+mileX(db))/2}" y="${GEO.top+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">☀️ day</text>`);
+    if (db-da > 18) parts.push(`<text x="${(mileX(da)+mileX(db))/2}" y="${GEO.top+10}" text-anchor="middle" font-size="9" fill="var(--ink2)">☀️ day</text>`);
   }
   let tick = (Math.floor(start/360)+1)*360;
   while (tick < t1) {
@@ -690,7 +863,7 @@ function renderNight() {
     const d = Math.min(Math.floor(tick/1440), DAYSJS.length-1), h = Math.floor((tick%1440)/60);
     const lbl = DAYSJS[d]+' '+((h%12)||12)+' '+(h<12?'AM':'PM');
     parts.push(`<line x1="${x}" y1="${GEO.top+GEO.ploth}" x2="${x}" y2="${GEO.top+GEO.ploth+4}" stroke="var(--axis)" stroke-width="1"/>`);
-    parts.push(`<text x="${x}" y="${GEO.top+GEO.ploth+20}" text-anchor="middle" font-size="6.8" fill="var(--muted)">${lbl}</text>`);
+    parts.push(`<text x="${x}" y="${GEO.top+GEO.ploth+22}" text-anchor="middle" font-size="9" fill="var(--muted)">${lbl}</text>`);
     tick += 360;
   }
   g.innerHTML = parts.join('');
@@ -705,7 +878,13 @@ function applyPlan(pace, start) {
     const t = tAt(parseFloat(el.dataset.mi));
     el.textContent = fmtClock(t)+' '+phaseEmoji(t);
   });
+  document.querySelectorAll('.estdur').forEach(el => {
+    const m0 = parseFloat(el.dataset.mi), d = parseFloat(el.dataset.dist);
+    const mins = Math.round(tAt(m0 + d) - tAt(m0));
+    el.textContent = '~' + (mins >= 60 ? Math.floor(mins/60) + 'h ' : '') + String(mins % 60).padStart(2, '0') + 'm';
+  });
   renderNight();
+  if (window.GUIDE && GUIDE.renderAll) GUIDE.renderAll(); else if (window.GUIDE) GUIDE.renderSide();
 }
 function parsePace(v) { const m = v.trim().match(/^(\\d{1,2}):(\\d{2})$/); return m ? Number(m[1])+Number(m[2])/60 : null; }
 function hmJS(v) { const p = v.split(':').map(Number); return p[0]*60+p[1]; }
@@ -817,6 +996,201 @@ if (nrSel) {
   }
   nrSel.addEventListener('change', () => renderPlanner(Number(nrSel.value)));
 }
+// ---- redesign UI: selection, accordion, my-legs, platform maps ----
+window.GUIDE = {
+  N: NR0, names: Object.assign({}, RMAP0), paces: {}, slotOf: {}, selected: 0, showAll: false, openLeg: null,
+  legSlot(n) { return this.slotOf[n] || ((n - 1) % this.N) + 1; },
+  label(s) { return this.names[s] || 'Slot ' + s; },
+  shortLabel(s) { const nm = this.names[s]; return nm ? nm.split(' ')[0] : 'Slot ' + s; },
+  initials(s) {
+    const firsts = {};
+    for (let i = 1; i <= this.N; i++) { const f = (this.names[i] || 'S' + i)[0].toUpperCase(); firsts[f] = (firsts[f] || 0) + 1; }
+    const nm = this.names[s] || 'S' + s, f = nm[0].toUpperCase();
+    return firsts[f] > 1 ? nm.slice(0, 2) : f;
+  },
+  renderChips() {
+    const row = document.getElementById('chipRow');
+    if (!row) return;
+    row.innerHTML = '<button class="chip2" data-slot="0">All</button>' +
+      Array.from({length: this.N}, (_, i) => `<button class="chip2" data-slot="${i + 1}">${this.shortLabel(i + 1)}</button>`).join('');
+    row.querySelectorAll('.chip2').forEach(b => {
+      b.classList.toggle('on', Number(b.dataset.slot) === this.selected);
+      b.addEventListener('click', () => { this.select(Number(b.dataset.slot)); });
+    });
+  },
+  select(s) {
+    this.selected = s; this.showAll = false;
+    if (this.openLeg) this.toggleLeg(this.openLeg, false);
+    document.querySelectorAll('#chipRow .chip2').forEach(b => b.classList.toggle('on', Number(b.dataset.slot) === s));
+    document.querySelectorAll('.skb').forEach(el => el.classList.toggle('dim', s !== 0 && Number(el.dataset.slot) !== s));
+    document.querySelectorAll('.lrow').forEach(el => el.classList.toggle('mine', s !== 0 && Number(el.dataset.slot) === s));
+    this.renderSide();
+  },
+  legMeta(n) { return LEGDATA.find(l => l.n === n); },
+  renderSide() {
+    const s = this.selected;
+    const mine = LEGDATA.filter(l => this.legSlot(l.n) === s);
+    const kt = document.getElementById('kpiTitle');
+    if (kt) {
+      if (s === 0) {
+        kt.textContent = 'The whole race';
+        document.getElementById('kpiMi').textContent = PLAN.total ? LEGDATA.reduce((a, l) => a + l.dist, 0).toFixed(1) : '';
+        document.getElementById('kpiLegs').textContent = LEGDATA.length;
+        document.getElementById('kpiGain').textContent = (LEGDATA.reduce((a, l) => a + l.gain, 0) / 1000).toFixed(1) + 'k';
+      } else {
+        kt.textContent = this.shortLabel(s) + "'s race";
+        document.getElementById('kpiMi').textContent = mine.reduce((a, l) => a + l.dist, 0).toFixed(1);
+        document.getElementById('kpiLegs').textContent = mine.length;
+        document.getElementById('kpiGain').textContent = (mine.reduce((a, l) => a + l.gain, 0) / 1000).toFixed(1) + 'k';
+      }
+    }
+    const html = s === 0 ? '' : this.myLegsHtml(s, mine);
+    const d = document.getElementById('myLegsBlock'), ph = document.getElementById('myLegsBlockPhone');
+    if (d) d.innerHTML = html;
+    if (ph) ph.innerHTML = html;
+  },
+  myLegsHtml(s, mine) {
+    const list = this.showAll ? mine : mine.slice(0, 6);
+    const cards = list.map(l => {
+      const meta = LEGDATA.find(x => x.n === l.n);
+      const t = tAt(this.startMi(l.n));
+      return `<a class="mini" style="border-top:3px solid ${meta.color}" href="#lr-${l.n}">` +
+        `<span class="r1"><span>${String(l.n).padStart(2, '0')}</span><i>${fmtClock(t).replace(':00 ', ' ')}</i></span>` +
+        `<span class="nm">${meta.name}</span><span class="d">${meta.dist} mi</span></a>`;
+    }).join('');
+    const more = mine.length > 6
+      ? `<button class="morebtn" onclick="GUIDE.showAll=!GUIDE.showAll;GUIDE.renderSide()">${this.showAll ? 'show fewer' : '+ ' + (mine.length - 6) + ' more legs'}</button>` : '';
+    return `<div class="mylabel">${this.shortLabel(s)} runs these ${mine.length}</div><div class="minigrid">${cards}${more}</div>`;
+  },
+  startMi(n) {
+    let m = 0;
+    for (const l of LEGDATA) { if (l.n === n) break; m += l.dist; }
+    return m;
+  },
+  toggleLeg(n, want) {
+    const x = document.getElementById('leg-' + n), row = document.getElementById('lr-' + n);
+    if (!x || !row) return;
+    const open = want !== undefined ? want : !x.classList.contains('open');
+    if (open && this.openLeg && this.openLeg !== n) this.toggleLeg(this.openLeg, false);
+    x.classList.toggle('open', open);
+    row.classList.toggle('openrow', open);
+    row.setAttribute('aria-expanded', open);
+    this.openLeg = open ? n : (this.openLeg === n ? null : this.openLeg);
+  }
+};
+document.querySelectorAll('.lrow').forEach(row => {
+  const go = () => GUIDE.toggleLeg(Number(row.dataset.n));
+  row.addEventListener('click', go);
+  row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+});
+// open a leg when arriving via #leg-N or #lr-N
+if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) GUIDE.toggleLeg(Number(location.hash.split('-').pop()), true);
+document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', () => {
+  const n = Number((a.getAttribute('href') || '').split('#leg-').pop());
+  if (n) GUIDE.toggleLeg(n, true);
+}));
+// platform-appropriate map primary
+(function () {
+  const apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
+  if (!apple) return;
+  document.querySelectorAll('.mapnav').forEach(w => {
+    const p = w.querySelector('.mapPrimary'), alt = w.querySelector('.mapAlt');
+    if (!p || !alt) return;
+    p.href = w.dataset.a; p.textContent = '📍 Apple Maps ↗';
+    alt.href = w.dataset.g; alt.textContent = 'or Google ↗';
+  });
+})();
+// desktop: chart legend open by default
+if (matchMedia('(min-width: 900px)').matches) {
+  const cl = document.getElementById('chartLegend');
+  if (cl) cl.open = true;
+}
+GUIDE.idxColor = (v) => v >= 96 ? '#d03b3b' : v >= 90 ? '#ec835a' : v >= 84 ? '#fab219' : '#0ca30c';
+GUIDE.fmtDur = (mins) => { mins = Math.round(mins); return (mins >= 60 ? Math.floor(mins/60) + 'h ' : '') + String(mins % 60).padStart(2, '0') + 'm'; };
+GUIDE.slotStats = function () {
+  const out = [];
+  for (let s = 1; s <= this.N; s++) {
+    const legs = LEGDATA.filter(l => this.legSlot(l.n) === s);
+    out.push({ s, legs,
+      mi: legs.reduce((a, l) => a + l.dist, 0),
+      gain: legs.reduce((a, l) => a + l.gain, 0),
+      pts: legs.reduce((a, l) => a + l.pts, 0) });
+  }
+  const am = out.reduce((a, x) => a + x.mi, 0) / this.N || 1, ag = out.reduce((a, x) => a + x.gain, 0) / this.N || 1,
+        ap = out.reduce((a, x) => a + x.pts, 0) / this.N || 1;
+  out.forEach(x => x.score = x.mi / am + x.gain / ag + x.pts / ap);
+  const top = Math.max(...out.map(x => x.score)) || 1;
+  out.forEach(x => { x.idx = Math.round(100 * x.score / top); x.dMi = x.mi - am; x.dGain = x.gain - ag; });
+  return out.sort((a, b) => b.score - a.score);
+};
+GUIDE.renderLoadCards = function () {
+  const box = document.getElementById('loadCards');
+  if (!box) return;
+  const stats = this.slotStats();
+  box.innerHTML = stats.map((x, i) => {
+    const c = this.idxColor(x.idx);
+    let longest = 0;
+    for (let k = 0; k + 1 < x.legs.length; k++) {
+      const endT = tAt(this.startMi(x.legs[k].n) + x.legs[k].dist);
+      const nextT = tAt(this.startMi(x.legs[k + 1].n));
+      longest = Math.max(longest, nextT - endT);
+    }
+    const hardest = x.legs.length ? x.legs.reduce((a, l) => (l.pts > a.pts || (l.pts === a.pts && l.gain > a.gain)) ? l : a) : null;
+    const rk1 = i === 0 ? `style="background:${c};color:var(--page);border-color:${c}"` : '';
+    return `<div class="loadcard">
+      <div class="lchead"><span class="rk" ${rk1}>${i + 1}</span><span class="lcname">${this.label(x.s)}</span>
+        <span class="lcidx" style="color:${c}">${x.idx}<i>index</i></span></div>
+      <div class="lcbar"><i style="width:${x.idx}%;background:${c}"></i></div>
+      <div class="lcbody">
+        <div><b>${x.mi.toFixed(1)} mi</b><span class="${x.dMi > 0 ? 'hi' : ''}">${x.dMi >= 0 ? '+' : ''}${x.dMi.toFixed(1)} vs avg</span></div>
+        <div><b>+${x.gain.toLocaleString()} ft</b><span class="${x.dGain > 0 ? 'hi' : ''}">${x.dGain >= 0 ? '+' : ''}${Math.round(x.dGain)} vs avg</span></div>
+        <div><b>${this.fmtDur(longest)}</b><span>longest break</span></div>
+      </div>
+      <div class="lclegs">${x.legs.map(l => `<i style="background:color-mix(in srgb, ${l.color} 24%, transparent);border-top:2px solid ${l.color}">${l.n}</i>`).join('')}</div>
+      ${hardest ? `<div class="lctough">toughest — leg ${hardest.n} · ${hardest.name} (${hardest.lbl.toLowerCase()}, +${hardest.gain.toLocaleString()} ft)</div>` : ''}
+    </div>`;
+  }).join('');
+};
+GUIDE.renderSwimlane = function () {
+  const svg = document.getElementById('swimSvg'), namesBox = document.getElementById('swimNames');
+  if (!svg || !namesBox) return;
+  const LBL = 6, PLOTW = 900 - 16, HEAD = 22, ROWH = 26;
+  const t0 = tAt(0), tEnd = tAt(PLAN.total);
+  const X = (t) => LBL + (t - t0) / (tEnd - t0) * PLOTW;
+  const bottom = HEAD + this.N * ROWH + 4;
+  namesBox.innerHTML = Array.from({length: this.N}, (_, i) => `<div>${this.shortLabel(i + 1)}</div>`).join('');
+  let parts = [];
+  for (let d = 0; d < 3; d++) {
+    const ns = d * 1440 + PLAN.ss, ne = (d + 1) * 1440 + PLAN.sr;
+    const a = Math.max(ns, t0), b = Math.min(ne, tEnd);
+    if (b > a) {
+      parts.push(`<rect x="${X(a).toFixed(1)}" y="${HEAD}" width="${(X(b) - X(a)).toFixed(1)}" height="${bottom - HEAD}" fill="var(--nightshade)"/>`);
+      parts.push(`<text x="${((X(a) + X(b)) / 2).toFixed(1)}" y="15" text-anchor="middle" font-size="9.5" fill="var(--ink2)">🌙 dark — vest + headlamp</text>`);
+    }
+  }
+  for (let t = Math.ceil(t0 / 180) * 180; t < tEnd; t += 180) {
+    const d = Math.floor(t / 1440), h = Math.floor((t % 1440) / 60), major = h === 0 || h === 12;
+    const x = X(t).toFixed(1);
+    parts.push(`<line x1="${x}" y1="${HEAD}" x2="${x}" y2="${bottom}" stroke="${major ? 'var(--axis)' : 'var(--grid)'}" stroke-width="1"/>`);
+    const lbl = h === 0 ? RACE_DAYS_JS[Math.min(d, RACE_DAYS_JS.length - 1)] + ' 12a' : (h % 12 || 12) + (h < 12 ? 'a' : 'p');
+    parts.push(`<text x="${x}" y="${bottom + 14}" text-anchor="middle" font-size="9.5" font-weight="${major ? 700 : 400}" fill="${major ? 'var(--ink2)' : 'var(--muted)'}">${lbl}</text>`);
+  }
+  LEGDATA.forEach(l => {
+    const sSlot = this.legSlot(l.n);
+    if (sSlot > this.N) return;
+    const y = HEAD + (sSlot - 1) * ROWH + 6;
+    const m0 = this.startMi(l.n);
+    const x1 = X(tAt(m0)), w = Math.max(X(tAt(m0 + l.dist)) - x1, 5);
+    parts.push(`<rect x="${x1.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="15" rx="3" fill="${l.color}"/>`);
+    if (w >= 12) parts.push(`<text x="${(x1 + w / 2).toFixed(1)}" y="${y + 11.5}" text-anchor="middle" font-size="8.5" font-weight="700" fill="rgba(0,0,0,.78)">${l.n}</text>`);
+  });
+  svg.innerHTML = parts.join('');
+};
+GUIDE.renderAll = function () { this.renderSide(); this.renderLoadCards(); this.renderSwimlane(); };
+if (document.getElementById('chipRow')) { GUIDE.renderChips(); GUIDE.renderSide(); }
+if (document.getElementById('loadCards')) GUIDE.renderAll();
+if (matchMedia('(min-width: 900px)').matches) { const lt = document.getElementById('legTableD'); if (lt) lt.open = true; }
+if (document.querySelector('.eststart') && !document.querySelector('.eststart').textContent) applyPlan(PLAN.pace, PLAN.start);
 // keep anchor targets clear of the sticky nav
 const topnav = document.querySelector('nav.top');
 function setScrollPad() {
@@ -833,7 +1207,7 @@ def dot_legend():
 def diff_legend():
     return "".join(f'<span class="pill" style="--pc:{c}"><span class="dot"></span><b>{k}</b></span>' for k, c in DIFF.items())
 
-def race_day_panel():
+def race_day_panel(inner=False):
     opts = ""
     for l in LEGS:
         n = l["n"]
@@ -846,9 +1220,7 @@ def race_day_panel():
                  f'Leg {n} · {esc(NAMES[n])} — {esc(RUNNERS.get(slot) or f"slot {slot}")}</option>')
     p = PLAN["pace_min_per_mi"]
     t = round(p * 60); pace = f'{t // 60}:{t % 60:02d}'
-    return f'''<details class="legend" id="raceday">
-  <summary>🏁 Race day — who finishes when?</summary>
-  <div class="panel" style="margin-top:8px">
+    core = f'''<div id="raceday">
     <div class="planctl"><select id="rdLeg">{opts}</select></div>
     <div class="planctl">left the exchange at <input id="rdTime" type="time">
       <button id="rdNow" class="pillbtn">now</button> · running about
@@ -856,10 +1228,12 @@ def race_day_panel():
     <p id="rdOut" class="beta" style="margin:.6em 0">Pick the leg, tap <b>now</b> at the handoff (or type the time), and the ETA shows here.</p>
     <div class="planctl"><button id="rdApply" class="pillbtn">↻ re-time the whole schedule from this handoff</button>
       <span class="tiny">shifts every est. start on this page (and the overview) so this leg's start matches reality — reset with the ⏱ control's reset</span></div>
-  </div>
-</details>'''
+  </div>'''
+    if inner:
+        return core
+    return f'<details class="legend" id="racedayWrap"><summary>🏁 Race day — who finishes when?</summary><div class="panel" style="margin-top:8px">{core}</div></details>'
 
-def how_to_read(compact=False):
+def how_to_read(compact=False, inner=False):
     body = f'''
   <p style="margin:.3em 0"><span class="srcbadge">team beta</span>
   Beta boxes, difficulty ratings, surface breakdowns and commentary are from <b>your team's own experience</b> (fill in <code>builder/data.py</code>).
@@ -871,6 +1245,8 @@ def how_to_read(compact=False):
   🔄 route-update flag. When in doubt, the Strava link wins.</p>
   <div class="legendrow">Difficulty: {diff_legend()} · Surface: <span class="dotc" style="background:{SURF["pavement"]}"></span>pavement
   <span class="dotc" style="background:{SURF["gravel"]}"></span>gravel <span class="dotc" style="background:{SURF["trail"]}"></span>trail</div>'''
+    if inner:
+        return body
     if compact:
         return f'<details class="legend"><summary>How to read this guide (sources + legend)</summary><div class="panel" style="margin-top:8px">{body}</div></details>'
     return f'<div class="panel"><h2>How to read this guide</h2>{body}</div>'
@@ -905,15 +1281,17 @@ def hero(sub=True):
   {tiles}
 </header>'''
 
-def rules_panel(with_qr):
+def rules_panel(with_qr, inner=False):
     L = RACE["links"]
     qrs = "".join(
         f'<div class="qrbox big"><img src="{qr_datauri(u)}" alt="QR {t}"><span>{t}</span></div>'
         for t, u in [("Official course map", L["course_map"]), ("2025 race guide PDF", L["guide_pdf"]),
                      ("Exchange zones (Google Maps)", L["exchanges_map"])]) if with_qr else ""
+    head = '' if inner else '<h2>Night rules &amp; official links <span class="tiny">(🌐 from the official 2025 race guide)</span></h2>'
+    open_div = '<div>' if inner else '<div class="panel" id="rules">'
     return f'''
-<div class="panel" id="rules">
-  <h2>Night rules &amp; official links <span class="tiny">(🌐 from the official 2025 race guide)</span></h2>
+{open_div}
+  {head}
   <p style="margin:.3em 0">🦺 <b>Nighttime hours = 1 hour before sunset through 1 hour after dawn:</b> reflective vest for anyone
   out of the van, headlamp + rear flashing tail light for runners. In-ear headphones are banned (open-ear audio OK).
   Course is marked with black arrows on bright-yellow signs at each turn, plus yellow flags and reflective tags.</p>
@@ -951,68 +1329,238 @@ def nav_tabs(active):
     return (f'<div class="navrow navtabs"><a class="brand" href="index.html">{esc(TEAM_NAME)}</a>'
             f'<a href="index.html"{legs_cls}>Legs</a><a href="overview.html"{over_cls}>Overview</a></div>')
 
+
+# ---------------- redesign components ----------------
+def fmt_pace_str(v):
+    t = round(v * 60); return f"{t // 60}:{t % 60:02d}"
+
+def header_nav(active, with_chips=False):
+    """Two-row sticky header. Row 1 byte-identical across pages except the active item."""
+    items = ""
+    for key, label, href in (("legs", "Legs", "index.html"), ("overview", "Overview", "overview.html"), ("settings", "Settings", "settings.html")):
+        if key == active:
+            items += f'<span>{label}</span>'
+        else:
+            href2 = ("../" if JS_PREFIX.startswith("..") and key == "settings" else "") + href
+            items += f'<a class="hnav" data-page="{key}" href="{href2}">{label}</a>'
+    chips = ""
+    if with_chips:
+        chips = ('<div class="chiprow" id="chipRow"><button class="chip2 on" data-slot="0">All</button>'
+                 + "".join(f'<button class="chip2" data-slot="{s2}">{esc((RUNNERS.get(s2) or f"Slot {s2}").split(" ")[0] if RUNNERS.get(s2) else f"Slot {s2}")}</button>' for s2 in range(1, N_RUNNERS + 1))
+                 + '</div>')
+    return f'''<div class="hdr"><div class="hdr-in">
+  <div class="hdr-row"><span class="hdr-brand brand">{esc(TEAM_NAME)}</span>
+    <span class="hdr-meta">{RACE_ID} · {esc(RACE["dates"].replace("Friday ", "").replace("Saturday ", "").replace(" – ", "–").replace(", 2026", ""))}</span>
+    <nav class="hdr-nav">{items}</nav></div>
+  {chips}
+</div></div>'''
+
+def kpi_band():
+    return f'''<div class="eyebrow" style="margin-top:2px"><b id="kpiTitle">The whole race</b><span>Outback in the Ozarks 2026</span></div>
+<div class="kpis">
+  <div class="kpi"><b id="kpiMi">{TOTAL_MI:,.1f}</b><span>miles</span></div>
+  <div class="kpi"><b id="kpiLegs">{len(LEGS)}</b><span>legs</span></div>
+  <div class="kpi"><b id="kpiGain">{TOTAL_GAIN/1000:.1f}k</b><span>ft climb</span></div>
+</div>'''
+
+def chart_legend_details():
+    g = lambda inner: f'<svg viewBox="0 0 26 18" width="26" height="18">{inner}</svg>'
+    rows = [
+        (g('<rect x="3" y="4" width="7" height="12" rx="1.5" fill="var(--axis)"/><rect x="14" y="9" width="7" height="7" rx="1.5" fill="var(--grid)"/>'),
+         "<b>Taller</b> = longer leg (miles)"),
+        (g('<rect x="2" y="5" width="12" height="11" rx="1.5" fill="var(--axis)"/><rect x="17" y="5" width="5" height="11" rx="1.5" fill="var(--grid)"/>'),
+         "<b>Wider</b> = steeper (ft of climb per mile)"),
+        (g(''.join(f'<rect x="{2+i*6}" y="6" width="4.5" height="10" rx="1" fill="{c}"/>' for i, c in enumerate(DIFF.values()))),
+         "<b>Colour</b> = easy → very hard, team rating where it differs"),
+        (g('<rect x="2" y="3" width="22" height="13" rx="2" fill="var(--nightshade)"/>'),
+         "<b>Shaded band</b> = running in the dark"),
+        (g('<line x1="13" y1="2" x2="13" y2="16" stroke="var(--ink2)" stroke-width="1.4" stroke-dasharray="3 3"/>'),
+         "<b>Dashed</b> = major exchange / van swap"),
+    ]
+    body = "".join(f'<div>{a}</div><div>{b}</div>' for a, b in rows)
+    return (f'<details class="chartlegend" id="chartLegend"><summary>What am I looking at? — how to read this chart</summary>'
+            f'<div class="legendgrid">{body}</div></details>')
+
+def _platform_maps(key, cls=""):
+    st = STARTS.get(str(key))
+    if not st: return ""
+    ll = f'{st["lat"]:.6f},{st["lng"]:.6f}'
+    g = f'https://www.google.com/maps/dir/?api=1&amp;destination={ll}'
+    a = f'https://maps.apple.com/?daddr={ll}'
+    return (f'<span class="mapnav web-only {cls}" data-g="{g}" data-a="{a}">'
+            f'<a class="mapbtn2 mapPrimary" href="{g}" target="_blank" rel="noopener">📍 Google Maps ↗</a>'
+            f'<a class="mapalt mapAlt" href="{a}" target="_blank" rel="noopener">or Apple ↗</a></span>'
+            f'<span class="coords print-only">📍 {ll}</span>')
+
+def race_banner(kind, kicker, name, mi_label, sub, coords_key):
+    cls = "ex" if kind == "exchange" else "se"
+    return (f'<div class="bnr {cls}" id="{kicker.lower().replace(" ", "-")}">'
+            f'<div class="bnrmain"><div class="kick">{esc(kicker)}<i>{mi_label}</i></div>'
+            f'<div class="bname">{esc(name)}</div><div class="bsub">{esc(sub)}</div></div>'
+            f'<div class="bnav">{_platform_maps(coords_key)}</div></div>')
+
+def initials_map():
+    firsts = {}
+    out = {}
+    for s2 in range(1, N_RUNNERS + 1):
+        nm = RUNNERS.get(s2) or f"S{s2}"
+        f0 = nm[0].upper()
+        firsts.setdefault(f0, []).append(s2)
+    for s2 in range(1, N_RUNNERS + 1):
+        nm = RUNNERS.get(s2) or f"S{s2}"
+        f0 = nm[0].upper()
+        out[s2] = nm[:2].capitalize() if len(firsts[f0]) > 1 else f0
+    return out
+
+def leg_row(l):
+    n = l["n"]
+    slot = (n - 1) % N_RUNNERS + 1
+    rating = l["team"] or l["rating"]
+    inits = initials_map()
+    surf = "".join(f'<i style="flex:{v};background:{SURF[k]}"></i>'
+                   for v, k in zip(l["surface"], ("pavement", "gravel", "trail")) if v > 0)
+    team_txt = f'{l["rating"]} → {l["team"]}' if l["team"] else l["rating"]
+    return (f'<div class="lrow" id="lr-{n}" data-n="{n}" data-slot="{slot}" role="button" tabindex="0" aria-expanded="false">'
+            f'<span class="rail" style="background:{DIFF[rating]}"></span>'
+            f'<span class="num">{n:02d}</span>'
+            f'<span class="lname">{esc(NAMES[n])}</span>'
+            f'<span class="lsurf">{surf}</span>'
+            f'<span class="lstats">{fmt_mi(l["dist"])} mi · +{l["gain"]:,}</span>'
+            f'<span class="lrating" style="color:{DIFF[rating]}">{esc(team_txt)}</span>'
+            f'<span class="lstart eststart" data-mi="{l["start_mi"]}"></span>'
+            f'<span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
+            f'</div>')
+
+def leg_expanded(l):
+    n = l["n"]
+    slot = (n - 1) % N_RUNNERS + 1
+    rating = l["team"] or l["rating"]
+    c = DIFF[rating]
+    band_txt = f'{l["rating"]} → {l["team"]}' if l["team"] else l["rating"]
+    inits = initials_map()
+    m = ELEV_META.get(n)
+    foot = ""
+    if m and abs(m["mi"] - l["dist"]) > 0.15:
+        foot = (f'<div class="footnote">🔄 <b>2026 route update:</b> Strava now measures this leg at ~{m["mi"]:.1f} mi '
+                f'(our 2025 data: {fmt_mi(l["dist"])} mi / +{l["gain"]:,} ft). The profile is the current route.</div>')
+    tags = "".join(f'<span class="chip warn">⚠ {esc(t)}</span>' for t in l["tags"])
+    url = strava_url(n)
+    surfmeta = (f'<div class="surfmeta"><span>{esc(l["surface_text"])}</span>'
+                f'<span>mi {fmt_mi(l["start_mi"])} → {fmt_mi(l["end_mi"])}</span></div>')
+    left = (profile_svg(n) + surface_bar(l).replace('<div class="surftext">' + esc(l["surface_text"]) + '</div>', '') + surfmeta)
+    right = (f'<p class="beta2"><span class="src">team beta</span>{esc(l["beta"])}</p>'
+             f'<div class="tagrow">{tags}</div>{foot}'
+             f'<div class="xbtns"><a class="stravabtn web-only" href="{url}" target="_blank" rel="noopener">View route on Strava ↗</a>'
+             f'{_platform_maps(n - 1)}'
+             f'<div class="qrbox print-only"><img src="{qr_datauri(url)}" alt="QR: Strava route leg {n}"><span>Strava route</span></div></div>')
+    return (f'<div class="lx" id="leg-{n}" data-n="{n}" data-slot="{slot}">'
+            f'<div class="band" style="background:color-mix(in srgb, {c} 22%, transparent);border-bottom:1px solid color-mix(in srgb, {c} 40%, transparent)">'
+            f'<span style="color:{c}">{esc(band_txt)}</span>'
+            f'<span class="bandmeta">mi {fmt_mi(l["start_mi"])} → {fmt_mi(l["end_mi"])}</span><i>difficulty</i></div>'
+            f'<div class="xbody">'
+            f'<div class="nums"><div><b>{fmt_mi(l["dist"])}</b><span>mi</span></div>'
+            f'<div><b>+{l["gain"]:,}</b><span>ft</span></div>'
+            f'<div><b>{ftpmi(l):.0f}</b><span>ft/mi</span></div></div>'
+            f'<div class="assign"><span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
+            f'<b class="runner-name" data-slot="{slot}">{esc(RUNNERS.get(slot) or f"Slot {slot}")}</b>'
+            f'<span class="when"><span class="eststart" data-mi="{l["start_mi"]}"></span>'
+            f' · <span class="estdur" data-mi="{l["start_mi"]}" data-dist="{l["dist"]}"></span></span></div>'
+            f'<div class="xgrid"><div>{left}</div><div class="xright">{right}</div></div>'
+            f'</div></div>')
+
+def legs_stream():
+    out = [race_banner("start", "Start line", START_LABEL.title() if START_LABEL.isupper() else START_LABEL,
+                       "mi 0", RACE["start"].split(",", 1)[-1].strip() if "," in RACE["start"] else "", START_KEY)]
+    done_mi = LEGS[0]["start_mi"]
+    for i, sec in enumerate(SECTIONS):
+        a, b = sec["legs"]
+        for l in LEGS:
+            if a <= l["n"] <= b:
+                out.append(leg_row(l))
+                out.append(leg_expanded(l))
+        last = [x for x in LEGS if x["n"] == b][0]
+        secmi = sum(x["dist"] for x in LEGS if a <= x["n"] <= b)
+        secgain = sum(x["gain"] for x in LEGS if a <= x["n"] <= b)
+        sub = f'legs {a}–{b} done · {secmi:.1f} mi · +{secgain:,} ft'
+        if b in EXCHANGES:
+            out.append(race_banner("exchange", f"Major exchange {i + 1}", EXCHANGES[b]["name"],
+                                   f'mi {fmt_mi(last["end_mi"])}', sub, b))
+        else:
+            out.append(race_banner("finish", "Finish line", RACE["finish"].split(",")[0],
+                                   f'mi {fmt_mi(TOTAL_MI)}', sub, 36 if RACE_ID == "205" else 36))
+    return "".join(out)
+
+def exchange_jump():
+    rows = ['<div class="exjump rail-desktop-only"><div class="mylabel" style="margin:6px 9px 2px">Jump to an exchange</div>']
+    for i, sec in enumerate(SECTIONS):
+        a, b = sec["legs"]
+        last = [x for x in LEGS if x["n"] == b][0]
+        if b in EXCHANGES:
+            rows.append(f'<a href="#major-exchange-{i+1}"><span class="k">Ex {i+1}</span> {esc(EXCHANGES[b]["name"].split("—")[0].strip())}<span class="m">mi {fmt_mi(last["end_mi"])}</span></a>')
+    rows.append(f'<a href="#finish-line"><span class="k">Finish</span> {esc(RACE["finish"].split(",")[0])}<span class="m">mi {fmt_mi(TOTAL_MI)}</span></a></div>')
+    return "".join(rows)
+
 def build_index():
-    jump = ""
-    for l in LEGS:
-        slot = (l["n"] - 1) % N_RUNNERS + 1
-        jump += (f'<a href="#leg-{l["n"]}" data-slot="{slot}" title="{esc(NAMES[l["n"]])}">'
-                 f'{l["n"]}<span class="d" style="background:{DIFF[l["rating"]]}"></span></a>')
-    filters = '<button class="filterbtn active" data-slot="0">All runners</button>' + "".join(
-        f'<button class="filterbtn" data-slot="{s}">{esc(slot_label(s))}</button>' for s in range(1, N_RUNNERS + 1))
-    # the runner filter only appears once a roster is configured in data.py
-    filter_row = f'<div class="navrow"><span class="rowlabel">Runner</span>{filters}</div>' if RUNNERS else ""
-    nav = f'''<nav class="top">
-  {nav_tabs("legs")}
-  {filter_row}
-  <div class="jumprow"><span class="rowlabel" style="align-self:center;margin-right:4px">Leg</span>{jump}</div>
-</nav>'''
-    sections_html = "".join(section_block(i, s) for i, s in enumerate(SECTIONS))
+    nav = header_nav("legs", with_chips=True)
     body = f'''
-{hero(sub=False)}
-<div class="panel" id="course">
+<div class="shell"><div class="pagegrid">
+<div class="rail">
+  <div>{kpi_band()}</div>
+  <div id="myLegsBlock"></div>
+  {exchange_jump()}
+</div>
+<div class="maincol">
+<div class="chartcard" id="course">
   <h2>The whole course at a glance</h2>
+  <div class="sub">{len(LEGS)} legs in race order — tap one to jump.</div>
   {skyline_svg("")}
-  <div class="legendrow">Bar height = leg distance (mi) · bar width = steepness (ft/mi) · tap a bar to open that leg</div>
-  <div class="legendrow">Color = difficulty, team-adjusted: {dot_legend()}</div>
+  {chart_legend_details()}
   {plan_ctl()}
 </div>
-{how_to_read(compact=True)}
-{race_day_panel()}
-{sections_html}'''
+<div id="myLegsBlockPhone"></div>
+<div class="allhdr"><b>All {len(LEGS)} legs</b><span>tap a leg to open it</span></div>
+{legs_stream()}
+<details class="legend" style="margin-top:20px"><summary>🏁 Race day — who finishes when?</summary>
+  <div class="panel" style="margin-top:8px">{race_day_panel(inner=True)}</div>
+</details>
+<details class="legend"><summary>How to read this guide (sources + legend)</summary>
+  <div class="panel" style="margin-top:8px">{how_to_read(inner=True)}</div>
+</details>
+</div>
+</div></div>'''
     return page(f"{TEAM_NAME} — Legs", nav, body, runners_js())
 
 def build_overview():
-    nr_options = "".join(f'<option value="{k}"{" selected" if k == N_RUNNERS else ""}>{k}</option>' for k in range(1, 13))
-    nav = f'''<nav class="top">
-  {nav_tabs("overview")}
-  <div class="navrow"><span class="rowlabel">Jump to</span><a href="#index">All legs</a><a href="#map">Map</a><a href="#plan">Planner</a><a href="#watch">Watch</a><a href="#rules">Rules</a></div>
-</nav>'''
-    pills = ('<div class="pillrow web-only"><button class="pillbtn idxbtn active" data-slot="0">All legs</button>'
-             + "".join(f'<button class="pillbtn idxbtn" data-slot="{s}">{esc(slot_label(s))}</button>' for s in range(1, N_RUNNERS + 1))
-             + '</div>') if RUNNERS else ""
+    nav = header_nav("overview", with_chips=False)
     body = f'''
-{hero()}
-<div class="panel" id="index">
-  <h2>Every leg on one page</h2>
-  {pills}
-  {index_table()}
-  {plan_ctl()}
-</div>
-<div class="panel" id="map">
-  <h2>Full course map <span class="tiny">(the race's official all-legs Strava route)</span></h2>
+<div class="shell">
+<h1 class="ovh1">Who's carrying what</h1>
+<p class="ovsub">Heaviest load first. The index weighs miles, climb and leg ratings equally, scaled so the toughest slot is 100. Change who runs what in <a href="settings.html">Settings</a>.</p>
+<div class="loadcards" id="loadCards"></div>
+
+<h2 class="ovh2">When does everyone run?</h2>
+<p class="ovsub">One row per runner, left to right across the whole race. The shaded stretch is after dark — swipe the timeline to read the clock.</p>
+<div class="swimcard"><div class="swimnames" id="swimNames"></div>
+  <div class="swimscroll"><svg id="swimSvg" width="900" height="200" viewBox="0 0 900 200"></svg></div></div>
+<div class="swimlegend"><span>bar = one leg · width = time on course · number = leg</span>{dot_legend()}</div>
+
+<h2 class="ovh2">The whole course</h2>
+<div class="chartcard" id="map" style="margin-top:8px">
   <div class="strava-embed-placeholder" data-embed-type="route" data-embed-id="3386113643310609494" data-style="standard" data-map-hash="7.42/36.048/-93.997" data-club-id="1634354" data-from-embed="true"></div>
   <script src="https://strava-embeds.com/embed.js"></script>
-  <p class="tiny" style="margin:.5em 0 0">Embed not loading? <a href="https://www.strava.com/routes/3386113643310609494" target="_blank" rel="noopener">Open the all-legs route on Strava ↗</a></p>
+  <p class="tiny" style="margin:.5em 0 0"><a href="https://www.strava.com/routes/3386113643310609494" target="_blank" rel="noopener">Open the full route on Strava ↗</a></p>
 </div>
-<div class="panel" id="plan">
-  <h2>Runner planner — who takes which rotation slot?</h2>
-  <p class="tiny" style="margin:.2em 0 .6em" id="planNote">With {N_RUNNERS} runners, slot <i>s</i> runs legs <i>s, s+{N_RUNNERS}, s+{2*N_RUNNERS}, …</i></p>
-  <div class="planctl web-only">Runners on your team: <select id="nrSel">{nr_options}</select>
-    <span class="tiny">what-if only — it doesn't change any team's real setup</span></div>
-  {planner_table()}
+
+<details class="ovd" id="legTableD"><summary>Every leg on one page <span class="tiny">table view</span></summary>
+  <div class="ovdbody" style="overflow-x:auto">{index_table()}</div>
+</details>
+
+<h2 class="ovh2">Before you go</h2>
+<div class="ovtwo">
+<details class="ovd"><summary>⌚ Get your legs on your Garmin watch</summary><div class="ovdbody">{watch_panel(inner=True)}</div></details>
+<details class="ovd"><summary>🦺 Night rules &amp; official links</summary><div class="ovdbody">{rules_panel(with_qr=False, inner=True)}</div></details>
 </div>
-{watch_panel()}
-{rules_panel(with_qr=False)}'''
+</div>'''
     return page(f"{TEAM_NAME} — Overview", nav, body, runners_js(), wide=True)
 
 def build_print():

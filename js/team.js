@@ -25,11 +25,11 @@
     for (const l of legs) {
       const card = $(`#leg-${l.n}`);
       if (!card) continue;
-      const beta = card.querySelector('.beta');
+      const beta = card.querySelector('.beta2') || card.querySelector('.beta');
       if (beta && l.beta) beta.innerHTML = '<span class="src">team beta</span>' + escHtml(l.beta);
       const tagrow = card.querySelector('.tagrow');
       if (tagrow) tagrow.innerHTML = (l.tags || []).map(t => `<span class="chip warn">⚠ ${escHtml(t)}</span>`).join('');
-      const surf = card.querySelector('.surftext');
+      const surf = card.querySelector('.surfmeta span') || card.querySelector('.surftext');
       if (surf && l.surface_text) surf.textContent = l.surface_text;
     }
   }
@@ -62,37 +62,35 @@
     const kicker = $('.kicker'); if (kicker) kicker.textContent = `${team.name.toUpperCase()} · RACE GUIDE`;
     document.title = `${team.name} — ${document.title.split('—').pop().trim()}`;
 
-    // per-leg slot + runner name on cards, jump chips, chart bars, table rows
-    $$('.leg').forEach(el => {
-      const n = Number(el.id.replace('leg-', ''));
+    // feed the shared UI state, then retag every leg element with its real slot
+    if (window.GUIDE) {
+      GUIDE.N = N;
+      GUIDE.names = Object.assign({}, names);
+      GUIDE.slotOf = Object.assign({}, slotOf);
+      GUIDE.paces = Object.assign({}, paceBySlot);
+    }
+    $$('.lrow, .lx').forEach(el => {
+      const n = Number(el.dataset.n);
+      if (!n) return;
       el.dataset.slot = legSlot(n);
-      const rn = el.querySelector('.runner-name');
-      if (rn) rn.innerHTML = `<b>${escHtml(names[legSlot(n)] || '—')}</b>`;
     });
-    $$('.jumprow a').forEach(el => {
-      const n = Number((el.getAttribute('href') || '').replace('#leg-', ''));
-      if (n) el.dataset.slot = legSlot(n);
+    $$('.avslot').forEach(el => {
+      const holder = el.closest('[data-n]');
+      let sSlot = holder ? legSlot(Number(holder.dataset.n)) : Number(el.dataset.slot);
+      el.dataset.slot = sSlot;
+      if (window.GUIDE) el.textContent = GUIDE.initials(sSlot);
+    });
+    $$('.lx .assign').forEach(box => {
+      const n = Number(box.closest('.lx').dataset.n);
+      const rn = box.querySelector('.runner-name');
+      if (rn) { rn.dataset.slot = legSlot(n); rn.textContent = names[legSlot(n)] || 'Slot ' + legSlot(n); }
     });
     $$('.skb').forEach(el => {
       const n = Number((el.getAttribute('href') || '').split('#leg-').pop());
       if (n) el.dataset.slot = legSlot(n);
     });
-    $$('#index tbody tr[data-n]').forEach(tr => { tr.dataset.slot = legSlot(Number(tr.dataset.n)); });
-
-    // runner filter bar (legs page): rebuild for this team
-    const navrows = $$('nav.top .navrow');
-    if ($('.jumprow') && typeof filterSlot === 'function') {
-      let row = $('#teamFilterRow');
-      if (!row) {
-        row = document.createElement('div');
-        row.className = 'navrow'; row.id = 'teamFilterRow';
-        navrows[0].after(row);
-      }
-      row.innerHTML = '<span class="rowlabel">Runner</span>' +
-        `<button class="filterbtn active" data-slot="0">All runners</button>` +
-        Array.from({length: N}, (_, i) => `<button class="filterbtn" data-slot="${i + 1}">${escHtml(label(i + 1))}</button>`).join('');
-      row.querySelectorAll('.filterbtn').forEach(b => b.addEventListener('click', () => filterSlot(Number(b.dataset.slot), b)));
-    }
+    $$('#legTableD tbody tr[data-n], #index tbody tr[data-n]').forEach(tr => { tr.dataset.slot = legSlot(Number(tr.dataset.n)); });
+    if (window.GUIDE && document.getElementById('chipRow')) GUIDE.renderChips();
 
     // per-runner piecewise schedule: each leg takes dist × its runner's pace
     // (missing runner paces fall back to the team average)
@@ -145,51 +143,8 @@
       setP();
     }
 
-    // team pages: hide the what-if size selector — team size lives in settings
-    const nrSel = $('#nrSel');
-    if (nrSel && nrSel.closest('.planctl')) nrSel.closest('.planctl').style.display = 'none';
-
-    // planner (overview): recompute with real assignments
-    const tb = $('#plantbody');
-    if (tb && typeof LEGDATA !== 'undefined') {
-      const slots = [];
-      for (let s = 1; s <= N; s++) {
-        const legs = LEGDATA.filter(l => legSlot(l.n) === s);
-        if (!legs.length) { slots.push({s, legs, mi: 0, gain: 0, pts: 0}); continue; }
-        slots.push({s, legs,
-          mi: legs.reduce((a, l) => a + l.dist, 0),
-          gain: legs.reduce((a, l) => a + l.gain, 0),
-          pts: legs.reduce((a, l) => a + l.pts, 0)});
-      }
-      const am = slots.reduce((a, x) => a + x.mi, 0) / N || 1, ag = slots.reduce((a, x) => a + x.gain, 0) / N || 1,
-            ap = slots.reduce((a, x) => a + x.pts, 0) / N || 1;
-      slots.forEach(x => x.score = x.mi / am + x.gain / ag + x.pts / ap);
-      const top = Math.max(...slots.map(x => x.score)) || 1;
-      slots.sort((a, b) => b.score - a.score);
-      tb.innerHTML = slots.map((x, i) => {
-        const idx = Math.round(100 * x.score / top);
-        const hardest = x.legs.length ? x.legs.reduce((a, l) => (l.pts > a.pts || (l.pts === a.pts && l.gain > a.gain)) ? l : a) : null;
-        const dots = x.legs.map(l => `<span class="dotc" style="background:${l.color}" title="Leg ${l.n} · ${escHtml(l.name)} · ${l.lbl}"></span>`).join('');
-        return `<tr><td class="c"><b>${i + 1}</b></td><td class="c"><b>${x.s}</b></td>` +
-          `<td class="runner-name"><b>${escHtml(names[x.s] || '—')}</b></td>` +
-          `<td>${x.legs.map(l => l.n).join(', ')}</td><td class="r">${x.mi.toFixed(1)}</td>` +
-          `<td class="r">${x.gain.toLocaleString()}</td><td class="nowrap">${dots}</td>` +
-          `<td><div class="meterwrap"><div class="meter"><div class="fill" style="width:${idx}%"></div></div><span class="mval">${idx}</span></div></td>` +
-          (hardest ? `<td>Leg ${hardest.n} · ${escHtml(hardest.name)} (${hardest.lbl} · +${hardest.gain.toLocaleString()} ft)</td>` : '<td>—</td>');
-      }).join('');
-    }
-
-    // nav: settings link for this team
-    const tabs = $('.navtabs');
-    if (tabs && !$('#settingsTab')) {
-      const a = document.createElement('a');
-      a.id = 'settingsTab';
-      a.href = (typeof RACE_ID !== 'undefined' && RACE_ID === '65' ? '../' : '') + 'settings.html?team=' + encodeURIComponent(slug);
-      a.textContent = 'Team settings';
-      tabs.appendChild(a);
-    }
-    // keep ?team= on internal nav links
-    $$('nav.top a[href$="index.html"], nav.top a[href$="overview.html"]').forEach(a => {
+    // carry ?team= on the header nav
+    $$('.hdr-nav a').forEach(a => {
       a.href = a.getAttribute('href') + '?team=' + encodeURIComponent(slug);
     });
   }

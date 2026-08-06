@@ -14,6 +14,7 @@
     --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12); --card:#232322; --accent:#3987e5;
     --nightshade:rgba(140,160,255,.18) } }
 * { box-sizing:border-box }
+:root { --mono: ui-monospace, SFMono-Regular, Menlo, monospace }
 html { scroll-behavior:smooth }
 body { margin:0; background:var(--page); color:var(--ink);
   font-family: system-ui, -apple-system, "Segoe UI", "Liberation Sans", "DejaVu Sans", sans-serif;
@@ -118,6 +119,173 @@ td.bar { background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%,
   border:1px solid var(--grid); border-radius:6px; padding:3px 6px; max-width:100% }
 .planctl #paceIn { width:52px; text-align:center }
 .planctl .pillbtn { padding:3px 9px }
+/* ---------- redesign: header ---------- */
+.hdr { position:sticky; top:0; z-index:9; background:color-mix(in srgb, var(--page) 94%, transparent);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:1px solid var(--grid); padding:9px 14px }
+.hdr-in { max-width:1064px; margin:0 auto }
+.hdr-row { display:flex; align-items:center; gap:8px }
+.hdr-brand { font-weight:800; font-size:13px }
+.hdr-meta { font:11px var(--mono); color:var(--muted) }
+.hdr-nav { margin-left:auto; display:flex; gap:14px; align-items:center }
+.hdr-nav a, .hdr-nav span { font:700 12px system-ui; color:var(--ink2); text-decoration:none }
+.hdr-nav span { color:var(--ink); border-bottom:2px solid var(--accent); padding-bottom:1px }
+.chiprow { display:flex; gap:6px; margin-top:9px; overflow-x:auto; scrollbar-width:none }
+.chiprow::-webkit-scrollbar { display:none }
+.chip2 { flex:none; border:1px solid var(--grid); background:transparent; color:var(--ink2);
+  font:600 12px system-ui; padding:5px 11px; border-radius:99px; cursor:pointer;
+  -webkit-appearance:none; appearance:none }
+.chip2.on { background:var(--ink); border-color:var(--ink); color:var(--page) }
+/* ---------- redesign: page shell ---------- */
+.shell { max-width:1064px; margin:0 auto; padding:16px 14px 40px }
+.eyebrow { display:flex; align-items:baseline; gap:8px }
+.eyebrow b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--accent) }
+.eyebrow span { margin-left:auto; font:11px var(--mono); color:var(--muted) }
+.kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:7px }
+.kpi { background:var(--card); border:1px solid var(--ring); border-radius:12px; padding:11px 11px 10px }
+.kpi b { display:block; font-weight:700; font-size:22px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
+.kpi span { display:block; font:600 9.5px system-ui; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-top:2px }
+/* ---------- redesign: chart card ---------- */
+.chartcard { background:var(--card); border:1px solid var(--ring); border-radius:14px; padding:13px 12px 12px; margin:16px 0 0 }
+.chartcard h2 { font-size:14px; letter-spacing:-.01em; font-weight:700 }
+.chartcard .sub { font-size:12px; color:var(--ink2); margin:2px 0 8px }
+.skb.dim { opacity:.18 }
+details.chartlegend { margin-top:8px }
+details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:var(--ink2) }
+.legendgrid { display:grid; grid-template-columns:auto 1fr; gap:8px 10px; align-items:center; margin-top:9px; font-size:12px; color:var(--ink2) }
+/* ---------- redesign: my legs ---------- */
+.mylabel { font:11px system-ui; color:var(--muted); margin:16px 0 7px }
+.minigrid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px }
+.mini { background:var(--card); border:1px solid var(--ring); border-radius:10px; padding:8px 9px 9px;
+  color:var(--ink); min-width:0; text-decoration:none; display:block }
+.mini .r1 { display:flex; justify-content:space-between; font:700 11px var(--mono); color:var(--muted) }
+.mini .nm, .mini .d { display:block }
+.mini .r1 i { font-style:normal; font-weight:400; font-size:11px }
+.mini .nm { font:600 12px system-ui; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:2px 0 }
+.mini .d { font:11.5px var(--mono); color:var(--ink2) }
+.morebtn { grid-column:1/-1; border:1px dashed var(--axis); background:none; color:var(--ink2);
+  font:600 11.5px system-ui; border-radius:10px; padding:8px; cursor:pointer; -webkit-appearance:none; appearance:none }
+/* ---------- redesign: banners ---------- */
+.bnr { display:flex; gap:9px; align-items:center; padding:11px 12px; border-radius:12px;
+  border:1px solid var(--ring); margin:14px 0 6px }
+.bnr.ex { border-left:3px solid var(--accent); background:color-mix(in srgb, var(--accent) 8%, transparent) }
+.bnr.se { border-left:3px solid var(--ink2); background:var(--surface) }
+.bnr .bnrmain { flex:1; min-width:0 }
+.bnr .kick { display:flex; justify-content:space-between; font:800 9.5px system-ui; letter-spacing:.13em; text-transform:uppercase }
+.bnr.ex .kick { color:var(--accent) } .bnr.se .kick { color:var(--ink2) }
+.bnr .kick i { font:10.5px var(--mono); font-style:normal; color:var(--muted); letter-spacing:0; text-transform:none }
+.bnr .bname { font-weight:700; font-size:14.5px; letter-spacing:-.015em }
+.bnr .bsub { font:10.5px var(--mono); color:var(--muted) }
+.bnr .bnav { text-align:right; flex:none }
+.mapbtn2 { display:inline-block; background:var(--card); border:1px solid var(--grid); border-radius:9px;
+  padding:7px 11px; font:700 12px system-ui; color:var(--ink); text-decoration:none; white-space:nowrap }
+.mapalt { display:block; font:11px system-ui; color:var(--muted); text-decoration:none; margin-top:3px }
+.mapalt:hover { color:var(--ink2) }
+/* ---------- redesign: leg rows + expanded card ---------- */
+.allhdr { display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 2px }
+.allhdr b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--muted) }
+.allhdr span { font:11px system-ui; color:var(--muted) }
+.lrow { display:flex; align-items:center; gap:9px; padding:9px 10px; margin:5px 0; border-radius:11px;
+  cursor:pointer; border:1px solid transparent }
+.lrow .rail { width:3px; height:26px; border-radius:2px; flex:none }
+.lrow .num { font:700 12px var(--mono); color:var(--muted); width:20px; flex:none }
+.lrow .lname { font:600 13.5px system-ui; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0 }
+.lrow .lstats { font:11.5px var(--mono); color:var(--ink2); font-variant-numeric:tabular-nums; white-space:nowrap }
+.lrow .av { width:22px; height:22px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+  font:700 10px system-ui; background:var(--surface); color:var(--ink2); border:1px solid var(--grid) }
+.lrow.mine { background:color-mix(in srgb, var(--accent) 12%, transparent);
+  border:1px solid color-mix(in srgb, var(--accent) 34%, transparent) }
+.lrow.mine .av { background:var(--accent); color:#fff; border-color:var(--accent) }
+.lrow.openrow { background:var(--card); border:1px solid var(--ring) }
+.lrow .lsurf, .lrow .lrating, .lrow .lstart { display:none }
+.lx { display:none; background:var(--card); border:1px solid var(--ring); border-radius:12px; overflow:hidden; margin:0 0 8px }
+.lx.open { display:block }
+.lx .band { display:flex; justify-content:space-between; padding:7px 13px; font:800 10px system-ui; letter-spacing:.12em; text-transform:uppercase }
+.lx .band i { font:10px var(--mono); font-style:normal; color:var(--muted); letter-spacing:0; text-transform:none }
+.lx .bandmeta { font:10px var(--mono); color:var(--muted); letter-spacing:0; text-transform:none; display:none }
+.lx .xbody { padding:12px 13px 13px }
+.lx .nums { display:flex; gap:18px; margin-bottom:10px }
+.lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
+.lx .nums span { font-size:11px; color:var(--muted); margin-left:3px }
+.lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
+  background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
+.lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center; font:700 10px system-ui; flex:none }
+.lx .assign b { font:700 12.5px system-ui }
+.lx .assign .when { margin-left:auto; font:11.5px var(--mono); color:var(--ink2); white-space:nowrap }
+.lx .surfmeta { display:flex; justify-content:space-between; font:10.5px var(--mono); color:var(--muted); margin-top:3px }
+.lx .beta2 { font-size:14px; line-height:1.5; color:var(--ink2); text-wrap:pretty; margin:10px 0 }
+.lx .beta2 .src { margin-right:7px }
+.lx .xgrid { display:block }
+.lx .xbtns { display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap; margin-top:10px }
+/* ---------- redesign: desktop ---------- */
+@media (min-width: 900px) {
+  .hdr { padding:11px 14px }
+  .hdr-brand { font-size:15px }
+  .hdr-nav a, .hdr-nav span { font-size:13px }
+  .shell { padding:22px 28px 48px }
+  .pagegrid { display:grid; grid-template-columns:308px 1fr; gap:30px; align-items:start }
+  .rail { position:sticky; top:76px; display:flex; flex-direction:column; gap:16px }
+  .minigrid { grid-template-columns:repeat(2,1fr) }
+  .legendgrid { grid-template-columns:auto 1fr auto 1fr }
+  .exjump { background:var(--card); border:1px solid var(--ring); border-radius:12px; padding:6px 4px }
+  .exjump a { display:flex; gap:8px; align-items:baseline; padding:7px 9px; border-radius:8px; text-decoration:none; color:var(--ink); font-size:13px; white-space:nowrap; overflow:hidden }
+.exjump a > :nth-child(2) { overflow:hidden; text-overflow:ellipsis }
+  .exjump a:hover { background:var(--surface) }
+  .exjump .k { font:700 10.5px var(--mono); color:var(--accent) }
+  .exjump .m { margin-left:auto; font:10.5px var(--mono); color:var(--muted) }
+  .lrow .lsurf { display:flex; width:78px; height:6px; border-radius:3px; overflow:hidden; gap:1px; flex:none }
+  .lrow .lsurf i { height:100% }
+  .lrow .lrating { display:block; width:96px; font:600 10.5px system-ui; flex:none }
+  .lrow .lstart { display:block; width:104px; font:11px var(--mono); color:var(--ink2); text-align:right; flex:none }
+  .lrow .lname { font-size:14.5px }
+  .lx .xgrid { display:grid; grid-template-columns:1.15fr 1fr; gap:20px }
+  .lx .xright { display:flex; flex-direction:column }
+  .lx .xbtns { margin-top:auto; padding-top:10px }
+  .lx .bandmeta { display:inline }
+}
+@media (max-width: 899px) { .exjump { display:none } .rail-desktop-only { display:none } #myLegsBlock { display:none } }
+@media (min-width: 900px) { #myLegsBlockPhone { display:none } }
+/* ---------- redesign: overview ---------- */
+.ovh1 { font-weight:800; font-size:24px; letter-spacing:-.028em; margin:4px 0 2px }
+.ovh2 { font-weight:800; font-size:20px; letter-spacing:-.025em; margin:26px 0 2px }
+.ovsub { font-size:12.5px; line-height:1.5; color:var(--ink2); margin:0 0 10px }
+.loadcards { display:flex; flex-direction:column; gap:7px }
+.loadcard { background:var(--card); border:1px solid var(--ring); border-radius:13px; overflow:hidden }
+.loadcard .lchead { display:flex; align-items:center; gap:8px; padding:10px 12px 7px }
+.loadcard .rk { width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font:700 11px var(--mono); background:var(--surface); color:var(--muted); border:1px solid var(--grid); flex:none }
+.loadcard .lcname { font:700 15px system-ui }
+.loadcard .lcidx { margin-left:auto; font:700 15px var(--mono) }
+.loadcard .lcidx i { font:400 10.5px var(--mono); color:var(--muted); font-style:normal; margin-left:4px }
+.loadcard .lcbar { height:5px; background:var(--surface) }
+.loadcard .lcbar i { display:block; height:100% }
+.loadcard .lcbody { display:flex; gap:18px; padding:9px 12px 8px }
+.loadcard .lcbody b { display:block; font-weight:700; font-size:17px; letter-spacing:-.02em; font-variant-numeric:tabular-nums }
+.loadcard .lcbody span { display:block; font:10.5px var(--mono); color:var(--muted) }
+.loadcard .lcbody .hi { color:#ec835a }
+.loadcard .lclegs { display:flex; gap:3px; padding:0 12px }
+.loadcard .lclegs i { flex:1; text-align:center; font:700 10.5px var(--mono); padding:3px 0 4px;
+  border-radius:0 0 5px 5px; font-style:normal }
+.loadcard .lctough { font:10.5px var(--mono); color:var(--muted); padding:6px 12px 10px }
+.swimcard { background:var(--card); border:1px solid var(--ring); border-radius:14px; padding:12px; display:flex }
+.swimnames { flex:none; width:66px; padding-top:22px }
+.swimnames div { height:26px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;
+  font:700 11px system-ui; color:var(--ink2); white-space:nowrap; overflow:hidden }
+.swimscroll { overflow-x:auto; flex:1 }
+.swimscroll svg { display:block }
+.swimlegend { display:flex; gap:12px; flex-wrap:wrap; font-size:11.5px; color:var(--muted); margin-top:8px; align-items:center }
+details.ovd { margin:10px 0 }
+details.ovd > summary { cursor:pointer; background:var(--card); border:1px solid var(--ring); border-radius:12px;
+  padding:12px 14px; font:700 14px system-ui; list-style:none }
+details.ovd > summary::-webkit-details-marker { display:none }
+details.ovd > summary:after { content:'▾'; float:right; color:var(--muted) }
+details.ovd[open] > summary:after { content:'▴' }
+details.ovd .ovdbody { padding:12px 2px 2px }
+@media (min-width: 900px) {
+  .loadcards { display:grid; grid-template-columns:repeat(3,1fr) }
+  .swimnames { width:78px }
+  .ovtwo { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start }
+}
 .footnote { font-size:11.5px; color:var(--ink2); background:var(--surface); border:1px dashed var(--axis);
   border-radius:7px; padding:5px 9px; margin-top:6px }
 .legfoot { margin-top:9px; display:flex; flex-wrap:wrap; gap:7px; align-items:center }
@@ -175,52 +343,42 @@ footer.colophon { margin-top:36px; font-size:11.5px; color:var(--muted); border-
 }
 </style></head>
 <body>
-<nav class="top">
-  <div class="navrow navtabs"><a class="brand" href="index.html">OTO 205</a><a href="index.html">Legs</a><a href="overview.html" class="active">Overview</a></div>
-  <div class="navrow"><span class="rowlabel">Jump to</span><a href="#index">All legs</a><a href="#map">Map</a><a href="#plan">Planner</a><a href="#watch">Watch</a><a href="#rules">Rules</a></div>
-</nav>
+<div class="hdr"><div class="hdr-in">
+  <div class="hdr-row"><span class="hdr-brand brand">OTO 205</span>
+    <span class="hdr-meta">205 · Oct 9–Oct 10</span>
+    <nav class="hdr-nav"><a class="hnav" data-page="legs" href="index.html">Legs</a><span>Overview</span><a class="hnav" data-page="settings" href="settings.html">Settings</a></nav></div>
+  
+</div></div>
 <div class="wrap wide" id="top">
 
+<div class="shell">
+<h1 class="ovh1">Who's carrying what</h1>
+<p class="ovsub">Heaviest load first. The index weighs miles, climb and leg ratings equally, scaled so the toughest slot is 100. Change who runs what in <a href="settings.html">Settings</a>.</p>
+<div class="loadcards" id="loadCards"></div>
 
-<header class="hero">
-  <div class="kicker">OTO 205 · RACE GUIDE</div>
-  <h1>Outback in the Ozarks · 205-Mile Relay</h1>
-  <div class="sub">Friday Oct 9 – Saturday Oct 10, 2026 · Lake Leatherwood City Ballpark, Eureka Springs, AR → Prairie Grove Battlefield State Park, Prairie Grove, AR</div>
-  
-  <div class="statgrid">
-    <div class="tile"><b>207.2</b><span>miles</span></div>
-    <div class="tile"><b>36</b><span>legs</span></div>
-    <div class="tile"><b>16,051</b><span>ft of climbing</span></div>
-    <div class="tile"><b>6</b><span>runners · 6 legs each</span></div>
-    <div class="tile"><b>5</b><span>major exchanges</span></div>
-  </div>
-</header>
-<div class="panel" id="index">
-  <h2>Every leg on one page</h2>
-  
-  <div class="tscroll"><table class="tbl small">
-<thead><tr><th>#</th><th>Leg</th><th class="r">Mi</th><th class="r">Gain</th><th class="r">ft/mi</th><th>Surface</th><th>Rating (official → team)</th><th class="r">Starts @ mi</th><th>Est start</th></tr></thead>
-<tbody><tr data-slot="1" data-n="1"><td class="c">1</td><td><a href="index.html#leg-1">Didgeridoo Dash</a></td><td class="r bar" style="--p:73%">6.35</td><td class="r bar" style="--p:79%">+755</td><td class="r bar" style="--p:61%">119</td><td>P33% / G33% / T34%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Very Hard</td><td class="r">0</td><td class="nowrap"><span class="eststart nowrap" data-mi="0.0">Fri 6:00 AM 🌙</span></td></tr><tr data-slot="2" data-n="2"><td class="c">2</td><td><a href="index.html#leg-2">Rockhouse Roll</a></td><td class="r bar" style="--p:86%">7.53</td><td class="r bar" style="--p:59%">+561</td><td class="r bar" style="--p:38%">75</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">6.35</td><td class="nowrap"><span class="eststart nowrap" data-mi="6.35">Fri 7:04 AM 🌅</span></td></tr><tr data-slot="3" data-n="3"><td class="c">3</td><td><a href="index.html#leg-3">Koala Holler</a></td><td class="r bar" style="--p:78%">6.81</td><td class="r bar" style="--p:64%">+609</td><td class="r bar" style="--p:46%">89</td><td>P25% / G38% / T37%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">13.88</td><td class="nowrap"><span class="eststart nowrap" data-mi="13.88">Fri 8:19 AM ☀️</span></td></tr><tr data-slot="4" data-n="4"><td class="c">4</td><td><a href="index.html#leg-4">Hot Diggity!</a></td><td class="r bar" style="--p:61%">5.33</td><td class="r bar" style="--p:13%">+126</td><td class="r bar" style="--p:12%">24</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">20.69</td><td class="nowrap"><span class="eststart nowrap" data-mi="20.69">Fri 9:27 AM ☀️</span></td></tr><tr data-slot="5" data-n="5"><td class="c">5</td><td><a href="index.html#leg-5">Wobble to Cobble</a></td><td class="r bar" style="--p:74%">6.49</td><td class="r bar" style="--p:94%">+896</td><td class="r bar" style="--p:71%">138</td><td>G100%</td><td><span class="dotc" style="background:#d03b3b"></span>Very Hard</td><td class="r">26.02</td><td class="nowrap"><span class="eststart nowrap" data-mi="26.02">Fri 10:20 AM ☀️</span></td></tr><tr data-slot="6" data-n="6"><td class="c">6</td><td><a href="index.html#leg-6">Hobb Nob</a></td><td class="r bar" style="--p:58%">5.04</td><td class="r bar" style="--p:20%">+193</td><td class="r bar" style="--p:20%">38</td><td>P95% / G5%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">32.51</td><td class="nowrap"><span class="eststart nowrap" data-mi="32.51">Fri 11:25 AM ☀️</span></td></tr><tr class="exrow"><td colspan="9">🚩 Hobbs State Park — mile 37.55</td></tr><tr data-slot="1" data-n="7"><td class="c">7</td><td><a href="index.html#leg-7">Little Clifty</a></td><td class="r bar" style="--p:56%">4.87</td><td class="r bar" style="--p:40%">+379</td><td class="r bar" style="--p:40%">78</td><td>T100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">37.55</td><td class="nowrap"><span class="eststart nowrap" data-mi="37.55">Fri 12:16 PM ☀️</span></td></tr><tr data-slot="2" data-n="8"><td class="c">8</td><td><a href="index.html#leg-8">War Eagle</a></td><td class="r bar" style="--p:70%">6.08</td><td class="r bar" style="--p:39%">+376</td><td class="r bar" style="--p:32%">62</td><td>P16% / T84%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">42.42</td><td class="nowrap"><span class="eststart nowrap" data-mi="42.42">Fri 1:04 PM ☀️</span></td></tr><tr data-slot="3" data-n="9"><td class="c">9</td><td><a href="index.html#leg-9">Up and At 'em!</a></td><td class="r bar" style="--p:93%">8.13</td><td class="r bar" style="--p:58%">+557</td><td class="r bar" style="--p:35%">69</td><td>P60% / G40%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Moderate</td><td class="r">48.5</td><td class="nowrap"><span class="eststart nowrap" data-mi="48.5">Fri 2:05 PM ☀️</span></td></tr><tr data-slot="4" data-n="10"><td class="c">10</td><td><a href="index.html#leg-10">Dingos with Banjos</a></td><td class="r bar" style="--p:100%">8.73</td><td class="r bar" style="--p:75%">+722</td><td class="r bar" style="--p:42%">83</td><td>P17% / G83%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">56.63</td><td class="nowrap"><span class="eststart nowrap" data-mi="56.63">Fri 3:26 PM ☀️</span></td></tr><tr data-slot="5" data-n="11"><td class="c">11</td><td><a href="index.html#leg-11">The Roamin' Forum</a></td><td class="r bar" style="--p:82%">7.13</td><td class="r bar" style="--p:34%">+327</td><td class="r bar" style="--p:24%">46</td><td>P67% / G33%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">65.36</td><td class="nowrap"><span class="eststart nowrap" data-mi="65.36">Fri 4:54 PM ☀️</span></td></tr><tr data-slot="6" data-n="12"><td class="c">12</td><td><a href="index.html#leg-12">Walkabout to Withrow</a></td><td class="r bar" style="--p:44%">3.86</td><td class="r bar" style="--p:19%">+183</td><td class="r bar" style="--p:24%">47</td><td>P42% / G58%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">72.49</td><td class="nowrap"><span class="eststart nowrap" data-mi="72.49">Fri 6:05 PM 🌆</span></td></tr><tr class="exrow"><td colspan="9">🚩 Withrow Springs State Park — mile 76.35</td></tr><tr data-slot="1" data-n="13"><td class="c">13</td><td><a href="index.html#leg-13">Lolligaggin'</a></td><td class="r bar" style="--p:70%">6.09</td><td class="r bar" style="--p:48%">+459</td><td class="r bar" style="--p:39%">75</td><td>P33% / G67%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">76.35</td><td class="nowrap"><span class="eststart nowrap" data-mi="76.35">Fri 6:44 PM 🌆</span></td></tr><tr data-slot="2" data-n="14"><td class="c">14</td><td><a href="index.html#leg-14">Bandicoot</a></td><td class="r bar" style="--p:56%">4.89</td><td class="r bar" style="--p:57%">+542</td><td class="r bar" style="--p:57%">111</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">82.44</td><td class="nowrap"><span class="eststart nowrap" data-mi="82.44">Fri 7:44 PM 🌙</span></td></tr><tr data-slot="3" data-n="15"><td class="c">15</td><td><a href="index.html#leg-15">I Ain't Skeerd!</a></td><td class="r bar" style="--p:80%">6.95</td><td class="r bar" style="--p:30%">+287</td><td class="r bar" style="--p:21%">41</td><td>P71% / G29%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Moderate</td><td class="r">87.33</td><td class="nowrap"><span class="eststart nowrap" data-mi="87.33">Fri 8:33 PM 🌙</span></td></tr><tr data-slot="4" data-n="16"><td class="c">16</td><td><a href="index.html#leg-16">Playin' Possum</a></td><td class="r bar" style="--p:56%">4.85</td><td class="r bar" style="--p:29%">+280</td><td class="r bar" style="--p:30%">58</td><td>P40% / G60%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">94.28</td><td class="nowrap"><span class="eststart nowrap" data-mi="94.28">Fri 9:43 PM 🌙</span></td></tr><tr data-slot="5" data-n="17"><td class="c">17</td><td><a href="index.html#leg-17">Rip Snorter</a></td><td class="r bar" style="--p:54%">4.74</td><td class="r bar" style="--p:66%">+630</td><td class="r bar" style="--p:68%">133</td><td>P25% / G75%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">99.13</td><td class="nowrap"><span class="eststart nowrap" data-mi="99.13">Fri 10:31 PM 🌙</span></td></tr><tr data-slot="6" data-n="18"><td class="c">18</td><td><a href="index.html#leg-18">Buncha Fun!</a></td><td class="r bar" style="--p:54%">4.75</td><td class="r bar" style="--p:16%">+156</td><td class="r bar" style="--p:17%">33</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">103.87</td><td class="nowrap"><span class="eststart nowrap" data-mi="103.87">Fri 11:19 PM 🌙</span></td></tr><tr class="exrow"><td colspan="9">🚩 Elkins — Bunch City Park — mile 108.62</td></tr><tr data-slot="1" data-n="19"><td class="c">19</td><td><a href="index.html#leg-19">Tasmanian Devil</a></td><td class="r bar" style="--p:66%">5.72</td><td class="r bar" style="--p:45%">+429</td><td class="r bar" style="--p:38%">75</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Moderate</td><td class="r">108.62</td><td class="nowrap"><span class="eststart nowrap" data-mi="108.62">Sat 12:06 AM 🌙</span></td></tr><tr data-slot="2" data-n="20"><td class="c">20</td><td><a href="index.html#leg-20">No Worries!</a></td><td class="r bar" style="--p:50%">4.36</td><td class="r bar" style="--p:20%">+187</td><td class="r bar" style="--p:22%">43</td><td>P100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">114.34</td><td class="nowrap"><span class="eststart nowrap" data-mi="114.34">Sat 1:03 AM 🌙</span></td></tr><tr data-slot="3" data-n="21"><td class="c">21</td><td><a href="index.html#leg-21">Wallaby</a></td><td class="r bar" style="--p:48%">4.23</td><td class="r bar" style="--p:22%">+211</td><td class="r bar" style="--p:26%">50</td><td>G100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">118.7</td><td class="nowrap"><span class="eststart nowrap" data-mi="118.7">Sat 1:47 AM 🌙</span></td></tr><tr data-slot="4" data-n="22"><td class="c">22</td><td><a href="index.html#leg-22">Plumb Tuckered</a></td><td class="r bar" style="--p:55%">4.84</td><td class="r bar" style="--p:99%">+944</td><td class="r bar" style="--p:100%">195</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">122.93</td><td class="nowrap"><span class="eststart nowrap" data-mi="122.93">Sat 2:29 AM 🌙</span></td></tr><tr data-slot="5" data-n="23"><td class="c">23</td><td><a href="index.html#leg-23">Greased Lightnin'</a></td><td class="r bar" style="--p:94%">8.17</td><td class="r bar" style="--p:16%">+156</td><td class="r bar" style="--p:10%">19</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">127.77</td><td class="nowrap"><span class="eststart nowrap" data-mi="127.77">Sat 3:18 AM 🌙</span></td></tr><tr data-slot="6" data-n="24"><td class="c">24</td><td><a href="index.html#leg-24">Bushwalker</a></td><td class="r bar" style="--p:53%">4.66</td><td class="r bar" style="--p:47%">+453</td><td class="r bar" style="--p:50%">97</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">135.94</td><td class="nowrap"><span class="eststart nowrap" data-mi="135.94">Sat 4:39 AM 🌙</span></td></tr><tr class="exrow"><td colspan="9">🚩 Lake Fort Smith State Park — mile 140.6</td></tr><tr data-slot="1" data-n="25"><td class="c">25</td><td><a href="index.html#leg-25">Tester to Chester</a></td><td class="r bar" style="--p:96%">8.41</td><td class="r bar" style="--p:88%">+845</td><td class="r bar" style="--p:52%">100</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">140.6</td><td class="nowrap"><span class="eststart nowrap" data-mi="140.6">Sat 5:26 AM 🌙</span></td></tr><tr data-slot="2" data-n="26"><td class="c">26</td><td><a href="index.html#leg-26">Gumption</a></td><td class="r bar" style="--p:63%">5.47</td><td class="r bar" style="--p:100%">+958</td><td class="r bar" style="--p:90%">175</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">149.01</td><td class="nowrap"><span class="eststart nowrap" data-mi="149.01">Sat 6:50 AM 🌅</span></td></tr><tr data-slot="3" data-n="27"><td class="c">27</td><td><a href="index.html#leg-27">Chuck a Wobbly</a></td><td class="r bar" style="--p:88%">7.67</td><td class="r bar" style="--p:85%">+818</td><td class="r bar" style="--p:55%">107</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">154.48</td><td class="nowrap"><span class="eststart nowrap" data-mi="154.48">Sat 7:45 AM 🌅</span></td></tr><tr data-slot="4" data-n="28"><td class="c">28</td><td><a href="index.html#leg-28">Boondocks</a></td><td class="r bar" style="--p:59%">5.15</td><td class="r bar" style="--p:43%">+415</td><td class="r bar" style="--p:41%">81</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">162.15</td><td class="nowrap"><span class="eststart nowrap" data-mi="162.15">Sat 9:02 AM ☀️</span></td></tr><tr data-slot="5" data-n="29"><td class="c">29</td><td><a href="index.html#leg-29">Backwoods Boomerang</a></td><td class="r bar" style="--p:72%">6.27</td><td class="r bar" style="--p:29%">+281</td><td class="r bar" style="--p:23%">45</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">167.3</td><td class="nowrap"><span class="eststart nowrap" data-mi="167.3">Sat 9:53 AM ☀️</span></td></tr><tr data-slot="6" data-n="30"><td class="c">30</td><td><a href="index.html#leg-30">Holy Hedgehog!</a></td><td class="r bar" style="--p:87%">7.56</td><td class="r bar" style="--p:38%">+364</td><td class="r bar" style="--p:25%">48</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">173.57</td><td class="nowrap"><span class="eststart nowrap" data-mi="173.57">Sat 10:56 AM ☀️</span></td></tr><tr class="exrow"><td colspan="9">🚩 Devil's Den State Park — mile 181.13</td></tr><tr data-slot="1" data-n="31"><td class="c">31</td><td><a href="index.html#leg-31">Running from the Devil</a></td><td class="r bar" style="--p:72%">6.27</td><td class="r bar" style="--p:97%">+929</td><td class="r bar" style="--p:76%">148</td><td>P56% / G36% / T8%</td><td><span class="dotc" style="background:#d03b3b"></span>Very Hard</td><td class="r">181.13</td><td class="nowrap"><span class="eststart nowrap" data-mi="181.13">Sat 12:11 PM ☀️</span></td></tr><tr data-slot="2" data-n="32"><td class="c">32</td><td><a href="index.html#leg-32">Ridgy Didge</a></td><td class="r bar" style="--p:53%">4.62</td><td class="r bar" style="--p:33%">+317</td><td class="r bar" style="--p:35%">69</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">187.4</td><td class="nowrap"><span class="eststart nowrap" data-mi="187.4">Sat 1:14 PM ☀️</span></td></tr><tr data-slot="3" data-n="33"><td class="c">33</td><td><a href="index.html#leg-33">Platypus Plod</a></td><td class="r bar" style="--p:41%">3.6</td><td class="r bar" style="--p:10%">+99</td><td class="r bar" style="--p:14%">28</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">192.02</td><td class="nowrap"><span class="eststart nowrap" data-mi="192.02">Sat 2:00 PM ☀️</span></td></tr><tr data-slot="4" data-n="34"><td class="c">34</td><td><a href="index.html#leg-34">Gravel, Grit &amp; Bridge Biz</a></td><td class="r bar" style="--p:41%">3.62</td><td class="r bar" style="--p:14%">+136</td><td class="r bar" style="--p:19%">38</td><td>G100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">195.62</td><td class="nowrap"><span class="eststart nowrap" data-mi="195.62">Sat 2:36 PM ☀️</span></td></tr><tr data-slot="5" data-n="35"><td class="c">35</td><td><a href="index.html#leg-35">The Holy Roller</a></td><td class="r bar" style="--p:35%">3.03</td><td class="r bar" style="--p:22%">+212</td><td class="r bar" style="--p:36%">70</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">199.24</td><td class="nowrap"><span class="eststart nowrap" data-mi="199.24">Sat 3:12 PM ☀️</span></td></tr><tr data-slot="6" data-n="36"><td class="c">36</td><td><a href="index.html#leg-36">Finish Line</a></td><td class="r bar" style="--p:56%">4.89</td><td class="r bar" style="--p:27%">+259</td><td class="r bar" style="--p:27%">53</td><td>P80% / G20%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">202.27</td><td class="nowrap"><span class="eststart nowrap" data-mi="202.27">Sat 3:43 PM ☀️</span></td></tr></tbody></table></div>
-  <div class="planctl web-only">⏱ Est. schedule assumes team pace <input id="paceIn" value="10:00" size="4"> min/mi · wave start Fri <input id="startIn" type="time" value="06:00"> <button id="planReset" class="pillbtn">reset</button> <span class="tiny">waves 6:00 AM–noon, assigned by team pace</span></div>
-</div>
-<div class="panel" id="map">
-  <h2>Full course map <span class="tiny">(the race's official all-legs Strava route)</span></h2>
+<h2 class="ovh2">When does everyone run?</h2>
+<p class="ovsub">One row per runner, left to right across the whole race. The shaded stretch is after dark — swipe the timeline to read the clock.</p>
+<div class="swimcard"><div class="swimnames" id="swimNames"></div>
+  <div class="swimscroll"><svg id="swimSvg" width="900" height="200" viewBox="0 0 900 200"></svg></div></div>
+<div class="swimlegend"><span>bar = one leg · width = time on course · number = leg</span><span class="dotc" style="background:#0ca30c"></span>Easy · <span class="dotc" style="background:#fab219"></span>Moderate · <span class="dotc" style="background:#ec835a"></span>Hard · <span class="dotc" style="background:#d03b3b"></span>Very Hard</div>
+
+<h2 class="ovh2">The whole course</h2>
+<div class="chartcard" id="map" style="margin-top:8px">
   <div class="strava-embed-placeholder" data-embed-type="route" data-embed-id="3386113643310609494" data-style="standard" data-map-hash="7.42/36.048/-93.997" data-club-id="1634354" data-from-embed="true"></div>
   <script src="https://strava-embeds.com/embed.js"></script>
-  <p class="tiny" style="margin:.5em 0 0">Embed not loading? <a href="https://www.strava.com/routes/3386113643310609494" target="_blank" rel="noopener">Open the all-legs route on Strava ↗</a></p>
+  <p class="tiny" style="margin:.5em 0 0"><a href="https://www.strava.com/routes/3386113643310609494" target="_blank" rel="noopener">Open the full route on Strava ↗</a></p>
 </div>
-<div class="panel" id="plan">
-  <h2>Runner planner — who takes which rotation slot?</h2>
-  <p class="tiny" style="margin:.2em 0 .6em" id="planNote">With 6 runners, slot <i>s</i> runs legs <i>s, s+6, s+12, …</i></p>
-  <div class="planctl web-only">Runners on your team: <select id="nrSel"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
-    <span class="tiny">what-if only — it doesn't change any team's real setup</span></div>
-  <div class="tscroll"><table class="tbl">
-<thead><tr><th>Rank</th><th>Slot</th><th>Runner</th><th>Legs</th><th class="r">Miles</th><th class="r">Climb ft</th><th>Leg ratings</th><th>Difficulty</th><th>Toughest assignment</th></tr></thead>
-<tbody id="plantbody"><tr><td class="c"><b>1</b></td><td class="c"><b>1</b></td><td class="blankcell runner-name" data-slot="1">&nbsp;</td><td>1, 7, 13, 19, 25, 31</td><td class="r">37.7</td><td class="r">3,796</td><td class="nowrap"><span class="dotc" style="background:#d03b3b" title="Leg 1 · Didgeridoo Dash · Very Hard"></span><span class="dotc" style="background:#ec835a" title="Leg 7 · Little Clifty · Hard"></span><span class="dotc" style="background:#fab219" title="Leg 13 · Lolligaggin' · Moderate"></span><span class="dotc" style="background:#fab219" title="Leg 19 · Tasmanian Devil · Moderate"></span><span class="dotc" style="background:#ec835a" title="Leg 25 · Tester to Chester · Hard"></span><span class="dotc" style="background:#d03b3b" title="Leg 31 · Running from the Devil · Very Hard"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:100%"></div></div><span class="mval">100</span></div></td><td>Leg 31 · Running from the Devil (Very Hard · +929 ft)</td></tr><tr><td class="c"><b>2</b></td><td class="c"><b>2</b></td><td class="blankcell runner-name" data-slot="2">&nbsp;</td><td>2, 8, 14, 20, 26, 32</td><td class="r">33.0</td><td class="r">2,941</td><td class="nowrap"><span class="dotc" style="background:#ec835a" title="Leg 2 · Rockhouse Roll · Hard"></span><span class="dotc" style="background:#ec835a" title="Leg 8 · War Eagle · Hard"></span><span class="dotc" style="background:#fab219" title="Leg 14 · Bandicoot · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 20 · No Worries! · Easy"></span><span class="dotc" style="background:#fab219" title="Leg 26 · Gumption · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 32 · Ridgy Didge · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:76%"></div></div><span class="mval">76</span></div></td><td>Leg 2 · Rockhouse Roll (Hard · +561 ft)</td></tr><tr><td class="c"><b>3</b></td><td class="c"><b>5</b></td><td class="blankcell runner-name" data-slot="5">&nbsp;</td><td>5, 11, 17, 23, 29, 35</td><td class="r">35.8</td><td class="r">2,502</td><td class="nowrap"><span class="dotc" style="background:#d03b3b" title="Leg 5 · Wobble to Cobble · Very Hard"></span><span class="dotc" style="background:#fab219" title="Leg 11 · The Roamin' Forum · Moderate"></span><span class="dotc" style="background:#fab219" title="Leg 17 · Rip Snorter · Moderate"></span><span class="dotc" style="background:#fab219" title="Leg 23 · Greased Lightnin' · Moderate"></span><span class="dotc" style="background:#fab219" title="Leg 29 · Backwoods Boomerang · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 35 · The Holy Roller · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:76%"></div></div><span class="mval">76</span></div></td><td>Leg 5 · Wobble to Cobble (Very Hard · +896 ft)</td></tr><tr><td class="c"><b>4</b></td><td class="c"><b>3</b></td><td class="blankcell runner-name" data-slot="3">&nbsp;</td><td>3, 9, 15, 21, 27, 33</td><td class="r">37.4</td><td class="r">2,581</td><td class="nowrap"><span class="dotc" style="background:#ec835a" title="Leg 3 · Koala Holler · Hard"></span><span class="dotc" style="background:#fab219" title="Leg 9 · Up and At 'em! · Moderate"></span><span class="dotc" style="background:#fab219" title="Leg 15 · I Ain't Skeerd! · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 21 · Wallaby · Easy"></span><span class="dotc" style="background:#ec835a" title="Leg 27 · Chuck a Wobbly · Hard"></span><span class="dotc" style="background:#0ca30c" title="Leg 33 · Platypus Plod · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:76%"></div></div><span class="mval">76</span></div></td><td>Leg 27 · Chuck a Wobbly (Hard · +818 ft)</td></tr><tr><td class="c"><b>5</b></td><td class="c"><b>4</b></td><td class="blankcell runner-name" data-slot="4">&nbsp;</td><td>4, 10, 16, 22, 28, 34</td><td class="r">32.5</td><td class="r">2,623</td><td class="nowrap"><span class="dotc" style="background:#0ca30c" title="Leg 4 · Hot Diggity! · Easy"></span><span class="dotc" style="background:#ec835a" title="Leg 10 · Dingos with Banjos · Hard"></span><span class="dotc" style="background:#0ca30c" title="Leg 16 · Playin' Possum · Easy"></span><span class="dotc" style="background:#ec835a" title="Leg 22 · Plumb Tuckered · Hard"></span><span class="dotc" style="background:#fab219" title="Leg 28 · Boondocks · Moderate"></span><span class="dotc" style="background:#0ca30c" title="Leg 34 · Gravel, Grit &amp; Bridge Biz · Easy"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:71%"></div></div><span class="mval">71</span></div></td><td>Leg 22 · Plumb Tuckered (Hard · +944 ft)</td></tr><tr><td class="c"><b>6</b></td><td class="c"><b>6</b></td><td class="blankcell runner-name" data-slot="6">&nbsp;</td><td>6, 12, 18, 24, 30, 36</td><td class="r">30.8</td><td class="r">1,608</td><td class="nowrap"><span class="dotc" style="background:#0ca30c" title="Leg 6 · Hobb Nob · Easy"></span><span class="dotc" style="background:#0ca30c" title="Leg 12 · Walkabout to Withrow · Easy"></span><span class="dotc" style="background:#0ca30c" title="Leg 18 · Buncha Fun! · Easy"></span><span class="dotc" style="background:#ec835a" title="Leg 24 · Bushwalker · Hard"></span><span class="dotc" style="background:#ec835a" title="Leg 30 · Holy Hedgehog! · Hard"></span><span class="dotc" style="background:#fab219" title="Leg 36 · Finish Line · Moderate"></span></td><td><div class="meterwrap"><div class="meter"><div class="fill" style="width:60%"></div></div><span class="mval">60</span></div></td><td>Leg 24 · Bushwalker (Hard · +453 ft)</td></tr></tbody></table></div>
-<p class="tiny" style="margin:.6em 0 0">Sorted hardest → easiest. Difficulty = equal parts total miles, total climb, and summed leg ratings (Easy 1 → Very Hard 4, team rating where it differs), scaled so the hardest slot = 100. Rating dots are in leg order<span class="web-only"> — hover for the leg</span>.</p>
-</div>
-<div class="panel" id="watch">
-  <h2>Get your legs on your Garmin watch</h2>
+
+<details class="ovd" id="legTableD"><summary>Every leg on one page <span class="tiny">table view</span></summary>
+  <div class="ovdbody" style="overflow-x:auto"><div class="tscroll"><table class="tbl small">
+<thead><tr><th>#</th><th>Leg</th><th class="r">Mi</th><th class="r">Gain</th><th class="r">ft/mi</th><th>Surface</th><th>Rating (official → team)</th><th class="r">Starts @ mi</th><th>Est start</th></tr></thead>
+<tbody><tr data-slot="1" data-n="1"><td class="c">1</td><td><a href="index.html#leg-1">Didgeridoo Dash</a></td><td class="r bar" style="--p:73%">6.35</td><td class="r bar" style="--p:79%">+755</td><td class="r bar" style="--p:61%">119</td><td>P33% / G33% / T34%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Very Hard</td><td class="r">0</td><td class="nowrap"><span class="eststart nowrap" data-mi="0.0">Fri 6:00 AM 🌙</span></td></tr><tr data-slot="2" data-n="2"><td class="c">2</td><td><a href="index.html#leg-2">Rockhouse Roll</a></td><td class="r bar" style="--p:86%">7.53</td><td class="r bar" style="--p:59%">+561</td><td class="r bar" style="--p:38%">75</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">6.35</td><td class="nowrap"><span class="eststart nowrap" data-mi="6.35">Fri 7:04 AM 🌅</span></td></tr><tr data-slot="3" data-n="3"><td class="c">3</td><td><a href="index.html#leg-3">Koala Holler</a></td><td class="r bar" style="--p:78%">6.81</td><td class="r bar" style="--p:64%">+609</td><td class="r bar" style="--p:46%">89</td><td>P25% / G38% / T37%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">13.88</td><td class="nowrap"><span class="eststart nowrap" data-mi="13.88">Fri 8:19 AM ☀️</span></td></tr><tr data-slot="4" data-n="4"><td class="c">4</td><td><a href="index.html#leg-4">Hot Diggity!</a></td><td class="r bar" style="--p:61%">5.33</td><td class="r bar" style="--p:13%">+126</td><td class="r bar" style="--p:12%">24</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">20.69</td><td class="nowrap"><span class="eststart nowrap" data-mi="20.69">Fri 9:27 AM ☀️</span></td></tr><tr data-slot="5" data-n="5"><td class="c">5</td><td><a href="index.html#leg-5">Wobble to Cobble</a></td><td class="r bar" style="--p:74%">6.49</td><td class="r bar" style="--p:94%">+896</td><td class="r bar" style="--p:71%">138</td><td>G100%</td><td><span class="dotc" style="background:#d03b3b"></span>Very Hard</td><td class="r">26.02</td><td class="nowrap"><span class="eststart nowrap" data-mi="26.02">Fri 10:20 AM ☀️</span></td></tr><tr data-slot="6" data-n="6"><td class="c">6</td><td><a href="index.html#leg-6">Hobb Nob</a></td><td class="r bar" style="--p:58%">5.04</td><td class="r bar" style="--p:20%">+193</td><td class="r bar" style="--p:20%">38</td><td>P95% / G5%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">32.51</td><td class="nowrap"><span class="eststart nowrap" data-mi="32.51">Fri 11:25 AM ☀️</span></td></tr><tr class="exrow"><td colspan="9">🚩 Hobbs State Park — mile 37.55</td></tr><tr data-slot="1" data-n="7"><td class="c">7</td><td><a href="index.html#leg-7">Little Clifty</a></td><td class="r bar" style="--p:56%">4.87</td><td class="r bar" style="--p:40%">+379</td><td class="r bar" style="--p:40%">78</td><td>T100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">37.55</td><td class="nowrap"><span class="eststart nowrap" data-mi="37.55">Fri 12:16 PM ☀️</span></td></tr><tr data-slot="2" data-n="8"><td class="c">8</td><td><a href="index.html#leg-8">War Eagle</a></td><td class="r bar" style="--p:70%">6.08</td><td class="r bar" style="--p:39%">+376</td><td class="r bar" style="--p:32%">62</td><td>P16% / T84%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">42.42</td><td class="nowrap"><span class="eststart nowrap" data-mi="42.42">Fri 1:04 PM ☀️</span></td></tr><tr data-slot="3" data-n="9"><td class="c">9</td><td><a href="index.html#leg-9">Up and At 'em!</a></td><td class="r bar" style="--p:93%">8.13</td><td class="r bar" style="--p:58%">+557</td><td class="r bar" style="--p:35%">69</td><td>P60% / G40%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Moderate</td><td class="r">48.5</td><td class="nowrap"><span class="eststart nowrap" data-mi="48.5">Fri 2:05 PM ☀️</span></td></tr><tr data-slot="4" data-n="10"><td class="c">10</td><td><a href="index.html#leg-10">Dingos with Banjos</a></td><td class="r bar" style="--p:100%">8.73</td><td class="r bar" style="--p:75%">+722</td><td class="r bar" style="--p:42%">83</td><td>P17% / G83%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">56.63</td><td class="nowrap"><span class="eststart nowrap" data-mi="56.63">Fri 3:26 PM ☀️</span></td></tr><tr data-slot="5" data-n="11"><td class="c">11</td><td><a href="index.html#leg-11">The Roamin' Forum</a></td><td class="r bar" style="--p:82%">7.13</td><td class="r bar" style="--p:34%">+327</td><td class="r bar" style="--p:24%">46</td><td>P67% / G33%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">65.36</td><td class="nowrap"><span class="eststart nowrap" data-mi="65.36">Fri 4:54 PM ☀️</span></td></tr><tr data-slot="6" data-n="12"><td class="c">12</td><td><a href="index.html#leg-12">Walkabout to Withrow</a></td><td class="r bar" style="--p:44%">3.86</td><td class="r bar" style="--p:19%">+183</td><td class="r bar" style="--p:24%">47</td><td>P42% / G58%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">72.49</td><td class="nowrap"><span class="eststart nowrap" data-mi="72.49">Fri 6:05 PM 🌆</span></td></tr><tr class="exrow"><td colspan="9">🚩 Withrow Springs State Park — mile 76.35</td></tr><tr data-slot="1" data-n="13"><td class="c">13</td><td><a href="index.html#leg-13">Lolligaggin'</a></td><td class="r bar" style="--p:70%">6.09</td><td class="r bar" style="--p:48%">+459</td><td class="r bar" style="--p:39%">75</td><td>P33% / G67%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">76.35</td><td class="nowrap"><span class="eststart nowrap" data-mi="76.35">Fri 6:44 PM 🌆</span></td></tr><tr data-slot="2" data-n="14"><td class="c">14</td><td><a href="index.html#leg-14">Bandicoot</a></td><td class="r bar" style="--p:56%">4.89</td><td class="r bar" style="--p:57%">+542</td><td class="r bar" style="--p:57%">111</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">82.44</td><td class="nowrap"><span class="eststart nowrap" data-mi="82.44">Fri 7:44 PM 🌙</span></td></tr><tr data-slot="3" data-n="15"><td class="c">15</td><td><a href="index.html#leg-15">I Ain't Skeerd!</a></td><td class="r bar" style="--p:80%">6.95</td><td class="r bar" style="--p:30%">+287</td><td class="r bar" style="--p:21%">41</td><td>P71% / G29%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Moderate</td><td class="r">87.33</td><td class="nowrap"><span class="eststart nowrap" data-mi="87.33">Fri 8:33 PM 🌙</span></td></tr><tr data-slot="4" data-n="16"><td class="c">16</td><td><a href="index.html#leg-16">Playin' Possum</a></td><td class="r bar" style="--p:56%">4.85</td><td class="r bar" style="--p:29%">+280</td><td class="r bar" style="--p:30%">58</td><td>P40% / G60%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">94.28</td><td class="nowrap"><span class="eststart nowrap" data-mi="94.28">Fri 9:43 PM 🌙</span></td></tr><tr data-slot="5" data-n="17"><td class="c">17</td><td><a href="index.html#leg-17">Rip Snorter</a></td><td class="r bar" style="--p:54%">4.74</td><td class="r bar" style="--p:66%">+630</td><td class="r bar" style="--p:68%">133</td><td>P25% / G75%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">99.13</td><td class="nowrap"><span class="eststart nowrap" data-mi="99.13">Fri 10:31 PM 🌙</span></td></tr><tr data-slot="6" data-n="18"><td class="c">18</td><td><a href="index.html#leg-18">Buncha Fun!</a></td><td class="r bar" style="--p:54%">4.75</td><td class="r bar" style="--p:16%">+156</td><td class="r bar" style="--p:17%">33</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Easy</td><td class="r">103.87</td><td class="nowrap"><span class="eststart nowrap" data-mi="103.87">Fri 11:19 PM 🌙</span></td></tr><tr class="exrow"><td colspan="9">🚩 Elkins — Bunch City Park — mile 108.62</td></tr><tr data-slot="1" data-n="19"><td class="c">19</td><td><a href="index.html#leg-19">Tasmanian Devil</a></td><td class="r bar" style="--p:66%">5.72</td><td class="r bar" style="--p:45%">+429</td><td class="r bar" style="--p:38%">75</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard → Moderate</td><td class="r">108.62</td><td class="nowrap"><span class="eststart nowrap" data-mi="108.62">Sat 12:06 AM 🌙</span></td></tr><tr data-slot="2" data-n="20"><td class="c">20</td><td><a href="index.html#leg-20">No Worries!</a></td><td class="r bar" style="--p:50%">4.36</td><td class="r bar" style="--p:20%">+187</td><td class="r bar" style="--p:22%">43</td><td>P100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">114.34</td><td class="nowrap"><span class="eststart nowrap" data-mi="114.34">Sat 1:03 AM 🌙</span></td></tr><tr data-slot="3" data-n="21"><td class="c">21</td><td><a href="index.html#leg-21">Wallaby</a></td><td class="r bar" style="--p:48%">4.23</td><td class="r bar" style="--p:22%">+211</td><td class="r bar" style="--p:26%">50</td><td>G100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">118.7</td><td class="nowrap"><span class="eststart nowrap" data-mi="118.7">Sat 1:47 AM 🌙</span></td></tr><tr data-slot="4" data-n="22"><td class="c">22</td><td><a href="index.html#leg-22">Plumb Tuckered</a></td><td class="r bar" style="--p:55%">4.84</td><td class="r bar" style="--p:99%">+944</td><td class="r bar" style="--p:100%">195</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">122.93</td><td class="nowrap"><span class="eststart nowrap" data-mi="122.93">Sat 2:29 AM 🌙</span></td></tr><tr data-slot="5" data-n="23"><td class="c">23</td><td><a href="index.html#leg-23">Greased Lightnin'</a></td><td class="r bar" style="--p:94%">8.17</td><td class="r bar" style="--p:16%">+156</td><td class="r bar" style="--p:10%">19</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">127.77</td><td class="nowrap"><span class="eststart nowrap" data-mi="127.77">Sat 3:18 AM 🌙</span></td></tr><tr data-slot="6" data-n="24"><td class="c">24</td><td><a href="index.html#leg-24">Bushwalker</a></td><td class="r bar" style="--p:53%">4.66</td><td class="r bar" style="--p:47%">+453</td><td class="r bar" style="--p:50%">97</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">135.94</td><td class="nowrap"><span class="eststart nowrap" data-mi="135.94">Sat 4:39 AM 🌙</span></td></tr><tr class="exrow"><td colspan="9">🚩 Lake Fort Smith State Park — mile 140.6</td></tr><tr data-slot="1" data-n="25"><td class="c">25</td><td><a href="index.html#leg-25">Tester to Chester</a></td><td class="r bar" style="--p:96%">8.41</td><td class="r bar" style="--p:88%">+845</td><td class="r bar" style="--p:52%">100</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">140.6</td><td class="nowrap"><span class="eststart nowrap" data-mi="140.6">Sat 5:26 AM 🌙</span></td></tr><tr data-slot="2" data-n="26"><td class="c">26</td><td><a href="index.html#leg-26">Gumption</a></td><td class="r bar" style="--p:63%">5.47</td><td class="r bar" style="--p:100%">+958</td><td class="r bar" style="--p:90%">175</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">149.01</td><td class="nowrap"><span class="eststart nowrap" data-mi="149.01">Sat 6:50 AM 🌅</span></td></tr><tr data-slot="3" data-n="27"><td class="c">27</td><td><a href="index.html#leg-27">Chuck a Wobbly</a></td><td class="r bar" style="--p:88%">7.67</td><td class="r bar" style="--p:85%">+818</td><td class="r bar" style="--p:55%">107</td><td>G100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate → Hard</td><td class="r">154.48</td><td class="nowrap"><span class="eststart nowrap" data-mi="154.48">Sat 7:45 AM 🌅</span></td></tr><tr data-slot="4" data-n="28"><td class="c">28</td><td><a href="index.html#leg-28">Boondocks</a></td><td class="r bar" style="--p:59%">5.15</td><td class="r bar" style="--p:43%">+415</td><td class="r bar" style="--p:41%">81</td><td>P50% / G50%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">162.15</td><td class="nowrap"><span class="eststart nowrap" data-mi="162.15">Sat 9:02 AM ☀️</span></td></tr><tr data-slot="5" data-n="29"><td class="c">29</td><td><a href="index.html#leg-29">Backwoods Boomerang</a></td><td class="r bar" style="--p:72%">6.27</td><td class="r bar" style="--p:29%">+281</td><td class="r bar" style="--p:23%">45</td><td>P100%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">167.3</td><td class="nowrap"><span class="eststart nowrap" data-mi="167.3">Sat 9:53 AM ☀️</span></td></tr><tr data-slot="6" data-n="30"><td class="c">30</td><td><a href="index.html#leg-30">Holy Hedgehog!</a></td><td class="r bar" style="--p:87%">7.56</td><td class="r bar" style="--p:38%">+364</td><td class="r bar" style="--p:25%">48</td><td>P100%</td><td><span class="dotc" style="background:#ec835a"></span>Hard</td><td class="r">173.57</td><td class="nowrap"><span class="eststart nowrap" data-mi="173.57">Sat 10:56 AM ☀️</span></td></tr><tr class="exrow"><td colspan="9">🚩 Devil's Den State Park — mile 181.13</td></tr><tr data-slot="1" data-n="31"><td class="c">31</td><td><a href="index.html#leg-31">Running from the Devil</a></td><td class="r bar" style="--p:72%">6.27</td><td class="r bar" style="--p:97%">+929</td><td class="r bar" style="--p:76%">148</td><td>P56% / G36% / T8%</td><td><span class="dotc" style="background:#d03b3b"></span>Very Hard</td><td class="r">181.13</td><td class="nowrap"><span class="eststart nowrap" data-mi="181.13">Sat 12:11 PM ☀️</span></td></tr><tr data-slot="2" data-n="32"><td class="c">32</td><td><a href="index.html#leg-32">Ridgy Didge</a></td><td class="r bar" style="--p:53%">4.62</td><td class="r bar" style="--p:33%">+317</td><td class="r bar" style="--p:35%">69</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">187.4</td><td class="nowrap"><span class="eststart nowrap" data-mi="187.4">Sat 1:14 PM ☀️</span></td></tr><tr data-slot="3" data-n="33"><td class="c">33</td><td><a href="index.html#leg-33">Platypus Plod</a></td><td class="r bar" style="--p:41%">3.6</td><td class="r bar" style="--p:10%">+99</td><td class="r bar" style="--p:14%">28</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">192.02</td><td class="nowrap"><span class="eststart nowrap" data-mi="192.02">Sat 2:00 PM ☀️</span></td></tr><tr data-slot="4" data-n="34"><td class="c">34</td><td><a href="index.html#leg-34">Gravel, Grit &amp; Bridge Biz</a></td><td class="r bar" style="--p:41%">3.62</td><td class="r bar" style="--p:14%">+136</td><td class="r bar" style="--p:19%">38</td><td>G100%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">195.62</td><td class="nowrap"><span class="eststart nowrap" data-mi="195.62">Sat 2:36 PM ☀️</span></td></tr><tr data-slot="5" data-n="35"><td class="c">35</td><td><a href="index.html#leg-35">The Holy Roller</a></td><td class="r bar" style="--p:35%">3.03</td><td class="r bar" style="--p:22%">+212</td><td class="r bar" style="--p:36%">70</td><td>P50% / G50%</td><td><span class="dotc" style="background:#0ca30c"></span>Easy</td><td class="r">199.24</td><td class="nowrap"><span class="eststart nowrap" data-mi="199.24">Sat 3:12 PM ☀️</span></td></tr><tr data-slot="6" data-n="36"><td class="c">36</td><td><a href="index.html#leg-36">Finish Line</a></td><td class="r bar" style="--p:56%">4.89</td><td class="r bar" style="--p:27%">+259</td><td class="r bar" style="--p:27%">53</td><td>P80% / G20%</td><td><span class="dotc" style="background:#fab219"></span>Moderate</td><td class="r">202.27</td><td class="nowrap"><span class="eststart nowrap" data-mi="202.27">Sat 3:43 PM ☀️</span></td></tr></tbody></table></div></div>
+</details>
+
+<h2 class="ovh2">Before you go</h2>
+<div class="ovtwo">
+<details class="ovd"><summary>⌚ Get your legs on your Garmin watch</summary><div class="ovdbody"><div>
+  
   <p class="tiny" style="margin:.2em 0 .6em">Cell signal is spotty on the course — load your legs as courses <b>before race weekend</b> so the watch can guide you (route line, off-course alerts, climb profile) with no phone needed.</p>
   <ol class="steps">
     <li><b>Link Strava to Garmin (one-time).</b> Garmin Connect app → <i>Settings → Connected Apps → Strava</i> → sign in and enable the <b>Courses</b> permission.</li>
@@ -229,10 +387,10 @@ footer.colophon { margin-top:36px; font-size:11.5px; color:var(--muted); border-
     <li><b>Race day:</b> start a Run activity → hold <b>UP/MENU</b> → <i>Navigation → Courses</i> → pick your leg → <i>Do Course</i>. (Menu names vary slightly by model.)</li>
   </ol>
   <p class="tiny">Apple Watch has no native course-following — the WorkOutDoors app can import the same routes (export GPX from Strava), or use the map links on each leg card and run from the phone.</p>
-</div>
-
-<div class="panel" id="rules">
-  <h2>Night rules &amp; official links <span class="tiny">(🌐 from the official 2025 race guide)</span></h2>
+</div></div></details>
+<details class="ovd"><summary>🦺 Night rules &amp; official links</summary><div class="ovdbody">
+<div>
+  
   <p style="margin:.3em 0">🦺 <b>Nighttime hours = 1 hour before sunset through 1 hour after dawn:</b> reflective vest for anyone
   out of the van, headlamp + rear flashing tail light for runners. In-ear headphones are banned (open-ear audio OK).
   Course is marked with black arrows on bright-yellow signs at each turn, plus yellow flags and reflective tags.</p>
@@ -243,11 +401,13 @@ footer.colophon { margin-top:36px; font-size:11.5px; color:var(--muted); border-
     <a href="https://www.google.com/maps/d/edit?mid=1S3rWAD35CEJBqz6sRkXKpyRrL0PEO_w&usp=sharing" target="_blank" rel="noopener">Full route map ↗</a>
   </p>
   <div class="linkrow print-only"></div>
+</div></div></details>
+</div>
 </div>
 <footer class="colophon">Built for OTO 205 · leg beta by your team ·
 names, routes &amp; rules from outbackintheozarks.com · not an official race document. Go get it. 🤙</footer>
 </div>
-<script>const RACE_DAYS_JS=["Fri", "Sat", "Sun"];const RACE_ID="205";const PLAN={"start": 360, "pace": 10.0, "sr": 435, "ss": 1125, "total": 207.16};const SEGS=[{"a": 0.0, "b": 6.35, "x0": 30, "x1": 61.129}, {"a": 6.35, "b": 13.88, "x0": 61.129, "x1": 80.635}, {"a": 13.88, "b": 20.69, "x0": 80.635, "x1": 104.048}, {"a": 20.69, "b": 26.02, "x0": 104.048, "x1": 110.238}, {"a": 26.02, "b": 32.51, "x0": 110.238, "x1": 146.384}, {"a": 32.51, "b": 37.55, "x0": 146.384, "x1": 156.409}, {"a": 37.55, "b": 42.42, "x0": 156.409, "x1": 176.785}, {"a": 42.42, "b": 48.5, "x0": 176.785, "x1": 192.976}, {"a": 48.5, "b": 56.63, "x0": 192.976, "x1": 210.913}, {"a": 56.63, "b": 65.36, "x0": 210.913, "x1": 232.566}, {"a": 65.36, "b": 72.49, "x0": 232.566, "x1": 244.574}, {"a": 72.49, "b": 76.35, "x0": 244.574, "x1": 256.986}, {"a": 76.35, "b": 82.44, "x0": 256.986, "x1": 276.719}, {"a": 82.44, "b": 87.33, "x0": 276.719, "x1": 305.739}, {"a": 87.33, "b": 94.28, "x0": 305.739, "x1": 316.55}, {"a": 94.28, "b": 99.13, "x0": 316.55, "x1": 331.665}, {"a": 99.13, "b": 103.87, "x0": 331.665, "x1": 366.464}, {"a": 103.87, "b": 108.62, "x0": 366.464, "x1": 375.062}, {"a": 108.62, "b": 114.34, "x0": 375.062, "x1": 394.698}, {"a": 114.34, "b": 118.7, "x0": 394.698, "x1": 405.927}, {"a": 118.7, "b": 122.93, "x0": 405.927, "x1": 418.987}, {"a": 122.93, "b": 127.77, "x0": 418.987, "x1": 470.052}, {"a": 127.77, "b": 135.94, "x0": 470.052, "x1": 475.051}, {"a": 135.94, "b": 140.6, "x0": 475.051, "x1": 500.502}, {"a": 140.6, "b": 149.01, "x0": 500.502, "x1": 526.809}, {"a": 149.01, "b": 154.48, "x0": 526.809, "x1": 572.662}, {"a": 154.48, "b": 162.15, "x0": 572.662, "x1": 600.585}, {"a": 162.15, "b": 167.3, "x0": 600.585, "x1": 621.682}, {"a": 167.3, "b": 173.57, "x0": 621.682, "x1": 633.416}, {"a": 173.57, "b": 181.13, "x0": 633.416, "x1": 646.022}, {"a": 181.13, "b": 187.4, "x0": 646.022, "x1": 684.814}, {"a": 187.4, "b": 192.02, "x0": 684.814, "x1": 702.778}, {"a": 192.02, "b": 195.62, "x0": 702.778, "x1": 709.978}, {"a": 195.62, "b": 199.24, "x0": 709.978, "x1": 719.814}, {"a": 199.24, "b": 202.27, "x0": 719.814, "x1": 738.133}, {"a": 202.27, "b": 207.16, "x0": 738.133, "x1": 752.0}];const GEO={"top": 40, "ploth": 134};const NR=6;const RMAP={};const LEGDATA=[{"n": 1, "dist": 6.35, "gain": 755, "v": 118.9, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Didgeridoo Dash"}, {"n": 2, "dist": 7.53, "gain": 561, "v": 74.5, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Rockhouse Roll"}, {"n": 3, "dist": 6.81, "gain": 609, "v": 89.4, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Koala Holler"}, {"n": 4, "dist": 5.33, "gain": 126, "v": 23.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Hot Diggity!"}, {"n": 5, "dist": 6.49, "gain": 896, "v": 138.1, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Wobble to Cobble"}, {"n": 6, "dist": 5.04, "gain": 193, "v": 38.3, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Hobb Nob"}, {"n": 7, "dist": 4.87, "gain": 379, "v": 77.8, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Little Clifty"}, {"n": 8, "dist": 6.08, "gain": 376, "v": 61.8, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "War Eagle"}, {"n": 9, "dist": 8.13, "gain": 557, "v": 68.5, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Up and At 'em!"}, {"n": 10, "dist": 8.73, "gain": 722, "v": 82.7, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Dingos with Banjos"}, {"n": 11, "dist": 7.13, "gain": 327, "v": 45.9, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "The Roamin' Forum"}, {"n": 12, "dist": 3.86, "gain": 183, "v": 47.4, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Walkabout to Withrow"}, {"n": 13, "dist": 6.09, "gain": 459, "v": 75.4, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Lolligaggin'"}, {"n": 14, "dist": 4.89, "gain": 542, "v": 110.8, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Bandicoot"}, {"n": 15, "dist": 6.95, "gain": 287, "v": 41.3, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "I Ain't Skeerd!"}, {"n": 16, "dist": 4.85, "gain": 280, "v": 57.7, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Playin' Possum"}, {"n": 17, "dist": 4.74, "gain": 630, "v": 132.9, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Rip Snorter"}, {"n": 18, "dist": 4.75, "gain": 156, "v": 32.8, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Buncha Fun!"}, {"n": 19, "dist": 5.72, "gain": 429, "v": 75.0, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Tasmanian Devil"}, {"n": 20, "dist": 4.36, "gain": 187, "v": 42.9, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "No Worries!"}, {"n": 21, "dist": 4.23, "gain": 211, "v": 49.9, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Wallaby"}, {"n": 22, "dist": 4.84, "gain": 944, "v": 195.0, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Plumb Tuckered"}, {"n": 23, "dist": 8.17, "gain": 156, "v": 19.1, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Greased Lightnin'"}, {"n": 24, "dist": 4.66, "gain": 453, "v": 97.2, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Bushwalker"}, {"n": 25, "dist": 8.41, "gain": 845, "v": 100.5, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Tester to Chester"}, {"n": 26, "dist": 5.47, "gain": 958, "v": 175.1, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Gumption"}, {"n": 27, "dist": 7.67, "gain": 818, "v": 106.6, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Chuck a Wobbly"}, {"n": 28, "dist": 5.15, "gain": 415, "v": 80.6, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Boondocks"}, {"n": 29, "dist": 6.27, "gain": 281, "v": 44.8, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Backwoods Boomerang"}, {"n": 30, "dist": 7.56, "gain": 364, "v": 48.1, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Holy Hedgehog!"}, {"n": 31, "dist": 6.27, "gain": 929, "v": 148.2, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Running from the Devil"}, {"n": 32, "dist": 4.62, "gain": 317, "v": 68.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Ridgy Didge"}, {"n": 33, "dist": 3.6, "gain": 99, "v": 27.5, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Platypus Plod"}, {"n": 34, "dist": 3.62, "gain": 136, "v": 37.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Gravel, Grit & Bridge Biz"}, {"n": 35, "dist": 3.03, "gain": 212, "v": 70.0, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "The Holy Roller"}, {"n": 36, "dist": 4.89, "gain": 259, "v": 53.0, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Finish Line"}];
+<script>const RACE_DAYS_JS=["Fri", "Sat", "Sun"];const RACE_ID="205";const PLAN={"start": 360, "pace": 10.0, "sr": 435, "ss": 1125, "total": 207.16};const SEGS=[{"a": 0.0, "b": 6.35, "x0": 30, "x1": 61.129}, {"a": 6.35, "b": 13.88, "x0": 61.129, "x1": 80.635}, {"a": 13.88, "b": 20.69, "x0": 80.635, "x1": 104.048}, {"a": 20.69, "b": 26.02, "x0": 104.048, "x1": 110.238}, {"a": 26.02, "b": 32.51, "x0": 110.238, "x1": 146.384}, {"a": 32.51, "b": 37.55, "x0": 146.384, "x1": 156.409}, {"a": 37.55, "b": 42.42, "x0": 156.409, "x1": 176.785}, {"a": 42.42, "b": 48.5, "x0": 176.785, "x1": 192.976}, {"a": 48.5, "b": 56.63, "x0": 192.976, "x1": 210.913}, {"a": 56.63, "b": 65.36, "x0": 210.913, "x1": 232.566}, {"a": 65.36, "b": 72.49, "x0": 232.566, "x1": 244.574}, {"a": 72.49, "b": 76.35, "x0": 244.574, "x1": 256.986}, {"a": 76.35, "b": 82.44, "x0": 256.986, "x1": 276.719}, {"a": 82.44, "b": 87.33, "x0": 276.719, "x1": 305.739}, {"a": 87.33, "b": 94.28, "x0": 305.739, "x1": 316.55}, {"a": 94.28, "b": 99.13, "x0": 316.55, "x1": 331.665}, {"a": 99.13, "b": 103.87, "x0": 331.665, "x1": 366.464}, {"a": 103.87, "b": 108.62, "x0": 366.464, "x1": 375.062}, {"a": 108.62, "b": 114.34, "x0": 375.062, "x1": 394.698}, {"a": 114.34, "b": 118.7, "x0": 394.698, "x1": 405.927}, {"a": 118.7, "b": 122.93, "x0": 405.927, "x1": 418.987}, {"a": 122.93, "b": 127.77, "x0": 418.987, "x1": 470.052}, {"a": 127.77, "b": 135.94, "x0": 470.052, "x1": 475.051}, {"a": 135.94, "b": 140.6, "x0": 475.051, "x1": 500.502}, {"a": 140.6, "b": 149.01, "x0": 500.502, "x1": 526.809}, {"a": 149.01, "b": 154.48, "x0": 526.809, "x1": 572.662}, {"a": 154.48, "b": 162.15, "x0": 572.662, "x1": 600.585}, {"a": 162.15, "b": 167.3, "x0": 600.585, "x1": 621.682}, {"a": 167.3, "b": 173.57, "x0": 621.682, "x1": 633.416}, {"a": 173.57, "b": 181.13, "x0": 633.416, "x1": 646.022}, {"a": 181.13, "b": 187.4, "x0": 646.022, "x1": 684.814}, {"a": 187.4, "b": 192.02, "x0": 684.814, "x1": 702.778}, {"a": 192.02, "b": 195.62, "x0": 702.778, "x1": 709.978}, {"a": 195.62, "b": 199.24, "x0": 709.978, "x1": 719.814}, {"a": 199.24, "b": 202.27, "x0": 719.814, "x1": 738.133}, {"a": 202.27, "b": 207.16, "x0": 738.133, "x1": 752.0}];const GEO={"top": 40, "ploth": 134};const NR=6;const RMAP={};const LEGDATA=[{"n": 1, "dist": 6.35, "gain": 755, "v": 118.9, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Didgeridoo Dash"}, {"n": 2, "dist": 7.53, "gain": 561, "v": 74.5, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Rockhouse Roll"}, {"n": 3, "dist": 6.81, "gain": 609, "v": 89.4, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Koala Holler"}, {"n": 4, "dist": 5.33, "gain": 126, "v": 23.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Hot Diggity!"}, {"n": 5, "dist": 6.49, "gain": 896, "v": 138.1, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Wobble to Cobble"}, {"n": 6, "dist": 5.04, "gain": 193, "v": 38.3, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Hobb Nob"}, {"n": 7, "dist": 4.87, "gain": 379, "v": 77.8, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Little Clifty"}, {"n": 8, "dist": 6.08, "gain": 376, "v": 61.8, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "War Eagle"}, {"n": 9, "dist": 8.13, "gain": 557, "v": 68.5, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Up and At 'em!"}, {"n": 10, "dist": 8.73, "gain": 722, "v": 82.7, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Dingos with Banjos"}, {"n": 11, "dist": 7.13, "gain": 327, "v": 45.9, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "The Roamin' Forum"}, {"n": 12, "dist": 3.86, "gain": 183, "v": 47.4, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Walkabout to Withrow"}, {"n": 13, "dist": 6.09, "gain": 459, "v": 75.4, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Lolligaggin'"}, {"n": 14, "dist": 4.89, "gain": 542, "v": 110.8, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Bandicoot"}, {"n": 15, "dist": 6.95, "gain": 287, "v": 41.3, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "I Ain't Skeerd!"}, {"n": 16, "dist": 4.85, "gain": 280, "v": 57.7, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Playin' Possum"}, {"n": 17, "dist": 4.74, "gain": 630, "v": 132.9, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Rip Snorter"}, {"n": 18, "dist": 4.75, "gain": 156, "v": 32.8, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Buncha Fun!"}, {"n": 19, "dist": 5.72, "gain": 429, "v": 75.0, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Tasmanian Devil"}, {"n": 20, "dist": 4.36, "gain": 187, "v": 42.9, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "No Worries!"}, {"n": 21, "dist": 4.23, "gain": 211, "v": 49.9, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Wallaby"}, {"n": 22, "dist": 4.84, "gain": 944, "v": 195.0, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Plumb Tuckered"}, {"n": 23, "dist": 8.17, "gain": 156, "v": 19.1, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Greased Lightnin'"}, {"n": 24, "dist": 4.66, "gain": 453, "v": 97.2, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Bushwalker"}, {"n": 25, "dist": 8.41, "gain": 845, "v": 100.5, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Tester to Chester"}, {"n": 26, "dist": 5.47, "gain": 958, "v": 175.1, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Gumption"}, {"n": 27, "dist": 7.67, "gain": 818, "v": 106.6, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Chuck a Wobbly"}, {"n": 28, "dist": 5.15, "gain": 415, "v": 80.6, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Boondocks"}, {"n": 29, "dist": 6.27, "gain": 281, "v": 44.8, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Backwoods Boomerang"}, {"n": 30, "dist": 7.56, "gain": 364, "v": 48.1, "pts": 3, "color": "#ec835a", "lbl": "Hard", "name": "Holy Hedgehog!"}, {"n": 31, "dist": 6.27, "gain": 929, "v": 148.2, "pts": 4, "color": "#d03b3b", "lbl": "Very Hard", "name": "Running from the Devil"}, {"n": 32, "dist": 4.62, "gain": 317, "v": 68.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Ridgy Didge"}, {"n": 33, "dist": 3.6, "gain": 99, "v": 27.5, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Platypus Plod"}, {"n": 34, "dist": 3.62, "gain": 136, "v": 37.6, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "Gravel, Grit & Bridge Biz"}, {"n": 35, "dist": 3.03, "gain": 212, "v": 70.0, "pts": 1, "color": "#0ca30c", "lbl": "Easy", "name": "The Holy Roller"}, {"n": 36, "dist": 4.89, "gain": 259, "v": 53.0, "pts": 2, "color": "#fab219", "lbl": "Moderate", "name": "Finish Line"}];const RMAP0={};const NR0=6;
 function filterSlot(s, btn) {
   document.querySelectorAll('.leg').forEach(el => {
     el.classList.toggle('hidden', s !== 0 && Number(el.dataset.slot) !== s);
@@ -306,10 +466,10 @@ function renderNight() {
   for (const [ma, mb] of regions) {
     const xa = mileX(ma), xb = mileX(mb);
     parts.push(`<rect x="${xa}" y="${GEO.top}" width="${xb-xa}" height="${GEO.ploth}" fill="var(--nightshade)"/>`);
-    parts.push(`<text x="${(xa+xb)/2}" y="${GEO.top+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">🌙 night</text>`);
+    parts.push(`<text x="${(xa+xb)/2}" y="${GEO.top+10}" text-anchor="middle" font-size="9" fill="var(--ink2)">🌙 night</text>`);
   }
   for (const [da, db] of dayspans) {
-    if (db-da > 18) parts.push(`<text x="${(mileX(da)+mileX(db))/2}" y="${GEO.top+10}" text-anchor="middle" font-size="8" fill="var(--ink2)">☀️ day</text>`);
+    if (db-da > 18) parts.push(`<text x="${(mileX(da)+mileX(db))/2}" y="${GEO.top+10}" text-anchor="middle" font-size="9" fill="var(--ink2)">☀️ day</text>`);
   }
   let tick = (Math.floor(start/360)+1)*360;
   while (tick < t1) {
@@ -317,7 +477,7 @@ function renderNight() {
     const d = Math.min(Math.floor(tick/1440), DAYSJS.length-1), h = Math.floor((tick%1440)/60);
     const lbl = DAYSJS[d]+' '+((h%12)||12)+' '+(h<12?'AM':'PM');
     parts.push(`<line x1="${x}" y1="${GEO.top+GEO.ploth}" x2="${x}" y2="${GEO.top+GEO.ploth+4}" stroke="var(--axis)" stroke-width="1"/>`);
-    parts.push(`<text x="${x}" y="${GEO.top+GEO.ploth+20}" text-anchor="middle" font-size="6.8" fill="var(--muted)">${lbl}</text>`);
+    parts.push(`<text x="${x}" y="${GEO.top+GEO.ploth+22}" text-anchor="middle" font-size="9" fill="var(--muted)">${lbl}</text>`);
     tick += 360;
   }
   g.innerHTML = parts.join('');
@@ -332,7 +492,13 @@ function applyPlan(pace, start) {
     const t = tAt(parseFloat(el.dataset.mi));
     el.textContent = fmtClock(t)+' '+phaseEmoji(t);
   });
+  document.querySelectorAll('.estdur').forEach(el => {
+    const m0 = parseFloat(el.dataset.mi), d = parseFloat(el.dataset.dist);
+    const mins = Math.round(tAt(m0 + d) - tAt(m0));
+    el.textContent = '~' + (mins >= 60 ? Math.floor(mins/60) + 'h ' : '') + String(mins % 60).padStart(2, '0') + 'm';
+  });
   renderNight();
+  if (window.GUIDE && GUIDE.renderAll) GUIDE.renderAll(); else if (window.GUIDE) GUIDE.renderSide();
 }
 function parsePace(v) { const m = v.trim().match(/^(\d{1,2}):(\d{2})$/); return m ? Number(m[1])+Number(m[2])/60 : null; }
 function hmJS(v) { const p = v.split(':').map(Number); return p[0]*60+p[1]; }
@@ -444,6 +610,201 @@ if (nrSel) {
   }
   nrSel.addEventListener('change', () => renderPlanner(Number(nrSel.value)));
 }
+// ---- redesign UI: selection, accordion, my-legs, platform maps ----
+window.GUIDE = {
+  N: NR0, names: Object.assign({}, RMAP0), paces: {}, slotOf: {}, selected: 0, showAll: false, openLeg: null,
+  legSlot(n) { return this.slotOf[n] || ((n - 1) % this.N) + 1; },
+  label(s) { return this.names[s] || 'Slot ' + s; },
+  shortLabel(s) { const nm = this.names[s]; return nm ? nm.split(' ')[0] : 'Slot ' + s; },
+  initials(s) {
+    const firsts = {};
+    for (let i = 1; i <= this.N; i++) { const f = (this.names[i] || 'S' + i)[0].toUpperCase(); firsts[f] = (firsts[f] || 0) + 1; }
+    const nm = this.names[s] || 'S' + s, f = nm[0].toUpperCase();
+    return firsts[f] > 1 ? nm.slice(0, 2) : f;
+  },
+  renderChips() {
+    const row = document.getElementById('chipRow');
+    if (!row) return;
+    row.innerHTML = '<button class="chip2" data-slot="0">All</button>' +
+      Array.from({length: this.N}, (_, i) => `<button class="chip2" data-slot="${i + 1}">${this.shortLabel(i + 1)}</button>`).join('');
+    row.querySelectorAll('.chip2').forEach(b => {
+      b.classList.toggle('on', Number(b.dataset.slot) === this.selected);
+      b.addEventListener('click', () => { this.select(Number(b.dataset.slot)); });
+    });
+  },
+  select(s) {
+    this.selected = s; this.showAll = false;
+    if (this.openLeg) this.toggleLeg(this.openLeg, false);
+    document.querySelectorAll('#chipRow .chip2').forEach(b => b.classList.toggle('on', Number(b.dataset.slot) === s));
+    document.querySelectorAll('.skb').forEach(el => el.classList.toggle('dim', s !== 0 && Number(el.dataset.slot) !== s));
+    document.querySelectorAll('.lrow').forEach(el => el.classList.toggle('mine', s !== 0 && Number(el.dataset.slot) === s));
+    this.renderSide();
+  },
+  legMeta(n) { return LEGDATA.find(l => l.n === n); },
+  renderSide() {
+    const s = this.selected;
+    const mine = LEGDATA.filter(l => this.legSlot(l.n) === s);
+    const kt = document.getElementById('kpiTitle');
+    if (kt) {
+      if (s === 0) {
+        kt.textContent = 'The whole race';
+        document.getElementById('kpiMi').textContent = PLAN.total ? LEGDATA.reduce((a, l) => a + l.dist, 0).toFixed(1) : '';
+        document.getElementById('kpiLegs').textContent = LEGDATA.length;
+        document.getElementById('kpiGain').textContent = (LEGDATA.reduce((a, l) => a + l.gain, 0) / 1000).toFixed(1) + 'k';
+      } else {
+        kt.textContent = this.shortLabel(s) + "'s race";
+        document.getElementById('kpiMi').textContent = mine.reduce((a, l) => a + l.dist, 0).toFixed(1);
+        document.getElementById('kpiLegs').textContent = mine.length;
+        document.getElementById('kpiGain').textContent = (mine.reduce((a, l) => a + l.gain, 0) / 1000).toFixed(1) + 'k';
+      }
+    }
+    const html = s === 0 ? '' : this.myLegsHtml(s, mine);
+    const d = document.getElementById('myLegsBlock'), ph = document.getElementById('myLegsBlockPhone');
+    if (d) d.innerHTML = html;
+    if (ph) ph.innerHTML = html;
+  },
+  myLegsHtml(s, mine) {
+    const list = this.showAll ? mine : mine.slice(0, 6);
+    const cards = list.map(l => {
+      const meta = LEGDATA.find(x => x.n === l.n);
+      const t = tAt(this.startMi(l.n));
+      return `<a class="mini" style="border-top:3px solid ${meta.color}" href="#lr-${l.n}">` +
+        `<span class="r1"><span>${String(l.n).padStart(2, '0')}</span><i>${fmtClock(t).replace(':00 ', ' ')}</i></span>` +
+        `<span class="nm">${meta.name}</span><span class="d">${meta.dist} mi</span></a>`;
+    }).join('');
+    const more = mine.length > 6
+      ? `<button class="morebtn" onclick="GUIDE.showAll=!GUIDE.showAll;GUIDE.renderSide()">${this.showAll ? 'show fewer' : '+ ' + (mine.length - 6) + ' more legs'}</button>` : '';
+    return `<div class="mylabel">${this.shortLabel(s)} runs these ${mine.length}</div><div class="minigrid">${cards}${more}</div>`;
+  },
+  startMi(n) {
+    let m = 0;
+    for (const l of LEGDATA) { if (l.n === n) break; m += l.dist; }
+    return m;
+  },
+  toggleLeg(n, want) {
+    const x = document.getElementById('leg-' + n), row = document.getElementById('lr-' + n);
+    if (!x || !row) return;
+    const open = want !== undefined ? want : !x.classList.contains('open');
+    if (open && this.openLeg && this.openLeg !== n) this.toggleLeg(this.openLeg, false);
+    x.classList.toggle('open', open);
+    row.classList.toggle('openrow', open);
+    row.setAttribute('aria-expanded', open);
+    this.openLeg = open ? n : (this.openLeg === n ? null : this.openLeg);
+  }
+};
+document.querySelectorAll('.lrow').forEach(row => {
+  const go = () => GUIDE.toggleLeg(Number(row.dataset.n));
+  row.addEventListener('click', go);
+  row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+});
+// open a leg when arriving via #leg-N or #lr-N
+if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) GUIDE.toggleLeg(Number(location.hash.split('-').pop()), true);
+document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', () => {
+  const n = Number((a.getAttribute('href') || '').split('#leg-').pop());
+  if (n) GUIDE.toggleLeg(n, true);
+}));
+// platform-appropriate map primary
+(function () {
+  const apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
+  if (!apple) return;
+  document.querySelectorAll('.mapnav').forEach(w => {
+    const p = w.querySelector('.mapPrimary'), alt = w.querySelector('.mapAlt');
+    if (!p || !alt) return;
+    p.href = w.dataset.a; p.textContent = '📍 Apple Maps ↗';
+    alt.href = w.dataset.g; alt.textContent = 'or Google ↗';
+  });
+})();
+// desktop: chart legend open by default
+if (matchMedia('(min-width: 900px)').matches) {
+  const cl = document.getElementById('chartLegend');
+  if (cl) cl.open = true;
+}
+GUIDE.idxColor = (v) => v >= 96 ? '#d03b3b' : v >= 90 ? '#ec835a' : v >= 84 ? '#fab219' : '#0ca30c';
+GUIDE.fmtDur = (mins) => { mins = Math.round(mins); return (mins >= 60 ? Math.floor(mins/60) + 'h ' : '') + String(mins % 60).padStart(2, '0') + 'm'; };
+GUIDE.slotStats = function () {
+  const out = [];
+  for (let s = 1; s <= this.N; s++) {
+    const legs = LEGDATA.filter(l => this.legSlot(l.n) === s);
+    out.push({ s, legs,
+      mi: legs.reduce((a, l) => a + l.dist, 0),
+      gain: legs.reduce((a, l) => a + l.gain, 0),
+      pts: legs.reduce((a, l) => a + l.pts, 0) });
+  }
+  const am = out.reduce((a, x) => a + x.mi, 0) / this.N || 1, ag = out.reduce((a, x) => a + x.gain, 0) / this.N || 1,
+        ap = out.reduce((a, x) => a + x.pts, 0) / this.N || 1;
+  out.forEach(x => x.score = x.mi / am + x.gain / ag + x.pts / ap);
+  const top = Math.max(...out.map(x => x.score)) || 1;
+  out.forEach(x => { x.idx = Math.round(100 * x.score / top); x.dMi = x.mi - am; x.dGain = x.gain - ag; });
+  return out.sort((a, b) => b.score - a.score);
+};
+GUIDE.renderLoadCards = function () {
+  const box = document.getElementById('loadCards');
+  if (!box) return;
+  const stats = this.slotStats();
+  box.innerHTML = stats.map((x, i) => {
+    const c = this.idxColor(x.idx);
+    let longest = 0;
+    for (let k = 0; k + 1 < x.legs.length; k++) {
+      const endT = tAt(this.startMi(x.legs[k].n) + x.legs[k].dist);
+      const nextT = tAt(this.startMi(x.legs[k + 1].n));
+      longest = Math.max(longest, nextT - endT);
+    }
+    const hardest = x.legs.length ? x.legs.reduce((a, l) => (l.pts > a.pts || (l.pts === a.pts && l.gain > a.gain)) ? l : a) : null;
+    const rk1 = i === 0 ? `style="background:${c};color:var(--page);border-color:${c}"` : '';
+    return `<div class="loadcard">
+      <div class="lchead"><span class="rk" ${rk1}>${i + 1}</span><span class="lcname">${this.label(x.s)}</span>
+        <span class="lcidx" style="color:${c}">${x.idx}<i>index</i></span></div>
+      <div class="lcbar"><i style="width:${x.idx}%;background:${c}"></i></div>
+      <div class="lcbody">
+        <div><b>${x.mi.toFixed(1)} mi</b><span class="${x.dMi > 0 ? 'hi' : ''}">${x.dMi >= 0 ? '+' : ''}${x.dMi.toFixed(1)} vs avg</span></div>
+        <div><b>+${x.gain.toLocaleString()} ft</b><span class="${x.dGain > 0 ? 'hi' : ''}">${x.dGain >= 0 ? '+' : ''}${Math.round(x.dGain)} vs avg</span></div>
+        <div><b>${this.fmtDur(longest)}</b><span>longest break</span></div>
+      </div>
+      <div class="lclegs">${x.legs.map(l => `<i style="background:color-mix(in srgb, ${l.color} 24%, transparent);border-top:2px solid ${l.color}">${l.n}</i>`).join('')}</div>
+      ${hardest ? `<div class="lctough">toughest — leg ${hardest.n} · ${hardest.name} (${hardest.lbl.toLowerCase()}, +${hardest.gain.toLocaleString()} ft)</div>` : ''}
+    </div>`;
+  }).join('');
+};
+GUIDE.renderSwimlane = function () {
+  const svg = document.getElementById('swimSvg'), namesBox = document.getElementById('swimNames');
+  if (!svg || !namesBox) return;
+  const LBL = 6, PLOTW = 900 - 16, HEAD = 22, ROWH = 26;
+  const t0 = tAt(0), tEnd = tAt(PLAN.total);
+  const X = (t) => LBL + (t - t0) / (tEnd - t0) * PLOTW;
+  const bottom = HEAD + this.N * ROWH + 4;
+  namesBox.innerHTML = Array.from({length: this.N}, (_, i) => `<div>${this.shortLabel(i + 1)}</div>`).join('');
+  let parts = [];
+  for (let d = 0; d < 3; d++) {
+    const ns = d * 1440 + PLAN.ss, ne = (d + 1) * 1440 + PLAN.sr;
+    const a = Math.max(ns, t0), b = Math.min(ne, tEnd);
+    if (b > a) {
+      parts.push(`<rect x="${X(a).toFixed(1)}" y="${HEAD}" width="${(X(b) - X(a)).toFixed(1)}" height="${bottom - HEAD}" fill="var(--nightshade)"/>`);
+      parts.push(`<text x="${((X(a) + X(b)) / 2).toFixed(1)}" y="15" text-anchor="middle" font-size="9.5" fill="var(--ink2)">🌙 dark — vest + headlamp</text>`);
+    }
+  }
+  for (let t = Math.ceil(t0 / 180) * 180; t < tEnd; t += 180) {
+    const d = Math.floor(t / 1440), h = Math.floor((t % 1440) / 60), major = h === 0 || h === 12;
+    const x = X(t).toFixed(1);
+    parts.push(`<line x1="${x}" y1="${HEAD}" x2="${x}" y2="${bottom}" stroke="${major ? 'var(--axis)' : 'var(--grid)'}" stroke-width="1"/>`);
+    const lbl = h === 0 ? RACE_DAYS_JS[Math.min(d, RACE_DAYS_JS.length - 1)] + ' 12a' : (h % 12 || 12) + (h < 12 ? 'a' : 'p');
+    parts.push(`<text x="${x}" y="${bottom + 14}" text-anchor="middle" font-size="9.5" font-weight="${major ? 700 : 400}" fill="${major ? 'var(--ink2)' : 'var(--muted)'}">${lbl}</text>`);
+  }
+  LEGDATA.forEach(l => {
+    const sSlot = this.legSlot(l.n);
+    if (sSlot > this.N) return;
+    const y = HEAD + (sSlot - 1) * ROWH + 6;
+    const m0 = this.startMi(l.n);
+    const x1 = X(tAt(m0)), w = Math.max(X(tAt(m0 + l.dist)) - x1, 5);
+    parts.push(`<rect x="${x1.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="15" rx="3" fill="${l.color}"/>`);
+    if (w >= 12) parts.push(`<text x="${(x1 + w / 2).toFixed(1)}" y="${y + 11.5}" text-anchor="middle" font-size="8.5" font-weight="700" fill="rgba(0,0,0,.78)">${l.n}</text>`);
+  });
+  svg.innerHTML = parts.join('');
+};
+GUIDE.renderAll = function () { this.renderSide(); this.renderLoadCards(); this.renderSwimlane(); };
+if (document.getElementById('chipRow')) { GUIDE.renderChips(); GUIDE.renderSide(); }
+if (document.getElementById('loadCards')) GUIDE.renderAll();
+if (matchMedia('(min-width: 900px)').matches) { const lt = document.getElementById('legTableD'); if (lt) lt.open = true; }
+if (document.querySelector('.eststart') && !document.querySelector('.eststart').textContent) applyPlan(PLAN.pace, PLAN.start);
 // keep anchor targets clear of the sticky nav
 const topnav = document.querySelector('nav.top');
 function setScrollPad() {
