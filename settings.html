@@ -22,11 +22,26 @@ button { font:inherit; font-weight:700; border:none; border-radius:10px; padding
 button.ghost { background:none; border:1.5px solid var(--grid); color:var(--ink2) }
 .tiny { font-size:12px; color:var(--muted) } .ok { color:#0ca30c; font-weight:700 } .err { color:#d03b3b; font-weight:700 }
 a { color:var(--accent) }
+/* sticky top ribbon — mirrors the guide pages */
+.hdr { position:sticky; top:0; z-index:9; background:color-mix(in srgb, var(--page) 94%, transparent);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:1px solid var(--grid); padding:9px 14px }
+.hdr-in { max-width:1064px; margin:0 auto }
+.hdr-row { display:flex; align-items:center; gap:8px }
+.hdr-brand { font-weight:800; font-size:13px }
+.hdr-meta { font:11px ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted) }
+.hdr-nav { margin-left:auto; display:flex; gap:14px; align-items:center }
+.hdr-nav a, .hdr-nav span { font:700 12px system-ui; color:var(--ink2); text-decoration:none }
+.hdr-nav span { color:var(--ink); border-bottom:2px solid var(--accent); padding-bottom:1px }
+@media (min-width:900px) { .hdr { padding:11px 14px } .hdr-brand { font-size:15px } .hdr-nav a, .hdr-nav span { font-size:13px } }
 </style></head>
-<body><div class="wrap">
+<body>
+<div class="hdr"><div class="hdr-in"><div class="hdr-row">
+  <span class="hdr-brand" id="hdrBrand">Team settings</span>
+  <span class="hdr-meta" id="hdrMeta"></span>
+  <nav class="hdr-nav"><a id="lnkLegsTop" style="display:none">Legs</a><a id="lnkOverTop" style="display:none">Overview</a><span>Settings</span></nav>
+</div></div></div>
+<div class="wrap">
   <h1>🏃🏻 Team settings</h1>
-  <p class="tiny" id="crumb"></p>
-  <p id="topnav" style="display:none">→ Your team's guide: <a id="lnkLegsTop"><b>Legs</b></a> · <a id="lnkOverTop"><b>Overview</b></a></p>
   <div id="msg"></div>
   <div id="app" style="display:none">
     <div class="card">
@@ -72,7 +87,8 @@ a { color:var(--accent) }
   const team = teams[0];
   const LEG_MIN = team.race === '65' ? 25 : 1;
   const NAMES_URL = team.race === '65' ? '65/' : '';
-  document.getElementById('crumb').textContent = `${team.name} · OTO ${team.race} · ${season.year}`;
+  document.getElementById('hdrBrand').textContent = team.name;
+  document.getElementById('hdrMeta').textContent = `OTO ${team.race} · ${season.year}`;
 
   const [{ data: runners }, { data: assigns }, { data: legRows }] = await Promise.all([
     db.from('runners').select('*').eq('team_id', team.id),
@@ -159,7 +175,8 @@ a { color:var(--accent) }
 
   for (const [a, b] of [['lnkLegs', 'index'], ['lnkOver', 'overview'], ['lnkLegsTop', 'index'], ['lnkOverTop', 'overview']])
     document.getElementById(a).href = NAMES_URL + b + '.html?team=' + encodeURIComponent(slug);
-  document.getElementById('topnav').style.display = '';
+  document.getElementById('lnkLegsTop').style.display = '';
+  document.getElementById('lnkOverTop').style.display = '';
   document.getElementById('app').style.display = '';
 })();
 </script>

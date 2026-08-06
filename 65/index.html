@@ -136,6 +136,8 @@ td.bar { background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%,
   -webkit-appearance:none; appearance:none }
 .chip2.on { background:var(--ink); border-color:var(--ink); color:var(--page) }
 /* ---------- redesign: page shell ---------- */
+.wrap.shellwrap { max-width:none; padding:0 }
+.wrap.shellwrap > footer.colophon { max-width:1064px; margin-left:auto; margin-right:auto; padding:12px 14px 40px }
 .shell { max-width:1064px; margin:0 auto; padding:16px 14px 40px }
 .eyebrow { display:flex; align-items:baseline; gap:8px }
 .eyebrow b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--accent) }
@@ -223,7 +225,8 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
   .hdr-brand { font-size:15px }
   .hdr-nav a, .hdr-nav span { font-size:13px }
   .shell { padding:22px 28px 48px }
-  .pagegrid { display:grid; grid-template-columns:308px 1fr; gap:30px; align-items:start }
+  .pagegrid { display:grid; grid-template-columns:308px minmax(0,1fr); gap:30px; align-items:start }
+  .wrap.shellwrap > footer.colophon { padding-left:28px; padding-right:28px }
   .rail { position:sticky; top:76px; display:flex; flex-direction:column; gap:16px }
   .minigrid { grid-template-columns:repeat(2,1fr) }
   .legendgrid { grid-template-columns:auto 1fr auto 1fr }
@@ -349,7 +352,7 @@ footer.colophon { margin-top:36px; font-size:11.5px; color:var(--muted); border-
     <nav class="hdr-nav"><span>Legs</span><a class="hnav" data-page="overview" href="overview.html">Overview</a><a class="hnav" data-page="settings" href="../settings.html">Settings</a></nav></div>
   <div class="chiprow" id="chipRow"><button class="chip2 on" data-slot="0">All</button><button class="chip2" data-slot="1">Slot 1</button><button class="chip2" data-slot="2">Slot 2</button><button class="chip2" data-slot="3">Slot 3</button><button class="chip2" data-slot="4">Slot 4</button><button class="chip2" data-slot="5">Slot 5</button><button class="chip2" data-slot="6">Slot 6</button></div>
 </div></div>
-<div class="wrap" id="top">
+<div class="wrap shellwrap" id="top">
 
 <div class="shell"><div class="pagegrid">
 <div class="rail">
@@ -383,19 +386,6 @@ footer.colophon { margin-top:36px; font-size:11.5px; color:var(--muted); border-
     <div class="planctl"><button id="rdApply" class="pillbtn">↻ re-time the whole schedule from this handoff</button>
       <span class="tiny">shifts every est. start on this page (and the overview) so this leg's start matches reality — reset with the ⏱ control's reset</span></div>
   </div></div>
-</details>
-<details class="legend"><summary>How to read this guide (sources + legend)</summary>
-  <div class="panel" style="margin-top:8px">
-  <p style="margin:.3em 0"><span class="srcbadge">team beta</span>
-  Beta boxes, difficulty ratings, surface breakdowns and commentary are from <b>your team's own experience</b> (fill in <code>builder/data.py</code>).
-  Distances, gain, mile markers and climb grades are from public Strava data.</p>
-  <p style="margin:.3em 0">🌐 <b>From online:</b> official leg names, Strava routes, exchange stations, dates and night rules
-  come from the official race site and 2025 race guide.</p>
-  <p style="margin:.3em 0" class="tiny">⚠ Distances/gain on the cards are our 2025 numbers. The elevation profile charts come straight
-  from the current 2026 Strava routes (pulled July 2026). Four legs changed for 2026 — <b>1, 8, 30 and 31</b> — those cards carry a
-  🔄 route-update flag. When in doubt, the Strava link wins.</p>
-  <div class="legendrow">Difficulty: <span class="pill" style="--pc:#0ca30c"><span class="dot"></span><b>Easy</b></span><span class="pill" style="--pc:#fab219"><span class="dot"></span><b>Moderate</b></span><span class="pill" style="--pc:#ec835a"><span class="dot"></span><b>Hard</b></span><span class="pill" style="--pc:#d03b3b"><span class="dot"></span><b>Very Hard</b></span> · Surface: <span class="dotc" style="background:#64748b"></span>pavement
-  <span class="dotc" style="background:#a97142"></span>gravel <span class="dotc" style="background:#14919b"></span>trail</div></div>
 </details>
 </div>
 </div></div>
@@ -694,9 +684,14 @@ document.querySelectorAll('.lrow').forEach(row => {
 });
 // open a leg when arriving via #leg-N or #lr-N
 if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) GUIDE.toggleLeg(Number(location.hash.split('-').pop()), true);
-document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', () => {
+document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', (e) => {
   const n = Number((a.getAttribute('href') || '').split('#leg-').pop());
-  if (n) GUIDE.toggleLeg(n, true);
+  if (!n) return;
+  const row = document.getElementById('lr-' + n);
+  if (!row) return; // chart lives on another page — let the link navigate
+  e.preventDefault();
+  GUIDE.toggleLeg(n, true);
+  row.scrollIntoView({behavior: 'smooth', block: 'start'});
 }));
 // platform-appropriate map primary
 (function () {
@@ -801,12 +796,17 @@ if (document.getElementById('loadCards')) GUIDE.renderAll();
 if (matchMedia('(min-width: 900px)').matches) { const lt = document.getElementById('legTableD'); if (lt) lt.open = true; }
 if (document.querySelector('.eststart') && !document.querySelector('.eststart').textContent) applyPlan(PLAN.pace, PLAN.start);
 // keep anchor targets clear of the sticky nav
-const topnav = document.querySelector('nav.top');
+const topnav = document.querySelector('.hdr') || document.querySelector('nav.top');
 function setScrollPad() {
   if (topnav) document.documentElement.style.scrollPaddingTop = (topnav.offsetHeight + 10) + 'px';
 }
 setScrollPad();
 addEventListener('resize', setScrollPad);
 if (topnav && window.ResizeObserver) new ResizeObserver(setScrollPad).observe(topnav);
+// re-align a hash-opened leg now that scroll padding is known
+if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) {
+  const row = document.getElementById('lr-' + location.hash.split('-').pop());
+  if (row) setTimeout(() => row.scrollIntoView({block: 'start'}), 0);
+}
 </script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/team.js"></script>
 </body></html>

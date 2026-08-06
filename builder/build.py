@@ -551,6 +551,8 @@ td.bar { background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%,
   -webkit-appearance:none; appearance:none }
 .chip2.on { background:var(--ink); border-color:var(--ink); color:var(--page) }
 /* ---------- redesign: page shell ---------- */
+.wrap.shellwrap { max-width:none; padding:0 }
+.wrap.shellwrap > footer.colophon { max-width:1064px; margin-left:auto; margin-right:auto; padding:12px 14px 40px }
 .shell { max-width:1064px; margin:0 auto; padding:16px 14px 40px }
 .eyebrow { display:flex; align-items:baseline; gap:8px }
 .eyebrow b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--accent) }
@@ -638,7 +640,8 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
   .hdr-brand { font-size:15px }
   .hdr-nav a, .hdr-nav span { font-size:13px }
   .shell { padding:22px 28px 48px }
-  .pagegrid { display:grid; grid-template-columns:308px 1fr; gap:30px; align-items:start }
+  .pagegrid { display:grid; grid-template-columns:308px minmax(0,1fr); gap:30px; align-items:start }
+  .wrap.shellwrap > footer.colophon { padding-left:28px; padding-right:28px }
   .rail { position:sticky; top:76px; display:flex; flex-direction:column; gap:16px }
   .minigrid { grid-template-columns:repeat(2,1fr) }
   .legendgrid { grid-template-columns:auto 1fr auto 1fr }
@@ -1085,9 +1088,14 @@ document.querySelectorAll('.lrow').forEach(row => {
 });
 // open a leg when arriving via #leg-N or #lr-N
 if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) GUIDE.toggleLeg(Number(location.hash.split('-').pop()), true);
-document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', () => {
+document.querySelectorAll('.skb').forEach(a => a.addEventListener('click', (e) => {
   const n = Number((a.getAttribute('href') || '').split('#leg-').pop());
-  if (n) GUIDE.toggleLeg(n, true);
+  if (!n) return;
+  const row = document.getElementById('lr-' + n);
+  if (!row) return; // chart lives on another page — let the link navigate
+  e.preventDefault();
+  GUIDE.toggleLeg(n, true);
+  row.scrollIntoView({behavior: 'smooth', block: 'start'});
 }));
 // platform-appropriate map primary
 (function () {
@@ -1192,13 +1200,18 @@ if (document.getElementById('loadCards')) GUIDE.renderAll();
 if (matchMedia('(min-width: 900px)').matches) { const lt = document.getElementById('legTableD'); if (lt) lt.open = true; }
 if (document.querySelector('.eststart') && !document.querySelector('.eststart').textContent) applyPlan(PLAN.pace, PLAN.start);
 // keep anchor targets clear of the sticky nav
-const topnav = document.querySelector('nav.top');
+const topnav = document.querySelector('.hdr') || document.querySelector('nav.top');
 function setScrollPad() {
   if (topnav) document.documentElement.style.scrollPaddingTop = (topnav.offsetHeight + 10) + 'px';
 }
 setScrollPad();
 addEventListener('resize', setScrollPad);
 if (topnav && window.ResizeObserver) new ResizeObserver(setScrollPad).observe(topnav);
+// re-align a hash-opened leg now that scroll padding is known
+if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) {
+  const row = document.getElementById('lr-' + location.hash.split('-').pop());
+  if (row) setTimeout(() => row.scrollIntoView({block: 'start'}), 0);
+}
 '''
 
 def dot_legend():
@@ -1308,6 +1321,8 @@ COLOPHON = f'''<footer class="colophon">Built for {TEAM_NAME} · leg beta by you
 names, routes &amp; rules from outbackintheozarks.com · not an official race document. Go get it. 🤙</footer>'''
 
 def page(title, nav_html, body, script="", wide=False):
+    # shell pages (redesign) do their own centering; the legacy .wrap must not clamp them
+    shellwrap = " shellwrap" if 'class="shell"' in body else ""
     return f'''<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1316,7 +1331,7 @@ def page(title, nav_html, body, script="", wide=False):
 <style>{css()}</style></head>
 <body>
 {nav_html}
-<div class="wrap{" wide" if wide else ""}" id="top">
+<div class="wrap{" wide" if wide else ""}{shellwrap}" id="top">
 {body}
 {COLOPHON}
 </div>
@@ -1522,9 +1537,6 @@ def build_index():
 {legs_stream()}
 <details class="legend" style="margin-top:20px"><summary>🏁 Race day — who finishes when?</summary>
   <div class="panel" style="margin-top:8px">{race_day_panel(inner=True)}</div>
-</details>
-<details class="legend"><summary>How to read this guide (sources + legend)</summary>
-  <div class="panel" style="margin-top:8px">{how_to_read(inner=True)}</div>
 </details>
 </div>
 </div></div>'''

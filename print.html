@@ -136,6 +136,8 @@ td.bar { background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%,
   -webkit-appearance:none; appearance:none }
 .chip2.on { background:var(--ink); border-color:var(--ink); color:var(--page) }
 /* ---------- redesign: page shell ---------- */
+.wrap.shellwrap { max-width:none; padding:0 }
+.wrap.shellwrap > footer.colophon { max-width:1064px; margin-left:auto; margin-right:auto; padding:12px 14px 40px }
 .shell { max-width:1064px; margin:0 auto; padding:16px 14px 40px }
 .eyebrow { display:flex; align-items:baseline; gap:8px }
 .eyebrow b { font:800 10px system-ui; letter-spacing:.14em; text-transform:uppercase; color:var(--accent) }
@@ -223,7 +225,8 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
   .hdr-brand { font-size:15px }
   .hdr-nav a, .hdr-nav span { font-size:13px }
   .shell { padding:22px 28px 48px }
-  .pagegrid { display:grid; grid-template-columns:308px 1fr; gap:30px; align-items:start }
+  .pagegrid { display:grid; grid-template-columns:308px minmax(0,1fr); gap:30px; align-items:start }
+  .wrap.shellwrap > footer.colophon { padding-left:28px; padding-right:28px }
   .rail { position:sticky; top:76px; display:flex; flex-direction:column; gap:16px }
   .minigrid { grid-template-columns:repeat(2,1fr) }
   .legendgrid { grid-template-columns:auto 1fr auto 1fr }
