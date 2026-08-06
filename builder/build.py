@@ -514,7 +514,7 @@ nav.top { position:sticky; top:0; z-index:9; background:var(--page); border-bott
   display:flex; align-items:center; justify-content:center; min-width:8px }
 .surftext { font-size:11px; color:var(--muted); margin-top:3px }
 .beta { margin:8px 0 4px; font-size:13.5px }
-.beta .src, .srcbadge { display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+.beta .src, .beta2 .src, .srcbadge { display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
   color:var(--accent); border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius:4px; padding:1px 5px; margin-right:7px; vertical-align:1px }
 .tiny { font-size:11px; color:var(--muted) }
@@ -656,9 +656,6 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
   .lrow .lrating { display:block; width:96px; font:600 10.5px system-ui; flex:none }
   .lrow .lstart { display:block; width:104px; font:11px var(--mono); color:var(--ink2); text-align:right; flex:none }
   .lrow .lname { font-size:14.5px }
-  .lx .xgrid { display:grid; grid-template-columns:1.15fr 1fr; gap:20px }
-  .lx .xright { display:flex; flex-direction:column }
-  .lx .xbtns { margin-top:auto; padding-top:10px }
   .lx .bandmeta { display:inline }
 }
 @media (max-width: 899px) { .exjump { display:none } .rail-desktop-only { display:none } #myLegsBlock { display:none } }
@@ -677,9 +674,10 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .loadcard .lcidx i { font:400 10.5px var(--mono); color:var(--muted); font-style:normal; margin-left:4px }
 .loadcard .lcbar { height:5px; background:var(--surface) }
 .loadcard .lcbar i { display:block; height:100% }
-.loadcard .lcbody { display:flex; gap:18px; padding:9px 12px 8px }
-.loadcard .lcbody b { display:block; font-weight:700; font-size:17px; letter-spacing:-.02em; font-variant-numeric:tabular-nums }
-.loadcard .lcbody span { display:block; font:10.5px var(--mono); color:var(--muted) }
+.loadcard .lcbody { display:grid; grid-template-columns:auto auto 1fr; gap:16px; padding:9px 12px 8px; align-items:start }
+.loadcard .lcbody b { display:block; font-weight:700; font-size:17px; letter-spacing:-.02em; font-variant-numeric:tabular-nums; white-space:nowrap }
+.loadcard .lcbody span { display:block; font:10.5px var(--mono); color:var(--muted); white-space:nowrap }
+.loadcard .lcbody div:last-child span { white-space:normal }
 .loadcard .lcbody .hi { color:#ec835a }
 .loadcard .lclegs { display:flex; gap:3px; padding:0 12px }
 .loadcard .lclegs i { flex:1; text-align:center; font:700 10.5px var(--mono); padding:3px 0 4px;
@@ -1149,12 +1147,12 @@ GUIDE.renderLoadCards = function () {
   const stats = this.slotStats();
   box.innerHTML = stats.map((x, i) => {
     const c = this.idxColor(x.idx);
-    let longest = 0, after = null;
+    let shortest = Infinity, after = null;
     for (let k = 0; k + 1 < x.legs.length; k++) {
       const endT = tAt(this.startMi(x.legs[k].n) + x.legs[k].dist);
       const nextT = tAt(this.startMi(x.legs[k + 1].n));
       const gap = nextT - endT;
-      if (gap > longest) { longest = gap; after = x.legs[k].n; }
+      if (gap < shortest) { shortest = gap; after = x.legs[k].n; }
     }
     const hardest = x.legs.length ? x.legs.reduce((a, l) => (l.pts > a.pts || (l.pts === a.pts && l.gain > a.gain)) ? l : a) : null;
     const rk1 = i === 0 ? `style="background:${c};color:var(--page);border-color:${c}"` : '';
@@ -1165,7 +1163,7 @@ GUIDE.renderLoadCards = function () {
       <div class="lcbody">
         <div><b>${x.mi.toFixed(1)} mi</b><span class="${x.dMi > 0 ? 'hi' : ''}">${x.dMi >= 0 ? '+' : ''}${x.dMi.toFixed(1)} vs avg</span></div>
         <div><b>+${x.gain.toLocaleString()} ft</b><span class="${x.dGain > 0 ? 'hi' : ''}">${x.dGain >= 0 ? '+' : ''}${Math.round(x.dGain)} vs avg</span></div>
-        <div><b>${after ? this.fmtDur(longest) : '—'}</b><span>${after ? 'longest break · after ' + after : 'runs once'}</span></div>
+        <div><b>${after ? this.fmtDur(shortest) : '—'}</b><span>${after ? 'shortest break · after ' + after : 'runs once'}</span></div>
       </div>
       <div class="lclegs">${x.legs.map(l => `<i style="background:color-mix(in srgb, ${l.color} 24%, transparent);border-top:2px solid ${l.color}">${l.n}</i>`).join('')}</div>
       ${hardest ? `<div class="lctough">toughest — leg ${hardest.n} · ${hardest.name} (${hardest.lbl.toLowerCase()}, +${hardest.gain.toLocaleString()} ft)</div>` : ''}
