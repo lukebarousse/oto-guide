@@ -1026,6 +1026,7 @@ window.GUIDE = {
     document.querySelectorAll('.skb').forEach(el => el.classList.toggle('dim', s !== 0 && Number(el.dataset.slot) !== s));
     document.querySelectorAll('.lrow').forEach(el => el.classList.toggle('mine', s !== 0 && Number(el.dataset.slot) === s));
     this.renderSide();
+    window.scrollTo({top: 0, behavior: 'smooth'}); // the KPIs + "runs these N" payoff lives up top
   },
   legMeta(n) { return LEGDATA.find(l => l.n === n); },
   renderSide() {
