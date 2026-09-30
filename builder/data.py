@@ -198,10 +198,10 @@ FINISH = dict(name="Prairie Grove Battlefield State Park", )
 # Toilets at each exchange zone, from the race director's list (Sep 2026).
 # Zone k = end of leg k = start of leg k+1; 0 = start line, 36 = finish.
 # "yes" = real bathroom, "porta" = porta-potty, "no" = none. The list's
-# "(Nearby)" entries count as yes. Zones missing here (0, 11) were blank on
-# the list and show nothing.
+# "(Nearby)" entries count as yes. Zone 11 was blank on the list and shows
+# nothing; 0 (start line) confirmed by Luke.
 ZONE_BATHROOMS = {
-    1: "yes", 2: "porta", 3: "yes", 4: "no", 5: "porta", 6: "yes", 7: "yes", 8: "yes",
+    0: "yes", 1: "yes", 2: "porta", 3: "yes", 4: "no", 5: "porta", 6: "yes", 7: "yes", 8: "yes",
     9: "porta", 10: "no", 12: "yes", 13: "porta", 14: "yes", 15: "yes", 16: "no", 17: "no",
     18: "yes", 19: "porta", 20: "yes", 21: "no", 22: "yes", 23: "yes", 24: "yes", 25: "yes",
     26: "yes", 27: "no", 28: "porta", 29: "yes", 30: "yes", 31: "yes", 32: "no", 33: "porta",
