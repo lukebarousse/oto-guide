@@ -20,7 +20,7 @@ OUT_DIR = os.environ.get("OTO_OUT", "out")
 RACE_ID = getattr(_d, "RACE_ID", "205")
 PLAN_NOTE = getattr(_d, "PLAN_NOTE", "waves 6:00 AM–noon, assigned by team pace")
 ZONE_BATHROOMS = getattr(_d, "ZONE_BATHROOMS", {})
-BATH_LABEL = {"yes": "🚻 Bathroom", "porta": "🚽 Porta-potty", "no": "🚫 No bathroom"}
+BATH_LABEL = {"yes": "🚻 Bathroom", "nearby": "🚻 Bathroom", "porta": "🚽 Porta-potty", "no": "🚫 No bathroom"}
 
 def zone_badge(zone):
     v = ZONE_BATHROOMS.get(zone)
@@ -481,6 +481,7 @@ nav.top { position:sticky; top:0; z-index:9; background:var(--page); border-bott
 .chip { display:inline-block; border-radius:6px; padding:2px 7px; font-size:11px; margin:2px 3px 0 0;
   border:1px solid var(--ring); background:var(--surface); color:var(--ink2) }
 .chip.climb { border-color:color-mix(in srgb, var(--accent) 45%, transparent); color:var(--ink) }
+.chip.note { border-color:color-mix(in srgb, var(--accent) 45%, transparent); color:var(--ink) }
 .dotc { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; outline:1px solid rgba(0,0,0,.2) }
 .secbanner { margin:34px 0 12px; padding:14px 16px; border-radius:12px; background:var(--ink); color:var(--page) }
 .secbanner .secno { font-size:11px; letter-spacing:.18em; opacity:.7; font-weight:700 }
@@ -636,7 +637,7 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums .ends .m { text-align:right; font-variant-numeric:tabular-nums }
 .lx .nums .ends .zb { justify-self:start; white-space:nowrap; font:600 10.5px system-ui; color:var(--ink2);
   border:1px solid var(--grid); background:var(--surface); border-radius:99px; padding:2px 8px }
-.lx .nums .ends .zb[data-v="yes"], .lx .nums .ends .zb[data-v="porta"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
+.lx .nums .ends .zb[data-v="yes"], .lx .nums .ends .zb[data-v="nearby"], .lx .nums .ends .zb[data-v="porta"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
 .lx .nums .ends .zb[data-v="no"] { color:var(--muted) }
 .lx .nums .ends .zb:empty { border:none; background:none; padding:0 }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
@@ -1497,6 +1498,11 @@ def leg_expanded(l):
         foot = (f'<div class="footnote">🔄 <b>2026 route update:</b> Strava now measures this leg at ~{m["mi"]:.1f} mi '
                 f'(our 2025 data: {fmt_mi(l["dist"])} mi / +{l["gain"]:,} ft). The profile is the current route.</div>')
     tags = "".join(f'<span class="chip warn">⚠ {esc(t)}</span>' for t in l["tags"])
+    # notes, not warnings — team.js keeps .chip.note when it swaps in DB tags
+    if ZONE_BATHROOMS.get(n - 1) == "nearby":
+        tags += '<span class="chip note">🚻 Bathroom at start is nearby</span>'
+    if ZONE_BATHROOMS.get(n) == "nearby":
+        tags += '<span class="chip note">🚻 Bathroom at end is nearby</span>'
     url = strava_url(n)
     surfmeta = f'<div class="surfmeta"><span>{esc(l["surface_text"])}</span></div>'
     left = (profile_svg(n) + surface_bar(l).replace('<div class="surftext">' + esc(l["surface_text"]) + '</div>', '') + surfmeta)

@@ -28,7 +28,10 @@
       const beta = card.querySelector('.beta2') || card.querySelector('.beta');
       if (beta && l.beta) beta.innerHTML = '<span class="src">team beta</span>' + escHtml(l.beta);
       const tagrow = card.querySelector('.tagrow');
-      if (tagrow) tagrow.innerHTML = (l.tags || []).map(t => `<span class="chip warn">⚠ ${escHtml(t)}</span>`).join('');
+      if (tagrow) {
+        const keep = [...tagrow.querySelectorAll('.chip.note')].map(c => c.outerHTML).join('');  // baked course notes
+        tagrow.innerHTML = (l.tags || []).map(t => `<span class="chip warn">⚠ ${escHtml(t)}</span>`).join('') + keep;
+      }
       const surf = card.querySelector('.surfmeta span') || card.querySelector('.surftext');
       if (surf && l.surface_text) surf.textContent = l.surface_text;
     }
