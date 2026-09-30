@@ -41,7 +41,7 @@
     const by = {}; zones.forEach(z => { by[z.zone] = z.bathroom; });
     $$('.zb[data-zone]').forEach(el => {
       const b = by[Number(el.dataset.zone)];
-      el.textContent = b === true ? ' · 🚻 Bathroom' : b === false ? ' · 🚫 No bathroom' : '';
+      el.textContent = b === true ? '🚻 Bathroom' : b === false ? '🚫 No bathroom' : '';
     });
   }
 

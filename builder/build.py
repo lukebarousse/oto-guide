@@ -623,9 +623,12 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
 .lx .nums span { font-size:11px; color:var(--muted); margin-left:3px }
 .lx .nums { flex-wrap:wrap; row-gap:8px }
-.lx .nums .ends { margin-left:auto; align-self:center; text-align:right; font:11.5px var(--mono); color:var(--ink2); line-height:1.7 }
-.lx .nums .ends span { font-size:inherit; margin:0; color:var(--muted) }
-.lx .nums .ends .zb { color:var(--ink2) }
+.lx .nums .ends { margin-left:auto; align-self:center; display:grid; grid-template-columns:auto auto auto; column-gap:8px; row-gap:3px;
+  align-items:baseline; font:11.5px var(--mono); color:var(--ink2) }
+.lx .nums .ends span { font-size:inherit; margin:0 }
+.lx .nums .ends .k { color:var(--muted); text-align:right }
+.lx .nums .ends .m { text-align:right; font-variant-numeric:tabular-nums }
+.lx .nums .ends .zb { text-align:left; white-space:nowrap }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
   background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
 .lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
@@ -1500,8 +1503,8 @@ def leg_expanded(l):
             f'<div class="nums"><div><b>{fmt_mi(l["dist"])}</b><span>mi</span></div>'
             f'<div><b>+{l["gain"]:,}</b><span>ft</span></div>'
             f'<div><b>{ftpmi(l):.0f}</b><span>ft/mi</span></div>'
-            f'<div class="ends"><div><span>Start:</span> {fmt_mi(l["start_mi"])} mi<span class="zb" data-zone="{n - 1}"></span></div>'
-            f'<div><span>End:</span> {fmt_mi(l["end_mi"])} mi<span class="zb" data-zone="{n}"></span></div></div></div>'
+            f'<div class="ends"><span class="k">Start:</span><span class="m">{fmt_mi(l["start_mi"])} mi</span><span class="zb" data-zone="{n - 1}"></span>'
+            f'<span class="k">End:</span><span class="m">{fmt_mi(l["end_mi"])} mi</span><span class="zb" data-zone="{n}"></span></div></div>'
             f'<div class="assign"><span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
             f'<b class="runner-name" data-slot="{slot}">{esc(RUNNERS.get(slot) or f"Slot {slot}")}</b>'
             f'<span class="when"><span class="eststart" data-mi="{l["start_mi"]}"></span>'
