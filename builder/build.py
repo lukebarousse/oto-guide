@@ -623,12 +623,16 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
 .lx .nums span { font-size:11px; color:var(--muted); margin-left:3px }
 .lx .nums { flex-wrap:wrap; row-gap:8px }
-.lx .nums .ends { margin-left:auto; align-self:center; display:grid; grid-template-columns:auto auto auto; column-gap:8px; row-gap:3px;
-  align-items:baseline; font:11.5px var(--mono); color:var(--ink2) }
+.lx .nums .ends { margin-left:auto; align-self:center; display:grid; grid-template-columns:auto auto auto; column-gap:8px; row-gap:5px;
+  align-items:center; font:11.5px var(--mono); color:var(--ink2) }
 .lx .nums .ends span { font-size:inherit; margin:0 }
 .lx .nums .ends .k { color:var(--muted); text-align:right }
 .lx .nums .ends .m { text-align:right; font-variant-numeric:tabular-nums }
-.lx .nums .ends .zb { text-align:left; white-space:nowrap }
+.lx .nums .ends .zb { justify-self:start; white-space:nowrap; font:600 10.5px system-ui; color:var(--ink2);
+  border:1px solid var(--grid); background:var(--surface); border-radius:99px; padding:2px 8px }
+.lx .nums .ends .zb[data-v="yes"] { color:var(--ink); border-color:color-mix(in srgb, #0ca30c 45%, transparent); background:color-mix(in srgb, #0ca30c 12%, transparent) }
+.lx .nums .ends .zb[data-v="no"] { color:var(--muted) }
+.lx .nums .ends .zb:empty { border:none; background:none; padding:0 }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
   background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
 .lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;

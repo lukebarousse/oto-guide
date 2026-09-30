@@ -42,6 +42,7 @@
     $$('.zb[data-zone]').forEach(el => {
       const b = by[Number(el.dataset.zone)];
       el.textContent = b === true ? '🚻 Bathroom' : b === false ? '🚫 No bathroom' : '';
+      el.dataset.v = b === true ? 'yes' : b === false ? 'no' : '';
     });
   }
 
