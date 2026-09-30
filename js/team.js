@@ -22,7 +22,6 @@
   async function applyLegContent(seasonId) {
     const { data: legs } = await db.from('legs').select('*').eq('season_id', seasonId);
     if (!legs) return;
-    const BATH = { start: 'at leg start', end: 'at leg end', both: 'at start + end' };
     for (const l of legs) {
       const card = $(`#leg-${l.n}`);
       if (!card) continue;
@@ -32,12 +31,18 @@
       if (tagrow) tagrow.innerHTML = (l.tags || []).map(t => `<span class="chip warn">⚠ ${escHtml(t)}</span>`).join('');
       const surf = card.querySelector('.surfmeta span') || card.querySelector('.surftext');
       if (surf && l.surface_text) surf.textContent = l.surface_text;
-      const bath = card.querySelector('.nums .bath');
-      if (bath) {
-        if (BATH[l.bathroom]) { bath.textContent = '🚻 ' + BATH[l.bathroom]; bath.hidden = false; }
-        else bath.hidden = true;
-      }
     }
+  }
+
+  // ---- exchange-zone facts (zone k = end of leg k / start of leg k+1; 0 = start line) ----
+  async function applyZones(seasonId) {
+    const { data: zones } = await db.from('zones').select('zone,bathroom').eq('season_id', seasonId);
+    if (!zones) return;
+    const by = {}; zones.forEach(z => { by[z.zone] = z.bathroom; });
+    $$('.zb[data-zone]').forEach(el => {
+      const b = by[Number(el.dataset.zone)];
+      el.textContent = b === true ? ' · 🚻 Bathroom' : b === false ? ' · 🚫 No bathroom' : '';
+    });
   }
 
   // ---- team overlay ----
@@ -159,7 +164,7 @@
     try {
       const season = await activeSeason();
       if (!season) return;
-      await applyLegContent(season.id);
+      await Promise.all([applyLegContent(season.id), applyZones(season.id)]);
       if (slug) await applyTeam(season.id);
     } catch (e) { console.warn('OTO overlay skipped:', e); }
   })();

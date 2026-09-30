@@ -203,14 +203,14 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx.open { display:block }
 .lx .band { display:flex; justify-content:space-between; padding:7px 13px; font:800 10px system-ui; letter-spacing:.12em; text-transform:uppercase }
 .lx .band i { font:10px var(--mono); font-style:normal; color:var(--muted); letter-spacing:0; text-transform:none }
-.lx .bandmeta { font:10px var(--mono); color:var(--muted); letter-spacing:0; text-transform:none; display:none }
 .lx .xbody { padding:12px 13px 13px }
 .lx .nums { display:flex; gap:18px; margin-bottom:10px }
 .lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
 .lx .nums span { font-size:11px; color:var(--muted); margin-left:3px }
-.lx .nums .bath { margin-left:auto; align-self:center; font:600 11.5px system-ui; color:var(--ink2);
-  background:var(--surface); border:1px solid var(--grid); border-radius:99px; padding:4px 9px; white-space:nowrap }
-.lx .nums .bath[hidden] { display:none }
+.lx .nums { flex-wrap:wrap; row-gap:8px }
+.lx .nums .ends { margin-left:auto; align-self:center; text-align:right; font:11.5px var(--mono); color:var(--ink2); line-height:1.7 }
+.lx .nums .ends span { font-size:inherit; margin:0; color:var(--muted) }
+.lx .nums .ends .zb { color:var(--ink2) }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
   background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
 .lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
@@ -244,7 +244,6 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
   .lrow .lrating { display:block; width:96px; font:600 10.5px system-ui; flex:none }
   .lrow .lstart { display:block; width:104px; font:11px var(--mono); color:var(--ink2); text-align:right; flex:none }
   .lrow .lname { font-size:14.5px }
-  .lx .bandmeta { display:inline }
 }
 @media (max-width: 899px) { .exjump { display:none } .rail-desktop-only { display:none } #myLegsBlock { display:none } }
 @media (min-width: 900px) { #myLegsBlockPhone { display:none } }
