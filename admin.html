@@ -125,12 +125,6 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       <label>Warning flags (comma-separated)</label><input id="legTags" placeholder="Loose gravel, No van access">
       <p><button id="legSave">Save leg</button> <span id="legMsg" class="tiny"></span></p>
     </div>
-
-    <h2>Exchange zones <span class="tiny">🚻 bathrooms — shows on each leg's Start / End line · saves as you change it</span></h2>
-    <div class="card" style="max-height:420px;overflow:auto;padding-top:0">
-      <table id="zonesT"><thead><tr><th>Zone</th><th>Where</th><th style="width:170px">Bathroom</th></tr></thead><tbody></tbody></table>
-      <p class="tiny" id="zoneMsg">Zone k = end of leg k = start of leg k+1. Leave “—” where you don't know yet; runners see nothing until you pick yes or no.</p>
-    </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -309,30 +303,6 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
     $('cCopy').innerHTML = '<option value="">— blank —</option>' +
       all.map(t => `<option value="${t.id}">${yr(t.season_id)} · ${esc(t.name)}</option>`).join('');
   }
-  async function loadZones() {
-    const tb = $('zonesT').querySelector('tbody');
-    if (!LD) { tb.innerHTML = '<tr><td colspan="3" class="tiny">js/legdata.js missing — rebuild the site</td></tr>'; return; }
-    const { data, error } = await db.from('zones').select('zone,bathroom').eq('season_id', season.id);
-    if (error) { tb.innerHTML = `<tr><td colspan="3" class="err">${esc(error.message)} — run supabase/migrations.sql</td></tr>`; return; }
-    const by = {}; (data || []).forEach(z => { by[z.zone] = z.bathroom; });
-    const exch = {}; LD.exchanges.forEach(e => { exch[e.after] = e.name; });
-    const last = LD.legs[LD.legs.length - 1].n;
-    const label = (k) => k === 0 ? `<b>Start line</b> · ${esc(LD.start.name)}`
-      : k === last ? `<b>Finish</b> · ${esc(LD.finish.name)}`
-      : `after leg ${k} · ${esc(LD.legs[k - 1].name)}${exch[k] ? ` — <b>${esc(exch[k])}</b>` : ''}`;
-    const opt = (v, cur) => `<option value="${v}"${cur === v ? ' selected' : ''}>`;
-    tb.innerHTML = Array.from({length: last + 1}, (_, k) => {
-      const cur = by[k] === true ? 'yes' : by[k] === false ? 'no' : '';
-      return `<tr><td>${k}</td><td>${label(k)}</td><td><select class="zoneSel" data-zone="${k}" style="padding:4px 8px">` +
-        `${opt('', cur)}—</option>${opt('yes', cur)}🚻 bathroom</option>${opt('no', cur)}🚫 no bathroom</option></select></td></tr>`;
-    }).join('');
-    tb.querySelectorAll('.zoneSel').forEach(sel => sel.addEventListener('change', async () => {
-      const v = sel.value === 'yes' ? true : sel.value === 'no' ? false : null;
-      const { error } = await db.from('zones').upsert({ season_id: season.id, zone: Number(sel.dataset.zone), bathroom: v });
-      $('zoneMsg').textContent = error ? error.message : `zone ${sel.dataset.zone} saved ✓`;
-      $('zoneMsg').className = error ? 'err' : 'ok';
-    }));
-  }
   async function loadLegs() {
     legs = (await db.from('legs').select('*').eq('season_id', season.id).order('n')).data || [];
     $('legSel').innerHTML = legs.map(l => `<option value="${l.n}">${l.n}</option>`).join('');
@@ -364,7 +334,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       }
       loadTeams();
     });
-    await loadSeasons(); await Promise.all([loadTeams(), loadCopyOptions(), loadLegs(), loadZones()]);
+    await loadSeasons(); await Promise.all([loadTeams(), loadCopyOptions(), loadLegs()]);
   }
 
   $('lGo').addEventListener('click', async () => {
@@ -377,7 +347,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
 
   $('seasonSel').addEventListener('change', async () => {
     season = seasons.find(s => s.id === Number($('seasonSel').value));
-    await Promise.all([loadTeams(), loadLegs(), loadZones()]);
+    await Promise.all([loadTeams(), loadLegs()]);
   });
   $('newSeason').addEventListener('click', async () => {
     const year = prompt('New season year?', String(new Date().getFullYear() + 1));
@@ -386,9 +356,7 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
     if (error) return alert(error.message);
     const src = legs.length ? legs : [];
     if (src.length) await db.from('legs').insert(src.map(l => ({ season_id: ns.id, n: l.n, beta: l.beta, tags: l.tags, team_rating: l.team_rating, surface_text: l.surface_text })));
-    const { data: zs } = await db.from('zones').select('zone,bathroom').eq('season_id', season.id);
-    if (zs && zs.length) await db.from('zones').insert(zs.map(z => ({ ...z, season_id: ns.id })));
-    await loadSeasons(); await Promise.all([loadTeams(), loadLegs(), loadZones()]);
+    await loadSeasons(); await Promise.all([loadTeams(), loadLegs()]);
   });
   $('activateSeason').addEventListener('click', async () => {
     await db.from('seasons').update({ active: false }).neq('id', 0);

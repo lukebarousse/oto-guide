@@ -34,18 +34,6 @@
     }
   }
 
-  // ---- exchange-zone facts (zone k = end of leg k / start of leg k+1; 0 = start line) ----
-  async function applyZones(seasonId) {
-    const { data: zones } = await db.from('zones').select('zone,bathroom').eq('season_id', seasonId);
-    if (!zones) return;
-    const by = {}; zones.forEach(z => { by[z.zone] = z.bathroom; });
-    $$('.zb[data-zone]').forEach(el => {
-      const b = by[Number(el.dataset.zone)];
-      el.textContent = b === true ? '🚻 Bathroom' : b === false ? '🚫 No bathroom' : '';
-      el.dataset.v = b === true ? 'yes' : b === false ? 'no' : '';
-    });
-  }
-
   // ---- team overlay ----
   async function applyTeam(seasonId) {
     const { data: teams } = await db.from('teams').select('*').eq('season_id', seasonId).eq('slug', slug).limit(1);
@@ -165,7 +153,7 @@
     try {
       const season = await activeSeason();
       if (!season) return;
-      await Promise.all([applyLegContent(season.id), applyZones(season.id)]);
+      await applyLegContent(season.id);
       if (slug) await applyTeam(season.id);
     } catch (e) { console.warn('OTO overlay skipped:', e); }
   })();

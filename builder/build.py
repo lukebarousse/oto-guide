@@ -19,6 +19,12 @@ JS_PREFIX = getattr(_d, "JS_PREFIX", "js/")
 OUT_DIR = os.environ.get("OTO_OUT", "out")
 RACE_ID = getattr(_d, "RACE_ID", "205")
 PLAN_NOTE = getattr(_d, "PLAN_NOTE", "waves 6:00 AM–noon, assigned by team pace")
+ZONE_BATHROOMS = getattr(_d, "ZONE_BATHROOMS", {})
+BATH_LABEL = {"yes": "🚻 Bathroom", "porta": "🚽 Porta-potty", "no": "🚫 No bathroom"}
+
+def zone_badge(zone):
+    v = ZONE_BATHROOMS.get(zone)
+    return f'<span class="zb" data-v="{v}">{BATH_LABEL[v]}</span>' if v in BATH_LABEL else '<span class="zb"></span>'
 
 DIFF = {"Easy": "#0ca30c", "Moderate": "#fab219", "Hard": "#ec835a", "Very Hard": "#d03b3b"}
 # deliberately outside the difficulty palette (green/yellow/orange/red)
@@ -630,7 +636,7 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums .ends .m { text-align:right; font-variant-numeric:tabular-nums }
 .lx .nums .ends .zb { justify-self:start; white-space:nowrap; font:600 10.5px system-ui; color:var(--ink2);
   border:1px solid var(--grid); background:var(--surface); border-radius:99px; padding:2px 8px }
-.lx .nums .ends .zb[data-v="yes"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
+.lx .nums .ends .zb[data-v="yes"], .lx .nums .ends .zb[data-v="porta"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
 .lx .nums .ends .zb[data-v="no"] { color:var(--muted) }
 .lx .nums .ends .zb:empty { border:none; background:none; padding:0 }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
@@ -1507,8 +1513,8 @@ def leg_expanded(l):
             f'<div class="nums"><div><b>{fmt_mi(l["dist"])}</b><span>mi</span></div>'
             f'<div><b>+{l["gain"]:,}</b><span>ft</span></div>'
             f'<div><b>{ftpmi(l):.0f}</b><span>ft/mi</span></div>'
-            f'<div class="ends"><span class="k">Start:</span><span class="m">{fmt_mi(l["start_mi"])} mi</span><span class="zb" data-zone="{n - 1}"></span>'
-            f'<span class="k">End:</span><span class="m">{fmt_mi(l["end_mi"])} mi</span><span class="zb" data-zone="{n}"></span></div></div>'
+            f'<div class="ends"><span class="k">Start:</span><span class="m">{fmt_mi(l["start_mi"])} mi</span>{zone_badge(n - 1)}'
+            f'<span class="k">End:</span><span class="m">{fmt_mi(l["end_mi"])} mi</span>{zone_badge(n)}</div></div>'
             f'<div class="assign"><span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
             f'<b class="runner-name" data-slot="{slot}">{esc(RUNNERS.get(slot) or f"Slot {slot}")}</b>'
             f'<span class="when"><span class="eststart" data-mi="{l["start_mi"]}"></span>'

@@ -57,20 +57,11 @@ create table legs (
   primary key (season_id, n)
 );
 
--- per-season exchange-zone facts. zone k = end of leg k = start of leg k+1; 0 = start line, 36 = finish
-create table zones (
-  season_id int not null references seasons(id) on delete cascade,
-  zone      int not null check (zone between 0 and 36),
-  bathroom  boolean,                        -- null = unknown (nothing shown), true/false = 🚻 / 🚫 on the leg card
-  primary key (season_id, zone)
-);
-
 alter table seasons     enable row level security;
 alter table teams       enable row level security;
 alter table runners     enable row level security;
 alter table assignments enable row level security;
 alter table legs        enable row level security;
-alter table zones       enable row level security;
 
 -- public read on everything
 create policy pub_read_seasons     on seasons     for select using (true);
@@ -78,7 +69,6 @@ create policy pub_read_teams       on teams       for select using (true);
 create policy pub_read_runners     on runners     for select using (true);
 create policy pub_read_assignments on assignments for select using (true);
 create policy pub_read_legs        on legs        for select using (true);
-create policy pub_read_zones       on zones       for select using (true);
 
 -- team-scoped tables: open writes (capability-URL model), but no team create/delete
 create policy pub_update_teams  on teams       for update using (true) with check (true);
@@ -90,7 +80,6 @@ create policy adm_all_seasons on seasons for all to authenticated using (true) w
 create policy adm_ins_teams   on teams   for insert to authenticated with check (true);
 create policy adm_del_teams   on teams   for delete to authenticated using (true);
 create policy adm_all_legs    on legs    for all to authenticated using (true) with check (true);
-create policy adm_all_zones   on zones   for all to authenticated using (true) with check (true);
 
 -- first season
 insert into seasons (year, active) values (2026, true);
