@@ -103,11 +103,11 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
     </div>
 
     <h2 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">Exchange windows
-      <span class="tiny" style="font-weight:400">projected first arrival → last departure, both races</span>
+      <span class="tiny" style="font-weight:400">projected, all teams</span>
       <span style="flex:1"></span><button class="ghost" id="printBoard" style="padding:5px 12px;font-size:13px">⎙ Print</button></h2>
     <div class="card" id="exchBoard" style="overflow-x:auto">
       <table id="exchT"><thead><tr>
-        <th>Location</th><th>Course mi</th><th>All teams</th><th>205-mile</th><th>65-mile</th>
+        <th>Location</th><th>Course mi</th><th>First arrival</th><th>Last arrival</th><th>Teams</th><th>First team</th><th>Last team</th>
       </tr></thead><tbody></tbody></table>
       <p class="tiny">Wave start + each runner's pace × the legs they're assigned (team average where a runner has no pace yet).
         ~ = at least one team in that window is missing paces or an assigned wave. Estimates — pad them for staffing.</p>
@@ -271,24 +271,21 @@ a { color:var(--accent) } .pill { display:inline-block; border:1px solid var(--g
       let tt = (race === '65' ? 1440 : 0) + hmm(t.wave_start || DEF_WAVE[race]);
       const push = (key, isStart) => {
         const g = at[key] = at[key] || {};
-        (g[race] = g[race] || []).push({ t: tt, team: t.name, approx, isStart });
+        (g[race] = g[race] || []).push({ t: tt, team: t.name, race, approx, isStart });
       };
       push(legsR[0].n - 1, true);
       legsR.forEach(l => { tt += l.dist * paceOf(slotOf[l.n] || (((l.n - 1) % N) + 1)); push(l.n, false); });
     });
-    const cell = (arr) => {
-      if (!arr || !arr.length) return '<span class="tiny">—</span>';
-      const a = arr.slice().sort((x, y) => x.t - y.t), lo = a[0], hi = a[a.length - 1];
-      const tilde = a.some(x => x.approx) ? '~' : '';
-      const what = lo.isStart ? 'start waves' : `${a.length} team${a.length === 1 ? '' : 's'}`;
-      return `<span class="rng"><b>${tilde}${fmtAbs('205', lo.t)}</b> → <b>${tilde}${fmtAbs('205', hi.t)}</b></span>` +
-        `<div class="tiny">${what} · first ${esc(lo.team)} · last ${esc(hi.team)}</div>`;
-    };
+    const who = (x) => esc(x.team) + (x.race === '65' ? ` <span class="tiny">65${x.isStart ? ' · starts here' : ''}</span>` : '');
     tb.innerHTML = locs.map(loc => {
       const g = at[loc.key] || {};
+      const a = [...(g['205'] || []), ...(g['65'] || [])].sort((x, y) => x.t - y.t);
       const mi65 = lfsMi != null && loc.mi >= lfsMi ? `<div class="tiny">65: mi ${(loc.mi - lfsMi).toFixed(1)}</div>` : '';
-      return `<tr><td><b>${esc(loc.name)}</b></td><td>${loc.mi.toFixed(1)}${mi65}</td>` +
-        `<td>${cell([...(g['205'] || []), ...(g['65'] || [])])}</td><td>${cell(g['205'])}</td><td>${cell(g['65'])}</td></tr>`;
+      const where = `<td><b>${esc(loc.name)}</b>${loc.key === 0 ? '<div class="tiny">start line</div>' : ''}</td><td>${loc.mi.toFixed(1)}${mi65}</td>`;
+      if (!a.length) return `<tr>${where}<td colspan="5" class="tiny">—</td></tr>`;
+      const lo = a[0], hi = a[a.length - 1], tilde = a.some(x => x.approx) ? '~' : '';
+      return `<tr>${where}<td class="rng"><b>${tilde}${fmtAbs('205', lo.t)}</b></td><td class="rng"><b>${tilde}${fmtAbs('205', hi.t)}</b></td>` +
+        `<td>${a.length}</td><td>${who(lo)}</td><td>${who(hi)}</td></tr>`;
     }).join('');
   }
   $('printBoard').addEventListener('click', () => {
