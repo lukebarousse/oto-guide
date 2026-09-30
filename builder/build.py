@@ -640,6 +640,7 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums .ends .zb[data-v="yes"], .lx .nums .ends .zb[data-v="nearby"], .lx .nums .ends .zb[data-v="porta"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
 .lx .nums .ends .zb[data-v="no"] { color:var(--muted) }
 .lx .nums .ends .zb:empty { border:none; background:none; padding:0 }
+@media (max-width: 599px) { .lx .nums .ends { flex-basis:100%; margin-left:0; margin-top:2px; justify-content:start } }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
   background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
 .lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
