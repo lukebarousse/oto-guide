@@ -1,4 +1,5 @@
 -- OTO Guide schema. Run this once in the Supabase SQL editor, then run seed_legs.sql.
+-- Existing project? Use migrations.sql instead.
 -- Security model (deliberate, per the race's needs):
 --   * everything is publicly readable
 --   * team-scoped tables (teams/runners/assignments) are publicly WRITABLE —
@@ -9,7 +10,9 @@
 create table seasons (
   id    serial primary key,
   year  int not null unique,
-  active boolean not null default false
+  active boolean not null default false,
+  target_finish_205 text,                 -- admin 🎯 target (HH:MM), drives suggested waves
+  target_finish_65  text
 );
 
 create table teams (
@@ -51,6 +54,7 @@ create table legs (
   tags      jsonb not null default '[]',
   team_rating text,                        -- community-adjusted rating shown as "team says"
   surface_text text not null default '',
+  bathroom  text check (bathroom in ('start','end','both')),  -- null = none; 🚻 chip on the leg card
   primary key (season_id, n)
 );
 

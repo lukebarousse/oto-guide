@@ -20,8 +20,9 @@
 
   // ---- leg content overlay (admin-edited wording + flags) ----
   async function applyLegContent(seasonId) {
-    const { data: legs } = await db.from('legs').select('n,beta,tags,team_rating,surface_text').eq('season_id', seasonId);
+    const { data: legs } = await db.from('legs').select('*').eq('season_id', seasonId);
     if (!legs) return;
+    const BATH = { start: 'at leg start', end: 'at leg end', both: 'at start + end' };
     for (const l of legs) {
       const card = $(`#leg-${l.n}`);
       if (!card) continue;
@@ -31,6 +32,11 @@
       if (tagrow) tagrow.innerHTML = (l.tags || []).map(t => `<span class="chip warn">⚠ ${escHtml(t)}</span>`).join('');
       const surf = card.querySelector('.surfmeta span') || card.querySelector('.surftext');
       if (surf && l.surface_text) surf.textContent = l.surface_text;
+      const bath = card.querySelector('.nums .bath');
+      if (bath) {
+        if (BATH[l.bathroom]) { bath.textContent = '🚻 ' + BATH[l.bathroom]; bath.hidden = false; }
+        else bath.hidden = true;
+      }
     }
   }
 
