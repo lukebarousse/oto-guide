@@ -219,9 +219,11 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums .ends .zb[data-v="yes"], .lx .nums .ends .zb[data-v="nearby"], .lx .nums .ends .zb[data-v="porta"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
 .lx .nums .ends .zb[data-v="no"] { color:var(--muted) }
 .lx .nums .ends .zb:empty { border:none; background:none; padding:0 }
-/* fit tiers, set by GUIDE.fitNums after measuring: t1 hides ft/mi, t2 also hides +ft, t3 wraps the block under the miles */
-.lx .nums.t1 > div:nth-child(3) { display:none }
-.lx .nums.t2 > div:nth-child(2) { display:none }
+.lx .nums .stats { display:flex; gap:18px; align-items:baseline; flex-wrap:wrap }
+/* fit tiers, set by GUIDE.fitNums after measuring: t1 hides ft/mi; t2 also stacks mi over +ft;
+   t3 drops the Start/End block underneath and brings all three stats back inline */
+.lx .nums.t1 .stats > div:nth-child(3), .lx .nums.t2 .stats > div:nth-child(3) { display:none }
+.lx .nums.t2 .stats { flex-direction:column; gap:0; align-items:flex-start }
 .lx .nums.t3 .ends { flex-basis:100%; margin-left:0; margin-top:2px; justify-content:start }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
   background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
@@ -708,13 +710,17 @@ window.GUIDE = {
     this.openLeg = open ? n : (this.openLeg === n ? null : this.openLeg);
     if (open) this.fitNums(x);
   },
-  // keep the Start/End block beside the big numbers: shed ft/mi, then +ft, and only then wrap it underneath
+  // keep the Start/End block beside the big numbers: shed ft/mi, then stack mi over +ft,
+  // and only then drop the block underneath (where all three stats fit again)
   fitNums(x) {
-    const nums = x.querySelector('.nums'), ends = nums && nums.querySelector('.ends');
-    if (!ends) return;
+    const nums = x.querySelector('.nums'), ends = nums && nums.querySelector('.ends'), stats = nums && nums.querySelector('.stats');
+    if (!ends || !stats) return;
     nums.classList.remove('t1', 't2', 't3');
-    const wrapped = () => ends.getBoundingClientRect().top >= nums.firstElementChild.getBoundingClientRect().bottom - 1;
-    for (const t of ['t1', 't2', 't3']) { if (!wrapped()) return; nums.classList.add(t); }
+    const wrapped = () => ends.getBoundingClientRect().top >= stats.getBoundingClientRect().bottom - 1;
+    if (!wrapped()) return;
+    nums.classList.add('t1'); if (!wrapped()) return;
+    nums.classList.add('t2'); if (!wrapped()) return;
+    nums.classList.remove('t1', 't2'); nums.classList.add('t3');
   }
 };
 document.querySelectorAll('.lrow').forEach(row => {
