@@ -629,8 +629,14 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lrow .lsurf, .lrow .lrating, .lrow .lstart { display:none }
 .lx { display:none; background:var(--card); border:1px solid var(--ring); border-radius:12px; overflow:hidden; margin:0 0 8px }
 .lx.open { display:block }
-.lx .band { display:flex; justify-content:space-between; padding:7px 13px; font:800 10px system-ui; letter-spacing:.12em; text-transform:uppercase }
-.lx .band i { font:10px var(--mono); font-style:normal; color:var(--muted); letter-spacing:0; text-transform:none }
+.lx .band { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:3px 10px; padding:6px 13px;
+  font:800 10px system-ui; letter-spacing:.12em; text-transform:uppercase }
+.lx .band .brate { margin-right:auto }
+.lx .band .assign { display:flex; align-items:center; gap:6px; letter-spacing:0; text-transform:none }
+.lx .band .av { width:19px; height:19px; border-radius:50%; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center; font:700 9.5px system-ui; flex:none }
+.lx .band .runner-name { font:700 12.5px system-ui; color:var(--ink) }
+.lx .band .when { font:11.5px var(--mono); color:var(--ink2); white-space:nowrap; letter-spacing:0; text-transform:none }
 .lx .xbody { padding:12px 13px 13px }
 .lx .nums { display:flex; gap:18px; margin-bottom:10px }
 .lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
@@ -643,12 +649,6 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .rtrack .ln { flex:1; border-top:1.5px solid var(--axis) }
 .lx .rbath { display:flex; justify-content:space-between; gap:10px; margin-top:4px; font:600 11.5px system-ui; color:var(--ink) }
 .lx .rbath .zb[data-v="no"] { color:var(--muted) }
-.lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
-  background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
-.lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
-  display:flex; align-items:center; justify-content:center; font:700 10px system-ui; flex:none }
-.lx .assign b { font:700 12.5px system-ui }
-.lx .assign .when { margin-left:auto; font:11.5px var(--mono); color:var(--ink2); white-space:nowrap }
 .lx .surfmeta { display:flex; justify-content:space-between; font:10.5px var(--mono); color:var(--muted); margin-top:3px }
 .lx .beta2 { font-size:14px; line-height:1.5; color:var(--ink2); text-wrap:pretty; margin:10px 0 }
 .lx .beta2 .src { margin-right:7px }
@@ -1516,8 +1516,11 @@ def leg_expanded(l):
              f'<div class="qrbox print-only"><img src="{qr_datauri(url)}" alt="QR: Strava route leg {n}"><span>Strava route</span></div></div>')
     return (f'<div class="lx" id="leg-{n}" data-n="{n}" data-slot="{slot}">'
             f'<div class="band" style="background:color-mix(in srgb, {c} 22%, transparent);border-bottom:1px solid color-mix(in srgb, {c} 40%, transparent)">'
-            f'<span style="color:{c}">{esc(band_txt)}</span>'
-            f'<i>difficulty</i></div>'
+            f'<span class="brate" style="color:{c}">{esc(band_txt)}</span>'
+            f'<span class="assign"><span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
+            f'<b class="runner-name" data-slot="{slot}">{esc(RUNNERS[slot].split(" ")[0] if RUNNERS.get(slot) else f"Slot {slot}")}</b></span>'
+            f'<span class="when"><span class="eststart" data-mi="{l["start_mi"]}"></span>'
+            f' · <span class="estdur" data-mi="{l["start_mi"]}" data-dist="{l["dist"]}"></span></span></div>'
             f'<div class="xbody">'
             f'<div class="nums"><div><b>{fmt_mi(l["dist"])}</b><span>mi</span></div>'
             f'<div><b>+{l["gain"]:,}</b><span>ft</span></div>'
@@ -1526,10 +1529,6 @@ def leg_expanded(l):
             f'<span class="rtrack"><i class="dot"></i><i class="ln"></i><i class="dot"></i></span>'
             f'<span><b>End</b> @ {fmt_at(l["end_mi"])}</span></div>'
             f'<div class="rbath">{zone_badge(n - 1)}{zone_badge(n)}</div></div>'
-            f'<div class="assign"><span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
-            f'<b class="runner-name" data-slot="{slot}">{esc(RUNNERS.get(slot) or f"Slot {slot}")}</b>'
-            f'<span class="when"><span class="eststart" data-mi="{l["start_mi"]}"></span>'
-            f' · <span class="estdur" data-mi="{l["start_mi"]}" data-dist="{l["dist"]}"></span></span></div>'
             f'<div class="xgrid"><div>{left}</div><div class="xright">{right}</div></div>'
             f'</div></div>')
 

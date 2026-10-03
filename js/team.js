@@ -86,7 +86,7 @@
     $$('.lx .assign').forEach(box => {
       const n = Number(box.closest('.lx').dataset.n);
       const rn = box.querySelector('.runner-name');
-      if (rn) { rn.dataset.slot = legSlot(n); rn.textContent = names[legSlot(n)] || 'Slot ' + legSlot(n); }
+      if (rn) { const sl = legSlot(n); rn.dataset.slot = sl; rn.textContent = window.GUIDE ? GUIDE.shortLabel(sl) : (names[sl] || 'Slot ' + sl); }
     });
     $$('.skb').forEach(el => {
       const n = Number((el.getAttribute('href') || '').split('#leg-').pop());
