@@ -7,6 +7,7 @@ Elevation profiles: if out/elev.json exists ({"1": [[mi, ft], ...], ...}), nativ
 profiles are embedded in each leg card.
 """
 import base64, importlib, io, json, os, re, html as H
+from decimal import Decimal, ROUND_HALF_UP
 import qrcode
 _d = importlib.import_module(os.environ.get("OTO_DATA", "data"))
 LEGS, NAMES, STRAVA, EXCHANGES, SECTIONS, RACE = _d.LEGS, _d.NAMES, _d.STRAVA, _d.EXCHANGES, _d.SECTIONS, _d.RACE
@@ -55,6 +56,11 @@ def qr_datauri(url, box=4):
 
 def esc(s): return H.escape(s, quote=False)
 def fmt_mi(x): return f"{x:,.2f}".rstrip("0").rstrip(".")
+
+def fmt_at(x):
+    """Course mile for the Start/End line: one decimal, half-up (76.35 -> 76.4); the start line is 0."""
+    d = Decimal(str(round(x, 2))).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+    return "0" if d == 0 else str(d)
 def strava_url(n): return f"https://www.strava.com/routes/{STRAVA[n]}"
 def ftpmi(l): return l["gain"] / l["dist"]
 
@@ -629,23 +635,14 @@ details.chartlegend summary { cursor:pointer; font:600 11.5px system-ui; color:v
 .lx .nums { display:flex; gap:18px; margin-bottom:10px }
 .lx .nums b { font-weight:700; font-size:19px; letter-spacing:-.03em; font-variant-numeric:tabular-nums }
 .lx .nums span { font-size:11px; color:var(--muted); margin-left:3px }
-.lx .nums { flex-wrap:wrap; row-gap:8px }
-.lx .nums .ends { margin-left:auto; align-self:center; display:grid; grid-template-columns:auto auto auto; column-gap:8px; row-gap:5px;
-  align-items:center; font:11.5px var(--mono); color:var(--ink2) }
-.lx .nums .ends span { font-size:inherit; margin:0 }
-.lx .nums .ends .k { color:var(--muted); text-align:right }
-.lx .nums .ends .m { text-align:right; font-variant-numeric:tabular-nums }
-.lx .nums .ends .zb { justify-self:start; white-space:nowrap; font:600 10.5px system-ui; color:var(--ink2);
-  border:1px solid var(--grid); background:var(--surface); border-radius:99px; padding:2px 8px }
-.lx .nums .ends .zb[data-v="yes"], .lx .nums .ends .zb[data-v="nearby"], .lx .nums .ends .zb[data-v="porta"] { color:var(--ink); border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 14%, transparent) }
-.lx .nums .ends .zb[data-v="no"] { color:var(--muted) }
-.lx .nums .ends .zb:empty { border:none; background:none; padding:0 }
-.lx .nums .stats { display:flex; gap:18px; align-items:baseline; flex-wrap:wrap }
-/* fit tiers, set by GUIDE.fitNums after measuring: t1 hides ft/mi; t2 also stacks mi over +ft;
-   t3 drops the Start/End block underneath and brings all three stats back inline */
-.lx .nums.t1 .stats > div:nth-child(3), .lx .nums.t2 .stats > div:nth-child(3) { display:none }
-.lx .nums.t2 .stats { flex-direction:column; gap:0; align-items:flex-start }
-.lx .nums.t3 .ends { flex-basis:100%; margin-left:0; margin-top:2px; justify-content:start }
+.lx .route { margin:0 0 11px }
+.lx .rline { display:flex; align-items:center; gap:8px; font:11.5px var(--mono); color:var(--ink2); white-space:nowrap }
+.lx .rline b { font:700 12px system-ui; color:var(--ink) }
+.lx .rtrack { flex:1; min-width:24px; display:flex; align-items:center }
+.lx .rtrack .dot { width:7px; height:7px; border-radius:50%; background:var(--ink2); flex:none }
+.lx .rtrack .ln { flex:1; border-top:1.5px solid var(--axis) }
+.lx .rbath { display:flex; justify-content:space-between; gap:10px; margin-top:4px; font:600 11.5px system-ui; color:var(--ink) }
+.lx .rbath .zb[data-v="no"] { color:var(--muted) }
 .lx .assign { display:flex; align-items:center; gap:8px; padding:8px 9px; border-radius:9px;
   background:color-mix(in srgb, var(--accent) 13%, transparent); margin-bottom:10px }
 .lx .assign .av { width:21px; height:21px; border-radius:50%; background:var(--accent); color:#fff;
@@ -1100,19 +1097,6 @@ window.GUIDE = {
     row.classList.toggle('openrow', open);
     row.setAttribute('aria-expanded', open);
     this.openLeg = open ? n : (this.openLeg === n ? null : this.openLeg);
-    if (open) this.fitNums(x);
-  },
-  // keep the Start/End block beside the big numbers: shed ft/mi, then stack mi over +ft,
-  // and only then drop the block underneath (where all three stats fit again)
-  fitNums(x) {
-    const nums = x.querySelector('.nums'), ends = nums && nums.querySelector('.ends'), stats = nums && nums.querySelector('.stats');
-    if (!ends || !stats) return;
-    nums.classList.remove('t1', 't2', 't3');
-    const wrapped = () => ends.getBoundingClientRect().top >= stats.getBoundingClientRect().bottom - 1;
-    if (!wrapped()) return;
-    nums.classList.add('t1'); if (!wrapped()) return;
-    nums.classList.add('t2'); if (!wrapped()) return;
-    nums.classList.remove('t1', 't2'); nums.classList.add('t3');
   }
 };
 document.querySelectorAll('.lrow').forEach(row => {
@@ -1256,7 +1240,7 @@ function setScrollPad() {
   if (topnav) document.documentElement.style.scrollPaddingTop = (topnav.offsetHeight + 10) + 'px';
 }
 setScrollPad();
-addEventListener('resize', () => { setScrollPad(); if (GUIDE.openLeg) GUIDE.fitNums(document.getElementById('leg-' + GUIDE.openLeg)); });
+addEventListener('resize', setScrollPad);
 if (topnav && window.ResizeObserver) new ResizeObserver(setScrollPad).observe(topnav);
 // re-align a hash-opened leg now that scroll padding is known
 if (/^#(leg|lr)-[0-9]+$/.test(location.hash)) {
@@ -1535,11 +1519,13 @@ def leg_expanded(l):
             f'<span style="color:{c}">{esc(band_txt)}</span>'
             f'<i>difficulty</i></div>'
             f'<div class="xbody">'
-            f'<div class="nums"><div class="stats"><div><b>{fmt_mi(l["dist"])}</b><span>mi</span></div>'
+            f'<div class="nums"><div><b>{fmt_mi(l["dist"])}</b><span>mi</span></div>'
             f'<div><b>+{l["gain"]:,}</b><span>ft</span></div>'
             f'<div><b>{ftpmi(l):.0f}</b><span>ft/mi</span></div></div>'
-            f'<div class="ends"><span class="k">Start:</span><span class="m">{fmt_mi(l["start_mi"])} mi</span>{zone_badge(n - 1)}'
-            f'<span class="k">End:</span><span class="m">{fmt_mi(l["end_mi"])} mi</span>{zone_badge(n)}</div></div>'
+            f'<div class="route"><div class="rline"><span><b>Start</b> @ {fmt_at(l["start_mi"])}</span>'
+            f'<span class="rtrack"><i class="dot"></i><i class="ln"></i><i class="dot"></i></span>'
+            f'<span><b>End</b> @ {fmt_at(l["end_mi"])}</span></div>'
+            f'<div class="rbath">{zone_badge(n - 1)}{zone_badge(n)}</div></div>'
             f'<div class="assign"><span class="av avslot" data-slot="{slot}">{esc(inits[slot])}</span>'
             f'<b class="runner-name" data-slot="{slot}">{esc(RUNNERS.get(slot) or f"Slot {slot}")}</b>'
             f'<span class="when"><span class="eststart" data-mi="{l["start_mi"]}"></span>'
