@@ -1,9 +1,9 @@
 # Supabase free-tier projects pause after ~1 week without traffic.
-# This pings the REST endpoint twice a week so the database stays awake.
+# This pings the REST endpoint every day, so one missed run cannot leave a 7-day gap.
 name: keep supabase awake
 on:
   schedule:
-    - cron: "17 12 * * 1,4"
+    - cron: "17 12 * * *"
   workflow_dispatch:
 jobs:
   ping:
