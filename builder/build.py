@@ -21,6 +21,7 @@ OUT_DIR = os.environ.get("OTO_OUT", "out")
 RACE_ID = getattr(_d, "RACE_ID", "205")
 PLAN_NOTE = getattr(_d, "PLAN_NOTE", "waves 6:00 AM–noon, assigned by team pace")
 ZONE_BATHROOMS = getattr(_d, "ZONE_BATHROOMS", {})
+ZONE_EXTRAS = getattr(_d, "ZONE_EXTRAS", {})      # per-season arrangements at an exchange (see data.py)
 BATH_LABEL = {"yes": "🚻 Bathroom", "nearby": "🚻 Bathroom", "porta": "🚽 Porta-potty", "no": "🚫 No bathroom"}
 
 def zone_badge(zone):
@@ -1506,6 +1507,13 @@ def leg_expanded(l):
         tags += '<span class="chip note">🚻 Bathroom at start is nearby</span>'
     if ZONE_BATHROOMS.get(n) == "nearby":
         tags += '<span class="chip note">🚻 Bathroom at end is nearby</span>'
+    for zone, where in ((n - 1, "start"), (n, "end")):
+        x = ZONE_EXTRAS.get(zone)
+        if not x:
+            continue
+        chip, _, when = x["chip"].partition(" from ")   # "🍳 Breakfast from 9 AM" -> "🍳 Breakfast at end from 9 AM"
+        tags += f'<span class="chip note">{esc(chip)} at {where}{" from " + esc(when) if when else ""}</span>'
+        foot += f'<div class="footnote">{esc(x["chip"].split(" ")[0])} <b>At the {where} of this leg:</b> {esc(x["note"])}</div>'
     url = strava_url(n)
     surfmeta = f'<div class="surfmeta"><span>{esc(l["surface_text"])}</span></div>'
     left = (profile_svg(n) + surface_bar(l).replace('<div class="surftext">' + esc(l["surface_text"]) + '</div>', '') + surfmeta)

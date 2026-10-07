@@ -210,6 +210,17 @@ ZONE_BATHROOMS = {
     34: "no", 35: "no", 36: "yes",
 }
 
+# Exchange-zone extras the race director arranged for THIS season (Oct 2026).
+# Not course facts — confirm with JT every year. Zone k = end of leg k = start
+# of leg k+1; both legs touching the zone get the chip and the note.
+# chip: short, goes in the tag row as "<chip> at start/end"; note: the detail,
+# shown in a footnote box as "At the start/end of this leg: <note>".
+ZONE_EXTRAS = {
+    29: dict(chip="🍳 Breakfast from 9 AM",
+             note="The Ol' Cabin in Winslow opens at 9 AM with breakfast for runners. "
+                  "Bathrooms open all night. Water for a tip or donation."),
+}
+
 SECTIONS = [
     dict(legs=(1, 6),  dest="Hobbs State Park"),
     dict(legs=(7, 12), dest="Withrow Springs State Park"),
