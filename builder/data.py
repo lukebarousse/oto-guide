@@ -210,13 +210,13 @@ ZONE_BATHROOMS = {
     34: "no", 35: "no", 36: "yes",
 }
 
-# Exchange-zone extras the race director arranged for THIS season (Oct 2026).
-# Not course facts — confirm with JT every year. Zone k = end of leg k = start
-# of leg k+1; both legs touching the zone get the chip and the note.
-# chip: short, goes in the tag row as "<chip> at start/end"; note: the detail,
-# shown in a footnote box as "At the start/end of this leg: <note>".
+# Exchange-zone extras the race director arranged for one season (not course
+# facts). An entry renders only while its `season` equals the year in RACE["dates"],
+# so it disappears by itself when the dates roll over. Zone k = end of leg k =
+# start of leg k+1; both legs touching the zone get the chip (verbatim, in the
+# tag row) and the note (in a footnote box as "At the start/end of this leg: <note>").
 ZONE_EXTRAS = {
-    29: dict(chip="🍳 Breakfast from 9 AM",
+    29: dict(season=2026, chip="🍳 Breakfast available",
              note="The Ol' Cabin in Winslow opens at 9 AM with breakfast for runners. "
                   "Bathrooms open all night. Water for a tip or donation."),
 }
