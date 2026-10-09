@@ -29,6 +29,8 @@ OTO_DATA=data65 OTO_OUT=out65 ../.venv/bin/python build.py    # -> out65/
 cp out/*.html .. && cp out65/*.html ../65/
 ```
 
+Leg wording lives in the database once the site is up (`js/team.js` overlays it), so after editing beta/tags in `data.py` push the changed legs: `OTO_ADMIN_EMAIL=… OTO_ADMIN_PASSWORD=… ../.venv/bin/python push_legs.py 2 3 4` (your admin login; `--all` for every leg). `gen_seed.py` refreshes `supabase/seed_legs.sql` for fresh installs.
+
 Runtime pieces (not generated): `js/team.js` (personalization overlay), `settings.html`, `admin.html`, `404.html` (routes `/t/<slug>`), `supabase/*.sql`.
 
 See `CLAUDE.md` for the full map. Not an official race document — verify against the official race guide.
