@@ -51,7 +51,7 @@ LEGS = [
       climbs=[(1.8, 497, 5.3)], tags=["Dogs", "Watch the turns"]),
  dict(n=3, dist=6.81, gain=609, rating="Hard", team=None,
       surface=(25, 38, 37), surface_text="75% gravel/trail · 25% pavement",
-      beta="Hard for sure. Super rocky path — even the vans can't follow it. You run across a dry river bed and finish up a steep, narrow hiking trail to the highway. Many had to walk a little.",
+      beta="Hard for sure. Super rocky path for the first half: a long descent that crosses a dry river bed, then it climbs again from there. Very steep climb at mile 4 with some sand barriers to get over, which are a little tricky. In 2026 that climb wasn't groomed, so it was waist-high weeds the whole way for about half a mile. After that it's dirt for a little longer, then pavement for the last mile and change.",
       climbs=[(1.4, 223, 3.0)], tags=["No van access", "Rocky"]),
  dict(n=4, dist=5.33, gain=126, rating="Moderate", team="Easy",
       surface=(50, 50, 0), surface_text="Pavement / gravel",

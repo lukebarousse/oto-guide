@@ -29,4 +29,4 @@ Never edit the root/65 HTML directly — always regenerate. `data65.py` derives 
 - Exchange coordinates: `builder/starts.json`, key k = start of leg k+1 (0 = start line, 36 = finish). From the race's official Google My Maps.
 - The anon key in `js/config.js` is public by design; the service-role key must never appear in this repo.
 - Test JS via `python3 -m http.server` (not file://). Static mode must never throw — guard all DB code on `OTO_CONFIG.url`.
-- After changing `data.py` leg content, regenerate `supabase/seed_legs.sql` (script pattern in git history) so fresh DB installs match.
+- After changing `data.py` leg content, regenerate `supabase/seed_legs.sql` (`cd builder && ../.venv/bin/python gen_seed.py`) so fresh DB installs match. The live site shows the **database** row, so also paste the new text into `admin.html` or run that leg's row from the seed in the Supabase SQL editor.
