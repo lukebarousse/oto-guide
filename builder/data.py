@@ -3,6 +3,7 @@
 #   NOTE  = 2025 team Apple Note (first-hand beta from last year's runner)
 #   SHEET = Luke's Google Sheet (Strava-scraped 2025: distances, gain, cumulative miles, climb sections)
 #   WEB   = official outbackintheozarks.com course map (leg names, Strava route links, exchange names)
+#   ROUTE = elev_meta.json: length + gain of the current 2026 Strava routes (same pull as the elevation profiles)
 
 STRAVA = {
     1: "3379992613740062728", 2: "3379993009756757000", 3: "3384280323494893970",
@@ -36,8 +37,11 @@ NAMES = {
 # surface: (pavement %, gravel/dirt %, trail %) approximated from the note text; surface_text = literal.
 # climbs: notable climb sections from the sheet (avg grade, elevation ft, distance mi).
 # dist/gain: sheet values (Strava-scraped 2025). Leg 30 & 36 ratings come from the sheet (missing in note).
+# Re-routed legs (1, 8, 30, 31: ROUTE differs from the sheet by more than 0.15 mi): dist is the current 2026
+# route length and dist_2025 keeps the sheet's figure for the card footnote. gain stays the sheet's figure on
+# every leg (ROUTE gain reads higher than the sheet on unchanged legs too, so mixing the two would skew ft/mi).
 LEGS = [
- dict(n=1, dist=6.35, gain=755, rating="Hard", team="Very Hard",
+ dict(n=1, dist=6.94, dist_2025=6.35, gain=755, rating="Hard", team="Very Hard",
       surface=(33, 33, 34), surface_text="Trail / pavement / gravel",
       beta="Trail has switchbacks with loose gravel and tree roots — be careful, saw several people fall. Steep climb going into Eureka, potential to walk some of it. Easy downhill through town, followed by a tough gravel climb to the finish. Could see this leg rated very hard.",
       climbs=[(2.8, 330, 2.2), (2.2, 274, 2.3)], tags=["Loose gravel + roots", "Steep climb"]),
@@ -65,7 +69,7 @@ LEGS = [
       surface=(0, 0, 100), surface_text="100% trail",
       beta="Rolling hills with two big inclines. Easy to go fast on the downhill. A lot of good shade.",
       climbs=[], tags=["Shaded"]),
- dict(n=8, dist=6.08, gain=376, rating="Hard", team=None,
+ dict(n=8, dist=6.27, dist_2025=6.08, gain=376, rating="Hard", team=None,
       surface=(16, 0, 84), surface_text="Mostly trail · last mile pavement",
       beta="Anticipate loose rocks, exposed roots and heavy leaf coverage. Several descents and moderate climbs. Finishes with a transition to paved road leading directly to War Eagle. GPS navigation recommended for the trail (sorry Benny).",
       climbs=[], tags=["GPS recommended", "Rocks + roots + leaves"]),
@@ -153,11 +157,11 @@ LEGS = [
       surface=(100, 0, 0), surface_text="100% pavement",
       beta="Lots of rolling hills with three big climbs — every downhill was met with a climb. Windy road with very little shoulder. Would recommend a flagger.",
       climbs=[], tags=["Flagger recommended", "No shoulder"]),
- dict(n=30, dist=7.56, gain=364, rating="Hard", team=None, rating_src="sheet",
+ dict(n=30, dist=7.27, dist_2025=7.56, gain=364, rating="Hard", team=None, rating_src="sheet",
       surface=(100, 0, 0), surface_text="100% pavement",
       beta="A lot of gradual climbs for the first 4–5 miles. Take your time — you'll need it for the brutal descent into Devil's Den: switchbacks and high traffic, with over 800 ft of descent in the last couple of miles. Highly recommend a flagger.",
       climbs=[], tags=["Flagger recommended", "Brutal descent", "Switchbacks + traffic"]),
- dict(n=31, dist=6.27, gain=929, rating="Very Hard", team=None,
+ dict(n=31, dist=6.79, dist_2025=6.27, gain=929, rating="Very Hard", team=None,
       surface=(56, 36, 8), surface_text="½ mi trail · 3.5 mi pavement · rest gravel",
       beta="Short trail coming out of the park with uneven terrain. Once you reach Hwy 16 it's flat until 2.3 miles in — then you climb!! Climb the rest of the way. Walked a few stretches to keep the heart rate down.",
       climbs=[(2.3, 750, 6.3)], tags=["Climb from mile 2.3 on"]),

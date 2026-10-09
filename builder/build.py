@@ -6,7 +6,7 @@
 Elevation profiles: if out/elev.json exists ({"1": [[mi, ft], ...], ...}), native SVG
 profiles are embedded in each leg card.
 """
-import base64, importlib, io, json, os, re, html as H
+import base64, importlib, io, json, os, re, sys, html as H
 from decimal import Decimal, ROUND_HALF_UP
 import qrcode
 _d = importlib.import_module(os.environ.get("OTO_DATA", "data"))
@@ -48,6 +48,13 @@ for p in ("out/elev.json", "elev.json"):
         if os.path.exists(mp):
             ELEV_META = {int(k): v for k, v in json.load(open(mp)).items()}
         break
+# data.py carries each leg's current route length as dist (re-routed legs keep the 2025
+# sheet's figure in dist_2025 for the card footnote). Shout if a fresh elev_meta.json disagrees.
+for _l in LEGS:
+    _m = ELEV_META.get(_l["n"])
+    if _m and abs(_m["mi"] - _l["dist"]) > 0.15:
+        print(f"WARNING: leg {_l['n']}: data.py dist {_l['dist']} mi, but elev_meta.json measures {_m['mi']} mi. "
+              f"Update dist / dist_2025 in data.py.", file=sys.stderr)
 
 def qr_datauri(url, box=4):
     q = qrcode.QRCode(border=2, box_size=box)
@@ -261,17 +268,23 @@ def climb_chips(l):
 def tag_chips(l):
     return "".join(f'<span class="chip warn">⚠ {esc(t)}</span>' for t in l["tags"])
 
+def route_note(l):
+    """Footnote for a leg re-routed since the 2025 sheet: dist is the current route,
+    dist_2025 the sheet's figure (see data.py). Empty for every other leg."""
+    old = l.get("dist_2025")
+    if not old:
+        return ""
+    only = "only " if l["dist"] > old else ""
+    return (f'<div class="footnote">🔄 <b>{SEASON_YEAR} route update:</b> this leg now measures {fmt_mi(l["dist"])} mi on Strava. '
+            f'In 2025 it was {only}{fmt_mi(old)} mi long. The profile is the current route.</div>')
+
 def leg_card(l):
     n = l["n"]
     slot = (n - 1) % N_RUNNERS + 1
     team_b = badge("team says", l["team"]) if l["team"] else ""
     src_note = ' <span class="tiny">(rating from our sheet — missing in the note)</span>' if l.get("rating_src") else ""
     foot = f'<div class="footnote">ℹ {esc(l["footnote"])}</div>' if l.get("footnote") else ""
-    m = ELEV_META.get(n)
-    if m and abs(m["mi"] - l["dist"]) > 0.15:
-        foot += (f'<div class="footnote">🔄 <b>2026 route update:</b> Strava now measures this leg at ~{m["mi"]:.1f} mi '
-                 f'(our 2025 data: {fmt_mi(l["dist"])} mi / +{l["gain"]:,} ft). The profile below is the current route — '
-                 f'expect the stats to shift a bit.</div>')
+    foot += route_note(l)
     url = strava_url(n)
     return f'''
 <article class="leg" id="leg-{n}" data-slot="{slot}">
@@ -1290,9 +1303,9 @@ def how_to_read(compact=False, inner=False):
   Distances, gain, mile markers and climb grades are from public Strava data.</p>
   <p style="margin:.3em 0">🌐 <b>From online:</b> official leg names, Strava routes, exchange stations, dates and night rules
   come from the official race site and 2025 race guide.</p>
-  <p style="margin:.3em 0" class="tiny">⚠ Distances/gain on the cards are our 2025 numbers. The elevation profile charts come straight
-  from the current 2026 Strava routes (pulled July 2026). Four legs changed for 2026 — <b>1, 8, 30 and 31</b> — those cards carry a
-  🔄 route-update flag. When in doubt, the Strava link wins.</p>
+  <p style="margin:.3em 0" class="tiny">⚠ Four legs changed for 2026: <b>1, 8, 30 and 31</b>. Their cards show the current Strava distance,
+  with last year's in a 🔄 route-update note. Every other distance, and the climb on every card, is our 2025 number. The elevation
+  profile charts come straight from the current 2026 Strava routes (pulled July 2026). When in doubt, the Strava link wins.</p>
   <div class="legendrow">Difficulty: {diff_legend()} · Surface: <span class="dotc" style="background:{SURF["pavement"]}"></span>pavement
   <span class="dotc" style="background:{SURF["gravel"]}"></span>gravel <span class="dotc" style="background:{SURF["trail"]}"></span>trail</div>'''
     if inner:
@@ -1497,11 +1510,7 @@ def leg_expanded(l):
     c = DIFF[rating]
     band_txt = f'{l["rating"]} → {l["team"]}' if l["team"] else l["rating"]
     inits = initials_map()
-    m = ELEV_META.get(n)
-    foot = ""
-    if m and abs(m["mi"] - l["dist"]) > 0.15:
-        foot = (f'<div class="footnote">🔄 <b>2026 route update:</b> Strava now measures this leg at ~{m["mi"]:.1f} mi '
-                f'(our 2025 data: {fmt_mi(l["dist"])} mi / +{l["gain"]:,} ft). The profile is the current route.</div>')
+    foot = route_note(l)
     tags = "".join(f'<span class="chip warn">⚠ {esc(t)}</span>' for t in l["tags"])
     # notes, not warnings — team.js keeps .chip.note when it swaps in DB tags
     if ZONE_BATHROOMS.get(n - 1) == "nearby":

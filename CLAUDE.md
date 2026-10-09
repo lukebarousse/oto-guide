@@ -25,6 +25,7 @@ Never edit the root/65 HTML directly — always regenerate. `data65.py` derives 
 ## Conventions & gotchas
 
 - Leg numbering is official (65-mile legs are 25–36, never renumbered). `assignments` maps leg → slot; default is rotation `(index % n_runners) + 1`.
+- Leg `dist` in `data.py` is the current Strava route length (`builder/elev_meta.json`). Legs re-routed since the 2025 sheet (1, 8, 30, 31) keep last year's figure in `dist_2025`, which the card footnote shows; `gain` is the 2025 sheet on every leg. The build warns when `elev_meta.json` and `data.py` disagree by more than 0.15 mi.
 - Exchange coordinates: `builder/starts.json`, key k = start of leg k+1 (0 = start line, 36 = finish). From the race's official Google My Maps.
 - The anon key in `js/config.js` is public by design; the service-role key must never appear in this repo.
 - Test JS via `python3 -m http.server` (not file://). Static mode must never throw — guard all DB code on `OTO_CONFIG.url`.
