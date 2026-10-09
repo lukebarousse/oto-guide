@@ -48,13 +48,17 @@ for p in ("out/elev.json", "elev.json"):
         if os.path.exists(mp):
             ELEV_META = {int(k): v for k, v in json.load(open(mp)).items()}
         break
-# data.py carries each leg's current route length as dist (re-routed legs keep the 2025
-# sheet's figure in dist_2025 for the card footnote). Shout if a fresh elev_meta.json disagrees.
+# data.py carries each leg's current route length as dist; re-routed legs also take the route's
+# gain and keep the 2025 sheet's figures in dist_2025/gain_2025 for the card footnote. Shout if a
+# fresh elev_meta.json disagrees.
 for _l in LEGS:
     _m = ELEV_META.get(_l["n"])
     if _m and abs(_m["mi"] - _l["dist"]) > 0.15:
         print(f"WARNING: leg {_l['n']}: data.py dist {_l['dist']} mi, but elev_meta.json measures {_m['mi']} mi. "
               f"Update dist / dist_2025 in data.py.", file=sys.stderr)
+    if _m and "dist_2025" in _l and _m["gain"] != _l["gain"]:
+        print(f"WARNING: leg {_l['n']}: data.py gain {_l['gain']} ft, but elev_meta.json measures {_m['gain']} ft. "
+              f"Update gain / gain_2025 in data.py.", file=sys.stderr)
 
 def qr_datauri(url, box=4):
     q = qrcode.QRCode(border=2, box_size=box)
@@ -269,14 +273,15 @@ def tag_chips(l):
     return "".join(f'<span class="chip warn">⚠ {esc(t)}</span>' for t in l["tags"])
 
 def route_note(l):
-    """Footnote for a leg re-routed since the 2025 sheet: dist is the current route,
-    dist_2025 the sheet's figure (see data.py). Empty for every other leg."""
+    """Footnote for a leg re-routed since the 2025 sheet: dist/gain are the current route,
+    dist_2025/gain_2025 the sheet's figures (see data.py). Empty for every other leg."""
     old = l.get("dist_2025")
     if not old:
         return ""
     only = "only " if l["dist"] > old else ""
-    return (f'<div class="footnote">🔄 <b>{SEASON_YEAR} route update:</b> this leg now measures {fmt_mi(l["dist"])} mi on Strava. '
-            f'In 2025 it was {only}{fmt_mi(old)} mi long. The profile is the current route.</div>')
+    return (f'<div class="footnote">🔄 <b>{SEASON_YEAR} route update:</b> this leg now measures {fmt_mi(l["dist"])} mi / '
+            f'+{l["gain"]:,} ft on Strava. In 2025 it was {only}{fmt_mi(old)} mi long (+{l["gain_2025"]:,} ft). '
+            f'The profile is the current route.</div>')
 
 def leg_card(l):
     n = l["n"]
@@ -1303,9 +1308,9 @@ def how_to_read(compact=False, inner=False):
   Distances, gain, mile markers and climb grades are from public Strava data.</p>
   <p style="margin:.3em 0">🌐 <b>From online:</b> official leg names, Strava routes, exchange stations, dates and night rules
   come from the official race site and 2025 race guide.</p>
-  <p style="margin:.3em 0" class="tiny">⚠ Four legs changed for 2026: <b>1, 8, 30 and 31</b>. Their cards show the current Strava distance,
-  with last year's in a 🔄 route-update note. Every other distance, and the climb on every card, is our 2025 number. The elevation
-  profile charts come straight from the current 2026 Strava routes (pulled July 2026). When in doubt, the Strava link wins.</p>
+  <p style="margin:.3em 0" class="tiny">⚠ Four legs changed for 2026: <b>1, 8, 30 and 31</b>. Their cards show the current Strava distance
+  and climb, with last year's in a 🔄 route-update note. Every other card is our 2025 number. The elevation profile charts come
+  straight from the current 2026 Strava routes (pulled July 2026). When in doubt, the Strava link wins.</p>
   <div class="legendrow">Difficulty: {diff_legend()} · Surface: <span class="dotc" style="background:{SURF["pavement"]}"></span>pavement
   <span class="dotc" style="background:{SURF["gravel"]}"></span>gravel <span class="dotc" style="background:{SURF["trail"]}"></span>trail</div>'''
     if inner:
