@@ -4,6 +4,8 @@ Multi-team race guide for the Outback in the Ozarks relay. Static pages (generat
 
 ## Build (after ANY change to builder/*)
 
+First time on a machine: `python3 -m venv .venv && .venv/bin/pip install qrcode pillow` (the only deps; `.venv` is git-ignored). **`git pull --ff-only` before you build** — cloud sessions and the desktop app both push straight to `main`, and a rebuild from a stale checkout silently reverts their work.
+
 ```bash
 cd builder
 ../.venv/bin/python build.py                                  # 205 -> out/
@@ -30,3 +32,16 @@ Never edit the root/65 HTML directly — always regenerate. `data65.py` derives 
 - The anon key in `js/config.js` is public by design; the service-role key must never appear in this repo.
 - Test JS via `python3 -m http.server` (not file://). Static mode must never throw — guard all DB code on `OTO_CONFIG.url`.
 - After changing `data.py` leg content, regenerate `supabase/seed_legs.sql` (`cd builder && ../.venv/bin/python gen_seed.py`) so fresh DB installs match. The live site shows the **database** row, so also push it: `../.venv/bin/python push_legs.py 2 3 4` (writes need an admin login: `OTO_ADMIN_EMAIL` + `OTO_ADMIN_PASSWORD` in the environment, and from a cloud session the Supabase host must be allowed by the network policy), or paste the text into `admin.html`.
+
+- The 205 build also writes `js/legdata.js` (leg distances + exchange miles) for `admin.html`'s exchange-windows board and race totals. Commit it with the HTML.
+- Course facts that rarely change live in `data.py`, not the DB, and are baked at build: `ZONE_BATHROOMS` (per exchange zone: yes / nearby / porta / no; shown on each leg card's route line) and `ZONE_EXTRAS` (one-season arrangements such as the 2026 Ol' Cabin breakfast at zone 29; each entry carries `season=` and renders only while it matches the year in `RACE["dates"]`). Luke's rule: if JT won't edit it, don't build UI for it.
+- Leg notes from runners: add to the existing beta, never replace it (unless it was wrong). Watch distances/elevations are less accurate than the Strava route, so listed numbers stay the route; when a watch read 25%+ more climb, say so in the beta ("2026 watches read ~N ft of climb, more than the figure listed"). Distance disagreements are flagged to Luke, not written in.
+- Header meta everywhere reads `OTO 205 · Oct 9–10, 2026`; the guide pages derive it from `RACE["dates"]`, `settings.html` has its own `RACE_DATES` map — update both at season rollover.
+- Deploy = push to `main`; GitHub Pages builds in ~1–3 min. Verify with `gh run list --workflow pages-build-deployment --limit 1` and a `curl` of the live page with a cache-buster. Live URL: https://teamguide.outbackintheozarks.com (run1.fun redirects here from the retired `OutbackInTheOzarks` repo — leave that repo alone).
+- `.github/workflows/keepalive.yml` pings Supabase daily so the free project never pauses off-season. A run "cancelled — job was not acquired by Runner" is a GitHub outage, not our bug. GitHub disables schedules after 60 days without commits and emails Luke first.
+- Admin can't be signed into from a test harness; to exercise its table code, fetch `admin.html`, run its IIFE body with `new Function(body + 'window.__t={loadSeasons,loadTeams}')()` and call those — reads are public.
+
+## State as of 2026-10-12
+
+- 2026 race ran Oct 9–10. Run1 DNF'd before legs 31–36, so those legs have no 2026 notes. Sebastian's legs (5, 11, 17, 23, 29) have 2026 numbers but no description. Everything else in `data.py` carries this year's notes, and the live `legs` rows match `data.py` exactly (Luke ran `supabase/update_legs_2026-10-12.sql`).
+- Season rollover (2027): update `RACE["dates"]` in `data.py` (also drops the 2026 `ZONE_EXTRAS`), `RACE_DATES` in `settings.html`, confirm `ZONE_BATHROOMS` with JT, then in admin create the new season (copies the leg rows forward) and duplicate teams.
