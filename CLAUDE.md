@@ -43,5 +43,7 @@ Never edit the root/65 HTML directly — always regenerate. `data65.py` derives 
 
 ## State as of 2026-10-12
 
+Full narrative recap of the Aug–Oct 2026 work, open items and Luke's working preferences: `HANDOFF.md`.
+
 - 2026 race ran Oct 9–10. Run1 DNF'd before legs 31–36, so those legs have no 2026 notes. Sebastian's legs (5, 11, 17, 23, 29) have 2026 numbers but no description. Everything else in `data.py` carries this year's notes, and the live `legs` rows match `data.py` exactly (Luke ran `supabase/update_legs_2026-10-12.sql`).
 - Season rollover (2027): update `RACE["dates"]` in `data.py` (also drops the 2026 `ZONE_EXTRAS`), `RACE_DATES` in `settings.html`, confirm `ZONE_BATHROOMS` with JT, then in admin create the new season (copies the leg rows forward) and duplicate teams.
